@@ -1,0 +1,109 @@
+<style type="text/css">
+#output { overflow: hidden; }
+#output .sample { width: 45%; padding: 1%; border: 1px solid #ccc; float: left; }
+</style>
+<script src="./../vendor/mustache.js"></script>
+<script src="./../vendor/handlebars.js"></script>
+<script src="./../../lib/templates.js"></script>
+<script id="template_one" type="text/template">
+<h3>{{header}}</h3>
+<ul>
+    {{#items}}
+        {{#first}}
+          <li>
+            <strong>{{name}}</strong>
+          </li>
+        {{/first}}
+        {{^first}}
+          <li>
+            {{#link}}<a href="{{url}}">{{/link}}
+            {{name}}
+            {{#link}}</a>{{/link}}
+          </li>
+        {{/first}}
+    {{/items}}
+</ul>
+{{#something}}
+    <p>do something!</p>
+{{/something}}
+</script>
+<script id="template_one_tp" type="text/template">
+<h3>{header}</h3>
+<ul>
+<!-- BEGIN items -->
+  <!-- IF @first -->
+  <li>
+    <strong>{items.name}</strong>
+  </li>
+  <!-- ELSE -->
+  <li>
+    <!-- IF items.link --><a href="{items.url}"><!-- ENDIF items.link -->{items.name}<!-- IF items.link --></a><!-- ENDIF items.link -->
+  </li>
+  <!-- ENDIF @first -->
+<!-- END items -->
+</ul>
+<!-- IF something -->
+    <p>do something!</p>
+<!-- ENDIF something -->
+</script>
+
+
+<div id="output">
+    <div class="sample">
+        <h2>Mustache Renders</h2>
+        <div id="mu"></div>
+    </div>
+    <div class="sample">
+        <h2>Handlebars Renders</h2>
+        <div id="hb"></div>
+    </div>
+    <div class="sample">
+        <h2>Templates.js Renders</h2>
+        <div id="tp"></div>
+    </div>
+</div>
+
+
+<script>
+  function init() {
+     var template = document.getElementById('template_one').innerHTML,
+      tp_template = document.getElementById('template_one_tp').innerHTML,
+      data = {
+          "header": "Colors",
+          "items": [
+              { "name": "rainbow", "first": true, "url": "#Rainbow" },
+              { "name": "red", "link": true, "url": "#Red" },
+              { "name": "orange", "link": true, "url": "#Orange" },
+              { "name": "yellow", "link": true, "url": "#Yellow" },
+              { "name": "green", "link": true, "url": "#Green" },
+              { "name": "blue", "link": true, "url": "#Blue" },
+              { "name": "purple", "link": true, "url": "#Purple" },
+              { "name": "white", "link": false, "url": "#While" },
+              { "name": "black", "link": false, "url": "#Black" }
+          ],
+          "double": true
+      };
+
+    var timer = new Date().getTime();
+
+    /*for (var i = 0, ii = 500; i < ii; i++) {
+      document.getElementById('mu').innerHTML = Mustache.to_html(template, data);
+    }
+    console.log("Mustache", new Date().getTime() - timer);*/
+    
+    var timer = new Date().getTime();
+
+    for (var i = 0, ii = 1000; i < ii; i++) {
+      document.getElementById('hb').innerHTML = Handlebars.compile(template)(data);
+    }
+    console.log("Handlebars", new Date().getTime() - timer);
+
+    var timer = new Date().getTime();
+
+    for (var i = 0, ii = 1000; i < ii; i++) {
+      document.getElementById('tp').innerHTML = templates.parse(data, tp_template);
+    }
+    console.log("templates.js", new Date().getTime() - timer);
+  }
+  window.onload = init;
+</script>

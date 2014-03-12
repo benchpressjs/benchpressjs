@@ -1,0 +1,187 @@
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript" src="./data.js"></script>
+	<script type="text/javascript" src="./vendor/assert.js"></script>
+	<script type="text/javascript" src="./../lib/templates.js"></script>
+	<script type="text/javascript" src="./basics.js"></script>
+</head>
+<body>
+<form id="reset">
+
+
+<div class="unit">
+<textarea rows="5" cols="50" class="template">My favourite forum software is {forum}. This templating engine is written in {language}.</textarea>
+<textarea rows="5" cols="50" class="result"></textarea>
+<textarea rows="5" cols="50" class="expect">My favourite forum software is NodeBB. This templating engine is written in JavaScript.</textarea>
+</div>
+
+<div class="unit">
+<textarea rows="5" cols="50" class="template"><!-- IF language -->
+There is language
+<!-- ENDIF language --></textarea>
+<textarea rows="5" cols="50" class="result"></textarea>
+<textarea rows="5" cols="50" class="expect">There is language</textarea>
+</div>
+
+<div class="unit">
+<textarea rows="5" cols="50" class="template"><!-- BEGIN animals -->
+{animals.species}, is commonly known as <strong>{animals.name}</strong>
+<!-- END animals --></textarea>
+<textarea rows="5" cols="50" class="result"></textarea>
+<textarea rows="5" cols="50" class="expect">Felis silvestris catus, is commonly known as <strong>Cat</strong>
+Canis lupus familiaris, is commonly known as <strong>Dog</strong>
+Carassius auratus auratus, is commonly known as <strong>Goldfish</strong>
+Homo sapiens, is commonly known as <strong>Human</strong></textarea>
+</div>
+
+
+<div class="unit">
+<textarea rows="6" cols="50" class="template"><!-- BEGIN animals -->
+<!-- IF animals.isHuman -->
+{animals.name} is human
+<!-- ELSE -->
+{animals.name} is not human
+<!-- ENDIF animals.isHuman -->
+<!-- END animals --></textarea>
+<textarea rows="6" cols="50" class="result"></textarea>
+<textarea rows="6" cols="50" class="expect">Cat is not human
+Dog is not human
+Goldfish is not human
+Human is human</textarea>
+</div>
+
+<div class="unit">
+<textarea rows="6" cols="50" class="template"><!-- BEGIN animals -->
+<!-- IF !animals.isHuman -->
+{animals.name} is not human
+<!-- ELSE -->
+{animals.name} is human
+<!-- ENDIF !animals.isHuman -->
+<!-- END animals --></textarea>
+<textarea rows="6" cols="50" class="result"></textarea>
+<textarea rows="6" cols="50" class="expect">Cat is not human
+Dog is not human
+Goldfish is not human
+Human is human</textarea>
+</div>
+
+
+<div class="unit">
+<textarea rows="10" cols="50" class="template"><!-- BEGIN animals -->
+<!-- IF @first -->
+this is first
+<!-- ELSE -->
+this is not first
+<!-- ENDIF @first -->
+<!-- END animals --></textarea>
+<textarea rows="10" cols="50" class="result"></textarea>
+<textarea rows="10" cols="50" class="expect">this is first
+this is not first
+this is not first
+this is not first</textarea>
+</div>
+
+<div class="unit">
+<textarea rows="10" cols="50" class="template"><!-- BEGIN animals -->{function.canspeak}<!-- END animals --></textarea>
+<textarea rows="10" cols="50" class="result"></textarea>
+<textarea rows="10" cols="50" class="expect">Cannot speak
+Cannot speak
+Cannot speak
+Can speak</textarea>
+</div>
+
+
+
+<div class="unit">
+<textarea rows="10" cols="50" class="template"><!-- BEGIN animals -->
+<!-- IF animals.pet.info -->{animals.name} - {animals.pet.info}<!-- ENDIF animals.pet.info -->
+<!-- END animals --></textarea>
+<textarea rows="10" cols="50" class="result"></textarea>
+<textarea rows="10" cols="50" class="expect">Cat - Hates dogs, eats goldfish
+Dog - Hates cats
+Goldfish - Keep away from cats</textarea>
+</div>
+
+
+<div class="unit">
+<textarea rows="10" cols="50" class="template"><!-- BEGIN animals -->
+<!-- IF animals.pet.trainable -->
+{animals.name} can be trained
+<!-- ELSE -->
+{animals.name} cannot be trained
+<!-- ENDIF animals.pet.trainable -->
+<!-- END animals --></textarea>
+<textarea rows="10" cols="50" class="result"></textarea>
+<textarea rows="10" cols="50" class="expect">Cat can be trained
+Dog can be trained
+Goldfish cannot be trained
+Human cannot be trained</textarea>
+</div>
+
+<div class="unit">
+<textarea rows="10" cols="50" class="template">Rendered using <a href="{package.url}">{package.name}</a> by {package.author}</textarea>
+<textarea rows="10" cols="50" class="result"></textarea>
+<textarea rows="10" cols="50" class="expect">Rendered using <a href="http://www.github.com/psychobunny/templates.js">templates.js</a> by psychobunny</textarea>
+</div>
+
+
+<div class="unit">
+<textarea rows="10" cols="50" class="template"><h3>{header}</h3>
+<ul>
+<!-- BEGIN items -->
+	<!-- IF @first -->
+	<li>
+		<strong>{items.name}</strong>
+	</li>
+	<!-- ELSE -->
+	<li>
+		<!-- IF items.link --><a href="{items.url}"><!-- ENDIF items.link -->{items.name}<!-- IF items.link --></a><!-- ENDIF items.link -->
+	</li>
+	<!-- ENDIF @first -->
+<!-- END items -->
+</ul>
+<!-- IF something -->
+    <p>do something!</p>
+<!-- ENDIF something --></textarea>
+<textarea rows="10" cols="50" class="result"></textarea>
+<textarea rows="10" cols="50" class="expect"><h3>Colors</h3>
+<ul>
+	<li>
+		<strong>rainbow</strong>
+	</li>
+	<li>
+		<a href="#Red">red</a>
+	</li>
+	<li>
+		<a href="#Orange">orange</a>
+	</li>
+	<li>
+		<a href="#Yellow">yellow</a>
+	</li>
+	<li>
+		<a href="#Green">green</a>
+	</li>
+	<li>
+		<a href="#Blue">blue</a>
+	</li>
+	<li>
+		<a href="#Purple">purple</a>
+	</li>
+	<li>
+		white
+	</li>
+	<li>
+		black
+	</li>
+</ul></textarea>
+</div>
+
+
+
+
+
+
+</form>
+</body>
+</html>
