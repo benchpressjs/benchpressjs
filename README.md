@@ -117,7 +117,7 @@ My blog URL is {website}. The URL for this library is {package.url}
 ### Arrays:
 ```
 <!-- BEGIN animals -->
-  {animals.name} is from the species {animals.species}.<br />
+  {animals.name} is from the species {animals.species}.
   <!-- IF !animals.isHuman -->
     - This could be a pet.
   <!-- ENDIF !animals.isHuman -->
