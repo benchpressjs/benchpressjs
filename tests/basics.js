@@ -16,7 +16,7 @@ function start() {
 				template = (test.querySelector('.template').value).toString(),
 				expectEl = test.querySelector('.expect');
 
-			test.querySelector('.result').value = templates.parse(json, template);
+			test.querySelector('.result').value = templates.parse(template, json);
 
 			if (test.querySelector('.result').value === expectEl.value) {
 				expectEl.style.border = "2px solid green";
