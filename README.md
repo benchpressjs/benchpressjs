@@ -1,4 +1,4 @@
-# <img alt="templates.js" src="http://i.imgur.com/aZrCais.png" />
+# <img alt="templates.js" src="http://i.imgur.com/vVyRepC.png" />
 [![Code Climate](https://codeclimate.com/github/psychobunny/templates.js.png)](https://codeclimate.com/github/psychobunny/templates.js)
 
 templates.js is an ultralight (1.98kb minified and gzipped) and super fast templating framework for JavaScript and node.js.
@@ -16,10 +16,10 @@ var html = templates.parse(template, {sayHello: true});
 ```
 
 
-### Template Syntax
+## Template Syntax
+Sample data, see test cases for more:
 
 ```
-// Sample data, see test cases for more
 {
 	"animals": [
 		{
@@ -48,12 +48,12 @@ var html = templates.parse(template, {sayHello: true});
 }
 ```
 
-**Simple key/value**:
+### Simple key/value
 ```
 My blog URL is {website}. The URL for this library is {package.url}
 ```
 
-**Conditionals**:
+### Conditionals
 ```
 <!-- IF sayHello -->
   Hello world!
@@ -64,7 +64,7 @@ My blog URL is {website}. The URL for this library is {package.url}
 <!-- ENDFIF !somethingFalse -->
 ```
 
-**Arrays**:
+### Arrays:
 ```
 <!-- BEGIN animals -->
   {animals.name} is from the species {animals.species}.<br />
@@ -82,7 +82,10 @@ Dog is from the Canis lupus familiaris.
 Human is from the species Homo sapiens.
 ```
 
-**Helpers** are JavaScript methods for advanced logic in templates:
+### Helpers
+
+Helpers are JavaScript methods for advanced logic in templates. This example shows a really simple example of a function called `print_is_human` which will render text depending on the current block's data.
+
 ```
 templates.registerHelper('print_is_human', function(data, iterator, numblocks) {
 	return (data.isHuman) ? "Is human" : "Isn't human";
