@@ -1,15 +1,13 @@
 {
   "name": "templates.js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "psychobunny <psycho.bunny@hotmail.com>",
   "description": "An ultralight and super fast templating framework",
   "scripts": {
     "test": "./node_modules/.bin/mocha tests/main.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/psychobunny/templates.js.git"
-  },
+  "repository": "git://github.com/psychobunny/templates.js",
+  "main": "./index.js",
   "keywords": [
     "templates",
     "templating",

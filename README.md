@@ -151,6 +151,9 @@ Isn't human
 Isn't human
 Is human
 ```
+## Installation
+
+    npm install templates.js
 
 ## Testing
 
