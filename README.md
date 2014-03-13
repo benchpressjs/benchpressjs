@@ -99,6 +99,11 @@ Isn't human
 Is human
 ```
 
+## Testing
+
+    npm install
+    npm test
+
 ## Projects using templates.js
 
 [NodeBB](http://www.nodebb.org)

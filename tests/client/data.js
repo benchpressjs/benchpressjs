@@ -44,6 +44,8 @@ window.json = {
 	"language": "JavaScript",
 	"isTrue": true,
 	"isFalse": false,
+	"website": "http://burnaftercompiling.com",
+    "sayHello": true,
 	"header": "Colors",
 	"items": [
 		{
