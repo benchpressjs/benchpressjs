@@ -1,5 +1,7 @@
 # <img alt="templates.js" src="http://i.imgur.com/vVyRepC.png" />
+[![Build Status](https://travis-ci.org/psychobunny/templates.js.png?branch=master)](https://travis-ci.org/psychobunny/templates.js)
 [![Code Climate](https://codeclimate.com/github/psychobunny/templates.js.png)](https://codeclimate.com/github/psychobunny/templates.js)
+[![Dependency Status](https://david-dm.org/psychobunny/templates.js.png)](https://david-dm.org/psychobunny/templates.js)
 
 templates.js is an ultralight (1.98kb minified and gzipped) and super fast templating framework for JavaScript and node.js.
 
