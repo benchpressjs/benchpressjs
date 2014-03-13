@@ -9,8 +9,10 @@ It has [express](http://expressjs.com/) support out-of-the-box.
 
 ## API
 
+Parse templates by passing in a template string and an object representing the data to be parsed.
+
 ```
-var html = templates.parse(template, {sayHello: true});
+var parsed = templates.parse(template, data);
 ```
 
 ### templates.js client-side
