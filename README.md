@@ -17,6 +17,29 @@ templates.registerHelper('hello_world', function(data, iterator, numblocks) {
 var html = templates.parse(template, {sayHello: true});
 ```
 
+### templates.js and express
+
+```
+var express = require('express'),
+	app = express(),
+	templates = require('templates.js'),
+	data = {};
+
+app.configure(function() {
+	app.engine('tpl', templates.__express);
+	app.set('view engine', 'tpl');
+	app.set('views', 'path/to/templates');
+});
+
+app.render('myview', data, function(err, html) {
+	console.log(html);
+});
+
+app.get('/test', function(res, req, next) {
+	res.render('myview', data);
+});
+```
+
 
 ## Template Syntax
 Sample data, see test cases for more:
