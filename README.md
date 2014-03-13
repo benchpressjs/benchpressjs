@@ -114,7 +114,9 @@ My blog URL is {website}. The URL for this library is {package.url}
 <!-- ENDFIF !somethingFalse -->
 ```
 
-### Arrays:
+### Arrays
+Repeat blocks of HTML with an array. The two helpers `@first` and `@last` are also available as conditionals within an array.
+
 ```
 <!-- BEGIN animals -->
   {animals.name} is from the species {animals.species}.
