@@ -17,7 +17,9 @@
   ],
   "devDependencies": {
     "assert": "~1.1.1",
-    "mocha": "~1.17.1"
+    "mocha": "~1.17.1",
+    "express": "~3.4.8",
+    "path": "~0.4.9"
   },
   "license": "MIT",
   "engines": {
