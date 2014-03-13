@@ -1,7 +1,7 @@
 "use strict";
 /*global templates, json*/
 
-templates.registerHelper('canspeak', function(data, iterator, numblocks) {
+templates.registerHelper('canspeak', function(data/*, iterator, numblocks*/) {
 	return (data.isHuman && data.name === "Human") ? "Can speak" : "Cannot speak";
 });
 
