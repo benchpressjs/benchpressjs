@@ -5,16 +5,39 @@
 
 templates.js is an ultralight (1.98kb minified and gzipped) and super fast templating framework for JavaScript and node.js.
 
+It has [express](http://expressjs.com/) support out-of-the-box.
 
 ## API
 
 ```
-// Register helpers, optional.
-templates.registerHelper('hello_world', function(data, iterator, numblocks) {
-	return (data.sayHello) ? "Hello World!" : "Goodbye!";
-});
-
 var html = templates.parse(template, {sayHello: true});
+```
+
+### templates.js client-side
+
+```
+<html>
+<head>
+	<script type="text/javascript" src="path/to/templates.js"></script>
+</head>
+<body>
+	<div id="template">
+		<p>{quote.text}</p>
+		<strong>{quote.author}</strong>
+	</div>
+
+	<script type="text/javascript">
+		var el = document.getElementById('template');
+
+		el.innerHTML = templates.parse(el.innerHTML, {
+			quote: {
+				text: "Life is really simple, but we insist on making it complicated.",
+				author: "Confucius"
+			}
+		});
+	</script>
+</body>
+</html>
 ```
 
 ### templates.js and express
@@ -35,7 +58,7 @@ app.render('myview', data, function(err, html) {
 	console.log(html);
 });
 
-app.get('/test', function(res, req, next) {
+app.get('/myview', function(res, req, next) {
 	res.render('myview', data);
 });
 ```

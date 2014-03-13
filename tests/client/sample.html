@@ -1,0 +1,22 @@
+<html>
+<head>
+	<script type="text/javascript" src="./../../lib/templates.js"></script>
+</head>
+<body>
+	<div id="template">
+		<p>{quote.text}</p>
+		<strong>{quote.author}</strong>
+	</div>
+
+	<script type="text/javascript">
+		var el = document.getElementById('template');
+
+		el.innerHTML = templates.parse(el.innerHTML, {
+			quote: {
+				text: "Life is really simple, but we insist on making it complicated.",
+				author: "Confucius"
+			}
+		});
+	</script>
+</body>
+</html>
