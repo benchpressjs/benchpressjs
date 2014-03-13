@@ -1,6 +1,6 @@
 "use strict";
 
-var json = {
+window.json = {
 	"animals": [
 		{
 			"name": "Cat",
