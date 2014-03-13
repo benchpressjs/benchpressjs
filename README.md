@@ -1,4 +1,4 @@
-# <img alt="templates.js" src="http://i.imgur.com/L9Y2tHw.png" />
+# <img alt="templates.js" src="http://imgur.com/vVyRepC" />
 [![Code Climate](https://codeclimate.com/github/psychobunny/templates.js.png)](https://codeclimate.com/github/psychobunny/templates.js)
 
 templates.js is an ultralight (1.98kb minified and gzipped) and super fast templating framework for JavaScript and node.js.
