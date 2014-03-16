@@ -2,9 +2,14 @@
 <head>
 	<title></title>
 	<script type="text/javascript" src="./data.js"></script>
-	<script type="text/javascript" src="./../vendor/assert.js"></script>
 	<script type="text/javascript" src="./../../lib/templates.js"></script>
 	<script type="text/javascript" src="./basics.js"></script>
+	<style type="text/css">
+	.rendered {
+		display: inline-block;
+		width: 300px
+	}
+	</style>
 </head>
 <body>
 <form id="reset">
@@ -16,6 +21,7 @@
 Dog can be trained
 Goldfish cannot be trained
 Human cannot be trained</textarea>
+<div class="rendered"></div>
 </div>
 
 <div class="unit">
@@ -31,12 +37,14 @@ Human cannot be trained</textarea>
 Dog is not human
 Goldfish is not human
 Human is human</textarea>
+<div class="rendered"></div>
 </div>
 
 <div class="unit">
 <textarea rows="5" cols="50" class="template">My favourite forum software is {forum}. This templating engine is written in {language}.</textarea>
 <textarea rows="5" cols="50" class="result"></textarea>
 <textarea rows="5" cols="50" class="expect">My favourite forum software is NodeBB. This templating engine is written in JavaScript.</textarea>
+<div class="rendered"></div>
 </div>
 
 <div class="unit">
@@ -45,6 +53,7 @@ There is language
 <!-- ENDIF language --></textarea>
 <textarea rows="5" cols="50" class="result"></textarea>
 <textarea rows="5" cols="50" class="expect">There is language</textarea>
+<div class="rendered"></div>
 </div>
 
 <div class="unit">
@@ -56,6 +65,7 @@ There is language
 Canis lupus familiaris, is commonly known as <strong>Dog</strong>
 Carassius auratus auratus, is commonly known as <strong>Goldfish</strong>
 Homo sapiens, is commonly known as <strong>Human</strong></textarea>
+<div class="rendered"></div>
 </div>
 
 
@@ -74,6 +84,7 @@ Homo sapiens, is commonly known as <strong>Human</strong></textarea>
 Dog is not human
 Goldfish is not human
 Human is human</textarea>
+<div class="rendered"></div>
 </div>
 
 
@@ -90,6 +101,7 @@ this is not first
 this is not first
 this is not first
 this is not first</textarea>
+<div class="rendered"></div>
 </div>
 
 <div class="unit">
@@ -99,6 +111,7 @@ this is not first</textarea>
 Cannot speak
 Cannot speak
 Can speak</textarea>
+<div class="rendered"></div>
 </div>
 
 
@@ -111,6 +124,7 @@ Can speak</textarea>
 <textarea rows="10" cols="50" class="expect">Cat - Hates dogs, eats goldfish
 Dog - Hates cats
 Goldfish - Keep away from cats</textarea>
+<div class="rendered"></div>
 </div>
 
 
@@ -127,12 +141,14 @@ Goldfish - Keep away from cats</textarea>
 Dog can be trained
 Goldfish cannot be trained
 Human cannot be trained</textarea>
+<div class="rendered"></div>
 </div>
 
 <div class="unit">
 <textarea rows="10" cols="50" class="template">Rendered using <a href="{package.url}">{package.name}</a> by {package.author}</textarea>
 <textarea rows="10" cols="50" class="result"></textarea>
 <textarea rows="10" cols="50" class="expect">Rendered using <a href="http://www.github.com/psychobunny/templates.js">templates.js</a> by psychobunny</textarea>
+<div class="rendered"></div>
 </div>
 
 
@@ -185,6 +201,7 @@ Human cannot be trained</textarea>
 		black
 	</li>
 </ul></textarea>
+<div class="rendered"></div>
 </div>
 
 
