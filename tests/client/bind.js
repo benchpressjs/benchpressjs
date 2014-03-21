@@ -12,35 +12,35 @@ function init() {
 			arr: [
 				{
 					"count": 190,
-					"derp": 10
+					"number": 10
 				},
 				{
 					"count": 190,
-					"derp": 10
+					"number": 10
 				},
 				{
 					"count": 190,
-					"derp": 10
+					"number": 10
 				}
 			]
 		};
 
 	tpl.innerHTML = templates.parse(tpl.innerHTML, obj, true);
-	obj.arr[1].count = 2;
-	obj.arr[1].derp = 9;
+	/*obj.arr[1].count = 2;
+	obj.arr[1].number = 9;
 	obj.arr[2].count = 5;
-	obj.arr[2].derp = 4;
+	obj.arr[2].number = 4;
 	obj.arr[1].count = 5;
 	obj.username = "asd";
-	obj.package.name = "test";
+	obj.package.name = "test";*/
+	//obj.arr[2] = null;
 
-	delete obj.arr[2];
-	console.log(obj.arr);
+	obj.arr.push({
+		"count": 190,
+		"number": 10
+	});
 
-	/*setInterval(function() {
-		obj.arr[0].count++;	
-	}, 10);*/
-
+	//delete obj.arr[2];
 }
 
 
