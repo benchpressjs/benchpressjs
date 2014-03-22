@@ -4,7 +4,7 @@
 </style>
 <script src="./../vendor/mustache.js"></script>
 <script src="./../vendor/handlebars.js"></script>
-<script src="./../../lib/templates.js"></script>
+<script src="./../../../lib/templates.js"></script>
 <script id="template_one" type="text/template">
 <h3>{{header}}</h3>
 <ul>
@@ -94,14 +94,14 @@
     var timer = new Date().getTime();
 
     for (var i = 0, ii = 1000; i < ii; i++) {
-      document.getElementById('hb').innerHTML = Handlebars.compile(template)(data);
+      //document.getElementById('hb').innerHTML = Handlebars.compile(template)(data);
     }
     console.log("Handlebars", new Date().getTime() - timer);
 
     var timer = new Date().getTime();
 
     for (var i = 0, ii = 1000; i < ii; i++) {
-      document.getElementById('tp').innerHTML = templates.parse(data, tp_template);
+      document.getElementById('tp').innerHTML = templates.parse(tp_template, data);
     }
     console.log("templates.js", new Date().getTime() - timer);
   }
