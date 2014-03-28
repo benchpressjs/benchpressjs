@@ -9,7 +9,15 @@ window.json = {
 			"pet": {
 				"trainable": true,
 				"info": "Hates dogs, eats goldfish"
-			}
+			},
+			"hates": [
+				{
+					"name": "dogs"
+				},
+				{
+					"name": "humans"
+				}
+			]
 		},
 		{
 			"name": "Dog",
