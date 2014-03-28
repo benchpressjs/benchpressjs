@@ -5,6 +5,12 @@ templates.registerHelper('canspeak', function(data/*, iterator, numblocks*/) {
 	return (data.isHuman && data.name === "Human") ? "Can speak" : "Cannot speak";
 });
 
+templates.registerHelper('test', function(data) {
+	console.log(data);
+	return (data.forum && !data.double);
+});
+
+
 function start() {
 	document.getElementById('reset').reset();
 
