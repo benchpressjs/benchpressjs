@@ -32,7 +32,18 @@ window.json = {
 		{
 			"name": "Human",
 			"species": "Homo sapiens",
-			"isHuman": true
+			"isHuman": true,
+			"hobbies": [
+				{
+					"name": "guitar",
+				}, 
+				{
+					"name": "programming",
+				}, 
+				{
+					"name": "sports"
+				}
+			]
 		}
 	],
 	"package": {
