@@ -26,7 +26,15 @@ window.json = {
 			"pet": {
 				"trainable": true,
 				"info": "Hates cats"
-			}
+			},
+			"hates": [
+				{
+					"name": "cats"
+				},
+				{
+					"name": "goldfish"
+				}
+			]
 		},
 		{
 			"name": "Goldfish",
@@ -35,7 +43,18 @@ window.json = {
 			"pet": {
 				"trainable": false,
 				"info": "Keep away from cats"
-			}
+			},
+			"hates": [
+				{
+					"name": "cats"
+				},
+				{
+					"name": "dogs"
+				},
+				{
+					"name": "humans"
+				}
+			]
 		},
 		{
 			"name": "Human",

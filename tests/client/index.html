@@ -17,6 +17,24 @@
 
 <div class="unit">
 <textarea rows="5" cols="50" class="template"><!-- BEGIN animals -->
+	<!-- IF @first -->main<!-- ENDIF @first -->
+<!-- BEGIN hates -->
+	<!-- IF @first -->first<!-- ENDIF @first -->
+	{animals.hates.name}
+<!-- END hates --><br />
+<!-- END animals --></textarea>
+<textarea rows="5" cols="50" class="result"></textarea>
+<textarea rows="5" cols="50" class="expect">Cat @can be trained
+Dog @can be trained
+Goldfish cannot be trained
+Human cannot be trained</textarea>
+<div class="rendered"></div>
+</div>
+
+
+
+<div class="unit">
+<textarea rows="5" cols="50" class="template"><!-- BEGIN animals -->
 	{animals.name}
 <!-- BEGIN hates -->
 {animals.hates.name}
