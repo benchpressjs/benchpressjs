@@ -25,7 +25,7 @@
 <div class="rendered"></div>
 </div>
 
-<div class="unit">
+<div class="units">
 <textarea rows="5" cols="50" class="template"><!-- BEGIN animals -->
 	<!-- IF @first -->main<!-- ENDIF @first -->
 <!-- BEGIN hates -->
@@ -43,7 +43,7 @@ Human cannot be trained</textarea>
 
 
 
-<div class="unit">
+<div class="units">
 <textarea rows="5" cols="50" class="template"><!-- BEGIN animals -->
 	{animals.name}
 <!-- BEGIN hates -->
@@ -64,7 +64,7 @@ Human cannot be trained</textarea>
 
 
 
-<div class="unit">
+<div class="units">
 <textarea rows="5" cols="50" class="template">test<!-- IF double --> works<!-- ELSE -->not works<!-- ENDIF double --></textarea>
 <textarea rows="5" cols="50" class="result"></textarea>
 <textarea rows="5" cols="50" class="expect">Cat @can be trained
@@ -75,7 +75,7 @@ Human cannot be trained</textarea>
 </div>
 
 
-<div class="unit">
+<div class="units">
 <textarea rows="5" cols="50" class="template"><!-- IF function.test -->works<!-- ELSE -->not works<!-- ENDIF function.test --></textarea>
 <textarea rows="5" cols="50" class="result"></textarea>
 <textarea rows="5" cols="50" class="expect">Cat @can be trained
@@ -86,7 +86,7 @@ Human cannot be trained</textarea>
 </div>
 
 
-<div class="unit">
+<div class="units">
 <textarea rows="5" cols="50" class="template"><!-- BEGIN animals -->{animals.name}<!-- BEGIN hates -->hates: {animals.hates.name}<!-- END hates --><!-- END animals -->
 
 <!-- BEGIN animals -->{animals.name}<!-- BEGIN hobbies -->plays: {animals.hobbies.name}<!-- END hobbies --><!-- END animals --></textarea>
@@ -99,7 +99,7 @@ Human cannot be trained</textarea>
 </div>
 
 
-<div class="unit">
+<div class="units">
 <textarea rows="5" cols="50" class="template"><!-- BEGIN animals -->{animals.name}<!-- BEGIN hobbies -->{animals.hobbies.name}<!-- END hobbies --><!-- END animals --></textarea>
 <textarea rows="5" cols="50" class="result"></textarea>
 <textarea rows="5" cols="50" class="expect">Cat @can be trained
@@ -109,7 +109,7 @@ Human cannot be trained</textarea>
 <div class="rendered"></div>
 </div>
 
-<div class="unit">
+<div class="units">
 <textarea rows="5" cols="50" class="template"><!-- BEGIN animals --><!-- IF animals.pet.trainable -->{animals.name} @can be trained<!-- ELSE -->{animals.name} cannot be trained<!-- ENDIF animals.pet.trainable --><!-- END animals --></textarea>
 <textarea rows="5" cols="50" class="result"></textarea>
 <textarea rows="5" cols="50" class="expect">Cat @can be trained
@@ -119,7 +119,7 @@ Human cannot be trained</textarea>
 <div class="rendered"></div>
 </div>
 
-<div class="unit">
+<div class="units">
 <textarea rows="5" cols="50" class="template"><!-- BEGIN animals --><!-- IF animals.pet.trainable -->{animals.name} can be trained<!-- ELSE -->{animals.name} cannot be trained<!-- ENDIF animals.pet.trainable --><!-- END animals --></textarea>
 <textarea rows="5" cols="50" class="result"></textarea>
 <textarea rows="5" cols="50" class="expect">Cat can be trained
@@ -129,7 +129,7 @@ Human cannot be trained</textarea>
 <div class="rendered"></div>
 </div>
 
-<div class="unit">
+<div class="units">
 <textarea rows="6" cols="50" class="template"><!-- BEGIN animals -->
 <!-- IF animals.isHuman -->
 {animals.name} is human
@@ -145,14 +145,14 @@ Human is human</textarea>
 <div class="rendered"></div>
 </div>
 
-<div class="unit">
+<div class="units">
 <textarea rows="5" cols="50" class="template">My favourite forum software is {forum}. This templating engine is written in {language}.</textarea>
 <textarea rows="5" cols="50" class="result"></textarea>
 <textarea rows="5" cols="50" class="expect">My favourite forum software is NodeBB. This templating engine is written in JavaScript.</textarea>
 <div class="rendered"></div>
 </div>
 
-<div class="unit">
+<div class="units">
 <textarea rows="5" cols="50" class="template"><!-- IF language -->
 There is language
 <!-- ENDIF language --></textarea>
@@ -161,7 +161,7 @@ There is language
 <div class="rendered"></div>
 </div>
 
-<div class="unit">
+<div class="units">
 <textarea rows="5" cols="50" class="template"><!-- BEGIN animals -->
 {animals.species}, is commonly known as <strong>{animals.name}</strong>
 <!-- END animals --></textarea>
@@ -176,7 +176,7 @@ Homo sapiens, is commonly known as <strong>Human</strong></textarea>
 
 
 
-<div class="unit">
+<div class="units">
 <textarea rows="6" cols="50" class="template"><!-- BEGIN animals -->
 <!-- IF !animals.isHuman -->
 {animals.name} is not human
@@ -193,7 +193,7 @@ Human is human</textarea>
 </div>
 
 
-<div class="unit">
+<div class="units">
 <textarea rows="10" cols="50" class="template"><!-- BEGIN animals -->
 <!-- IF @first -->
 this is first
@@ -209,7 +209,7 @@ this is not first</textarea>
 <div class="rendered"></div>
 </div>
 
-<div class="unit">
+<div class="units">
 <textarea rows="10" cols="50" class="template"><!-- BEGIN animals -->{function.canspeak}<!-- END animals --></textarea>
 <textarea rows="10" cols="50" class="result"></textarea>
 <textarea rows="10" cols="50" class="expect">Cannot speak
@@ -221,7 +221,7 @@ Can speak</textarea>
 
 
 
-<div class="unit">
+<div class="units">
 <textarea rows="10" cols="50" class="template"><!-- BEGIN animals -->
 <!-- IF animals.pet.info -->{animals.name} - {animals.pet.info}<!-- ENDIF animals.pet.info -->
 <!-- END animals --></textarea>
@@ -233,7 +233,7 @@ Goldfish - Keep away from cats</textarea>
 </div>
 
 
-<div class="unit">
+<div class="units">
 <textarea rows="10" cols="50" class="template"><!-- BEGIN animals -->
 <!-- IF animals.pet.trainable -->
 {animals.name} can be trained
@@ -249,7 +249,7 @@ Human cannot be trained</textarea>
 <div class="rendered"></div>
 </div>
 
-<div class="unit">
+<div class="units">
 <textarea rows="10" cols="50" class="template">Rendered using <a href="{package.url}">{package.name}</a> by {package.author}</textarea>
 <textarea rows="10" cols="50" class="result"></textarea>
 <textarea rows="10" cols="50" class="expect">Rendered using <a href="http://www.github.com/psychobunny/templates.js">templates.js</a> by psychobunny</textarea>
@@ -257,7 +257,7 @@ Human cannot be trained</textarea>
 </div>
 
 
-<div class="unit">
+<div class="units">
 <textarea rows="10" cols="50" class="template"><h3>{header}</h3>
 <ul>
 <!-- BEGIN items -->

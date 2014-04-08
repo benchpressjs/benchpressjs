@@ -136,5 +136,6 @@ window.json = {
 	"config": {
 		"allowLocalLogin": false
 	},
-	"alternate_logins": true
+	"alternate_logins": true,
+	"some_other": false
 };
