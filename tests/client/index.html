@@ -14,6 +14,16 @@
 <body>
 <form id="reset">
 
+<div class="unit">
+<textarea rows="5" cols="50" class="template">
+<!-- IF config.allowLocalLogin -->
+<div class="<!-- IF alternate_logins -->col-md-6<!-- ELSE -->col-md-12<!-- ENDIF alternate_logins -->"></div>
+<!-- ENDIF config.allowLocalLogin -->
+</textarea>
+<textarea rows="5" cols="50" class="result"></textarea>
+<textarea rows="5" cols="50" class="expect"></textarea>
+<div class="rendered"></div>
+</div>
 
 <div class="unit">
 <textarea rows="5" cols="50" class="template"><!-- BEGIN animals -->

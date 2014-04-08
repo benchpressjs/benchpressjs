@@ -131,5 +131,10 @@ window.json = {
 			"url": "#Black"
 		}
 	],
-	"double": true
+	"double": true,
+	"single": false,
+	"config": {
+		"allowLocalLogin": false
+	},
+	"alternate_logins": true
 };
