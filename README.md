@@ -3,7 +3,7 @@
 [![Code Climate](https://codeclimate.com/github/psychobunny/templates.js.png)](https://codeclimate.com/github/psychobunny/templates.js)
 [![Dependency Status](https://david-dm.org/psychobunny/templates.js.png)](https://david-dm.org/psychobunny/templates.js)
 
-templates.js is an ultralight (1.98kb minified and gzipped) and super fast templating framework for JavaScript and node.js.
+templates.js is an ultralight (1.72kb minified and gzipped) and super fast templating framework for JavaScript and node.js.
 
 It has [express](http://expressjs.com/) support out-of-the-box.
 
