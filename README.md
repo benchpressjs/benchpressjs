@@ -65,6 +65,17 @@ app.get('/myview', function(res, req, next) {
 });
 ```
 
+## Automated Data Binding
+
+Activate data binding client-side:
+
+
+```
+var parsed = templates.parse(template, obj, true);
+```
+
+If you manipulate `obj` in the future post-render, it will update the DOM with the new value. Data binding is currently experimental and is not recommended for production use.
+
 
 ## Template Syntax
 Sample data, see test cases for more:
