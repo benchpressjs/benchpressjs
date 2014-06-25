@@ -8,7 +8,18 @@ window.json = {
 			"isHuman": false,
 			"pet": {
 				"trainable": true,
-				"info": "Hates dogs, eats goldfish"
+				"info": "Hates dogs, eats goldfish",
+				"groups": [
+					{
+						name: "group a"
+					},
+					{
+						name: "group b"
+					},
+					{
+						name: "group c"
+					}
+				]
 			},
 			"hates": [
 				{
@@ -25,7 +36,12 @@ window.json = {
 			"isHuman": false,
 			"pet": {
 				"trainable": true,
-				"info": "Hates cats"
+				"info": "Hates cats",
+				"groups": [
+					{
+						name: "group d"
+					}
+				]
 			},
 			"hates": [
 				{
@@ -42,7 +58,18 @@ window.json = {
 			"isHuman": false,
 			"pet": {
 				"trainable": false,
-				"info": "Keep away from cats"
+				"info": "Keep away from cats",
+				"groups": [
+					{
+						name: "group e"
+					},
+					{
+						name: "group b"
+					},
+					{
+						name: "group c"
+					}
+				]
 			},
 			"hates": [
 				{
@@ -137,5 +164,11 @@ window.json = {
 		"allowLocalLogin": false
 	},
 	"alternate_logins": true,
-	"some_other": false
+	"some_other": false,
+	"user": {
+		"username":"baris",
+		"userslug":"baris"
+	},
+	"userslug": "baris",
+	"username": "baris"
 };

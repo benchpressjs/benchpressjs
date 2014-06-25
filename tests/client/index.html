@@ -14,6 +14,131 @@
 <body>
 <form id="reset">
 
+
+<div class="unit">
+<textarea rows="5" cols="50" class="template">
+<!-- BEGIN animals -->
+	<!-- BEGIN groups -->
+		{animals.pet.groups.name}
+	<!-- END groups -->
+<!-- END animals -->
+</textarea>
+<textarea rows="5" cols="50" class="result"></textarea>
+<textarea rows="5" cols="50" class="expect">
+
+</textarea>
+<div class="rendered"></div>
+</div>
+
+<div class="unit">
+<textarea rows="5" cols="50" class="template"><div class="<!-- IF isTrue -->true<!-- ENDIF isTrue --> <!-- IF package -->testing<!-- ENDIF package -->"></textarea>
+<textarea rows="5" cols="50" class="result"></textarea>
+<textarea rows="5" cols="50" class="expect">
+<div class="true testing"></textarea>
+<div class="rendered"></div>
+</div>
+
+<div class="unit">
+<textarea rows="5" cols="50" class="template">
+<!-- BEGIN animals -->
+	<!-- BEGIN groups -->
+		{animals.pet.groups.name}
+	<!-- END groups -->
+<!-- END animals -->
+</textarea>
+<textarea rows="5" cols="50" class="result"></textarea>
+<textarea rows="5" cols="50" class="expect">
+
+</textarea>
+<div class="rendered"></div>
+</div>
+
+
+<div class="unit">
+<textarea rows="5" cols="50" class="template">
+<!-- IF !package -->
+	{package.name}
+<!-- ENDIF !package -->
+</textarea>
+<textarea rows="5" cols="50" class="result"></textarea>
+<textarea rows="5" cols="50" class="expect">
+
+</textarea>
+<div class="rendered"></div>
+</div>
+
+
+<div class="unit">
+<textarea rows="5" cols="50" class="template">
+<!-- IF package -->
+	{package.name}
+<!-- ENDIF package -->
+</textarea>
+<textarea rows="5" cols="50" class="result"></textarea>
+<textarea rows="5" cols="50" class="expect">templates.js
+</textarea>
+<div class="rendered"></div>
+</div>
+
+
+<div class="unit">
+<textarea rows="5" cols="50" class="template">
+{userslug}
+{user.userslug}
+</textarea>
+<textarea rows="5" cols="50" class="result"></textarea>
+<textarea rows="5" cols="50" class="expect">baris
+baris
+</textarea>
+<div class="rendered"></div>
+</div>
+
+
+<div class="unit">
+<textarea rows="5" cols="50" class="template">
+<!-- IF isTrue -->
+	<!-- BEGIN animals -->
+		{animals.name}
+	<!-- END animals -->
+<!-- ELSE -->
+	testing
+<!-- ENDIF isTrue -->
+</textarea>
+<textarea rows="5" cols="50" class="result"></textarea>
+<textarea rows="5" cols="50" class="expect">Cat
+	
+		Dog
+	
+		Goldfish
+	
+		Human
+</textarea>
+<div class="rendered"></div>
+</div>
+
+
+<div class="unit">
+<textarea rows="5" cols="50" class="template">
+<!-- IF isTrue -->
+	<!-- BEGIN animals -->
+		{animals.name}
+	<!-- END animals -->
+<!-- ELSE -->
+	testing
+<!-- ENDIF isTrue -->
+</textarea>
+<textarea rows="5" cols="50" class="result"></textarea>
+<textarea rows="5" cols="50" class="expect">Cat
+	
+		Dog
+	
+		Goldfish
+	
+		Human
+</textarea>
+<div class="rendered"></div>
+</div>
+
 <div class="unit">
 <textarea rows="5" cols="50" class="template">
 <!-- IF config.allowLocalLogin -->
@@ -21,7 +146,9 @@
 <!-- ENDIF config.allowLocalLogin -->
 </textarea>
 <textarea rows="5" cols="50" class="result"></textarea>
-<textarea rows="5" cols="50" class="expect"></textarea>
+<textarea rows="5" cols="50" class="expect">
+
+</textarea>
 <div class="rendered"></div>
 </div>
 
@@ -34,10 +161,23 @@
 <!-- END hates --><br />
 <!-- END animals --></textarea>
 <textarea rows="5" cols="50" class="result"></textarea>
-<textarea rows="5" cols="50" class="expect">Cat @can be trained
-Dog @can be trained
-Goldfish cannot be trained
-Human cannot be trained</textarea>
+<textarea rows="5" cols="50" class="expect">	main
+	first
+	dogs
+	
+	humans<br />
+	
+	first
+	cats
+	
+	goldfish<br />
+	
+	first
+	cats
+	
+	dogs
+	
+	humans<br /><br /></textarea>
 <div class="rendered"></div>
 </div>
 
@@ -54,10 +194,24 @@ Human cannot be trained</textarea>
 <!-- END hates -->
 <!-- END animals --></textarea>
 <textarea rows="5" cols="50" class="result"></textarea>
-<textarea rows="5" cols="50" class="expect">Cat @can be trained
-Dog @can be trained
-Goldfish cannot be trained
-Human cannot be trained</textarea>
+<textarea rows="5" cols="50" class="expect">	Cat
+dogs
+humans
+dogs
+humans
+	Dog
+cats
+goldfish
+cats
+goldfish
+	Goldfish
+cats
+dogs
+humans
+cats
+dogs
+humans
+	Human</textarea>
 <div class="rendered"></div>
 </div>
 
@@ -67,10 +221,7 @@ Human cannot be trained</textarea>
 <div class="unit">
 <textarea rows="5" cols="50" class="template">test<!-- IF double --> works<!-- ELSE -->not works<!-- ENDIF double --></textarea>
 <textarea rows="5" cols="50" class="result"></textarea>
-<textarea rows="5" cols="50" class="expect">Cat @can be trained
-Dog @can be trained
-Goldfish cannot be trained
-Human cannot be trained</textarea>
+<textarea rows="5" cols="50" class="expect">test works</textarea>
 <div class="rendered"></div>
 </div>
 
@@ -78,23 +229,31 @@ Human cannot be trained</textarea>
 <div class="unit">
 <textarea rows="5" cols="50" class="template"><!-- IF function.test -->works<!-- ELSE -->not works<!-- ENDIF function.test --></textarea>
 <textarea rows="5" cols="50" class="result"></textarea>
-<textarea rows="5" cols="50" class="expect">Cat @can be trained
-Dog @can be trained
-Goldfish cannot be trained
-Human cannot be trained</textarea>
+<textarea rows="5" cols="50" class="expect">not works</textarea>
 <div class="rendered"></div>
 </div>
 
 
 <div class="unit">
-<textarea rows="5" cols="50" class="template"><!-- BEGIN animals -->{animals.name}<!-- BEGIN hates -->hates: {animals.hates.name}<!-- END hates --><!-- END animals -->
+<textarea rows="5" cols="50" class="template"><!-- BEGIN animals -->{animals.name} <!-- BEGIN hates -->hates: {animals.hates.name}<!-- END hates --><!-- END animals -->
 
 <!-- BEGIN animals -->{animals.name}<!-- BEGIN hobbies -->plays: {animals.hobbies.name}<!-- END hobbies --><!-- END animals --></textarea>
 <textarea rows="5" cols="50" class="result"></textarea>
-<textarea rows="5" cols="50" class="expect">Cat @can be trained
-Dog @can be trained
-Goldfish cannot be trained
-Human cannot be trained</textarea>
+<textarea rows="5" cols="50" class="expect">Cat hates: dogs
+hates: humans
+Dog hates: cats
+hates: goldfish
+Goldfish hates: cats
+hates: dogs
+hates: humans
+Human
+
+Cat
+Dog
+Goldfish
+Humanplays: guitar
+plays: programming
+plays: sports</textarea>
 <div class="rendered"></div>
 </div>
 
@@ -102,10 +261,12 @@ Human cannot be trained</textarea>
 <div class="unit">
 <textarea rows="5" cols="50" class="template"><!-- BEGIN animals -->{animals.name}<!-- BEGIN hobbies -->{animals.hobbies.name}<!-- END hobbies --><!-- END animals --></textarea>
 <textarea rows="5" cols="50" class="result"></textarea>
-<textarea rows="5" cols="50" class="expect">Cat @can be trained
-Dog @can be trained
-Goldfish cannot be trained
-Human cannot be trained</textarea>
+<textarea rows="5" cols="50" class="expect">Cat
+Dog
+Goldfish
+Humanguitar
+programming
+sports</textarea>
 <div class="rendered"></div>
 </div>
 
