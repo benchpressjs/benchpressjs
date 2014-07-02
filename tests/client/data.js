@@ -170,5 +170,8 @@ window.json = {
 		"userslug":"baris"
 	},
 	"userslug": "baris",
-	"username": "baris"
+	"username": "baris",
+	"integerFalse": 0,
+	"stringFalse": "0",
+	"stringEmpty": ""
 };
