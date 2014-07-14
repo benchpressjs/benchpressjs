@@ -16,6 +16,29 @@
 
 <div class="unit">
 <textarea rows="5" cols="50" class="template">
+<!-- BEGIN emptyarray -->
+ emptyarray
+ <!-- IF emptyarray.undef.length -->
+ 	undef
+ 	<!-- BEGIN moar -->
+ 	moar
+ 		<!-- IF sth -->
+ 		sth
+ 		<!-- ENDIF sth -->
+ 	<!-- END moar -->
+ <!-- ENDIF emptyarray.undef.length -->
+<!-- END emptyarray -->
+</textarea>
+<textarea rows="5" cols="50" class="result"></textarea>
+<textarea rows="5" cols="50" class="expect">
+
+</textarea>
+<div class="rendered"></div>
+</div>
+
+
+<div class="unit">
+<textarea rows="5" cols="50" class="template">
 <!-- IF !stringFalse -->
 stringFalse
 <!-- ENDIF !stringFalse -->

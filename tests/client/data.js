@@ -1,6 +1,7 @@
 "use strict";
 
 window.json = {
+	"emptyarray": [],
 	"animals": [
 		{
 			"name": "Cat",
