@@ -1,0 +1,230 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>templates.js by psychobunny</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>templates.js</h1>
+        <p>Ultralight javascript templating framework</p>
+        <p class="view"><a href="https://github.com/psychobunny/templates.js">View the Project on GitHub <small>psychobunny/templates.js</small></a></p>
+        <ul>
+          <li><a href="https://github.com/psychobunny/templates.js/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/psychobunny/templates.js/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/psychobunny/templates.js">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="" class="anchor" href="#"><span class="octicon octicon-link"></span></a><img alt="templates.js" src="http://i.imgur.com/vVyRepC.png">
+</h1>
+
+<p><a href="https://travis-ci.org/psychobunny/templates.js"><img src="https://travis-ci.org/psychobunny/templates.js.png?branch=master" alt="Build Status"></a>
+<a href="https://codeclimate.com/github/psychobunny/templates.js"><img src="https://codeclimate.com/github/psychobunny/templates.js.png" alt="Code Climate"></a>
+<a href="https://david-dm.org/psychobunny/templates.js"><img src="https://david-dm.org/psychobunny/templates.js.png" alt="Dependency Status"></a></p>
+
+<p>templates.js is an ultralight (1.72kb minified and gzipped) and super fast templating framework for JavaScript and node.js.</p>
+
+<p>It has <a href="http://expressjs.com/">express</a> support out-of-the-box.</p>
+
+<h2>
+<a name="api" class="anchor" href="#api"><span class="octicon octicon-link"></span></a>API</h2>
+
+<p>Parse templates by passing in a template string and an object representing the data to be parsed.</p>
+
+<pre><code>var parsed = templates.parse(template, data);
+</code></pre>
+
+<h3>
+<a name="templatesjs-client-side" class="anchor" href="#templatesjs-client-side"><span class="octicon octicon-link"></span></a>templates.js client-side</h3>
+
+<pre><code>&lt;html&gt;
+&lt;head&gt;
+    &lt;script type="text/javascript" src="path/to/templates.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id="template"&gt;
+        &lt;p&gt;{quote.text}&lt;/p&gt;
+        &lt;strong&gt;{quote.author}&lt;/strong&gt;
+    &lt;/div&gt;
+
+    &lt;script type="text/javascript"&gt;
+        var el = document.getElementById('template');
+
+        el.innerHTML = templates.parse(el.innerHTML, {
+            quote: {
+                text: "Life is really simple, but we insist on making it complicated.",
+                author: "Confucius"
+            }
+        });
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<h3>
+<a name="templatesjs-and-express" class="anchor" href="#templatesjs-and-express"><span class="octicon octicon-link"></span></a>templates.js and express</h3>
+
+<pre><code>var express = require('express'),
+    app = express(),
+    templates = require('templates.js'),
+    data = {};
+
+app.configure(function() {
+    app.engine('tpl', templates.__express);
+    app.set('view engine', 'tpl');
+    app.set('views', 'path/to/templates');
+});
+
+app.render('myview', data, function(err, html) {
+    console.log(html);
+});
+
+app.get('/myview', function(res, req, next) {
+    res.render('myview', data);
+});
+</code></pre>
+
+<h2>
+<a name="automated-data-binding" class="anchor" href="#automated-data-binding"><span class="octicon octicon-link"></span></a>Automated Data Binding</h2>
+
+<p>Activate data binding client-side:</p>
+
+<pre><code>var parsed = templates.parse(template, obj, true);
+</code></pre>
+
+<p>If you manipulate <code>obj</code> in the future post-render, it will update the DOM with the new value. Data binding is currently experimental and is not recommended for production use.</p>
+
+<h2>
+<a name="template-syntax" class="anchor" href="#template-syntax"><span class="octicon octicon-link"></span></a>Template Syntax</h2>
+
+<p>Sample data, see test cases for more:</p>
+
+<pre><code>{
+    "animals": [
+        {
+            "name": "Cat",
+            "species": "Felis silvestris catus",
+            "isHuman": false,
+        },
+        {
+            "name": "Dog",
+            "species": "Canis lupus familiaris",
+            "isHuman": false,
+        },
+        {
+            "name": "Human",
+            "species": "Homo sapiens",
+            "isHuman": true
+        }
+    ],
+    "package": {
+        "name": "templates.js",
+        "author": "psychobunny",
+        "url": "http://www.github.com/psychobunny/templates.js"
+    },
+    "website": "http://burnaftercompiling.com",
+    "sayHello": true
+}
+</code></pre>
+
+<h3>
+<a name="simple-keyvalue" class="anchor" href="#simple-keyvalue"><span class="octicon octicon-link"></span></a>Simple key/value</h3>
+
+<pre><code>My blog URL is {website}. The URL for this library is {package.url}
+</code></pre>
+
+<h3>
+<a name="conditionals" class="anchor" href="#conditionals"><span class="octicon octicon-link"></span></a>Conditionals</h3>
+
+<pre><code>&lt;!-- IF sayHello --&gt;
+  Hello world!
+&lt;!-- ENDIF sayHello --&gt;
+
+&lt;!-- IF !somethingFalse --&gt;
+  somethingFalse doensn't exist
+&lt;!-- ENDFIF !somethingFalse --&gt;
+</code></pre>
+
+<h3>
+<a name="arrays" class="anchor" href="#arrays"><span class="octicon octicon-link"></span></a>Arrays</h3>
+
+<p>Repeat blocks of HTML with an array. The two helpers <code>@first</code> and <code>@last</code> are also available as conditionals within an array.</p>
+
+<pre><code>&lt;!-- BEGIN animals --&gt;
+  {animals.name} is from the species {animals.species}.
+  &lt;!-- IF !animals.isHuman --&gt;
+    - This could be a pet.
+  &lt;!-- ENDIF !animals.isHuman --&gt;
+&lt;!-- END animals --&gt;
+
+prints out:
+
+Cat is from the species Felis silvestris catus.
+- This could be a pet.
+Dog is from the Canis lupus familiaris.
+- This could be a pet.
+Human is from the species Homo sapiens.
+</code></pre>
+
+<h3>
+<a name="helpers" class="anchor" href="#helpers"><span class="octicon octicon-link"></span></a>Helpers</h3>
+
+<p>Helpers are JavaScript methods for advanced logic in templates. This example shows a really simple example of a function called <code>print_is_human</code> which will render text depending on the current block's data.</p>
+
+<pre><code>templates.registerHelper('print_is_human', function(data, iterator, numblocks) {
+    return (data.isHuman) ? "Is human" : "Isn't human";
+});
+
+&lt;!-- BEGIN animals --&gt;
+{function.print_is_human}
+&lt;!-- END animals --&gt;
+
+prints out:
+
+Isn't human
+Isn't human
+Is human
+</code></pre>
+
+<h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<pre><code>npm install templates.js
+</code></pre>
+
+<h2>
+<a name="testing" class="anchor" href="#testing"><span class="octicon octicon-link"></span></a>Testing</h2>
+
+<pre><code>npm install
+npm test
+</code></pre>
+
+<h2>
+<a name="projects-using-templatesjs" class="anchor" href="#projects-using-templatesjs"><span class="octicon octicon-link"></span></a>Projects using templates.js</h2>
+
+<p><a href="http://www.nodebb.org">NodeBB</a></p>
+
+<p>Add yours here by submitting a PR :)</p>
+      </section>
+    </div>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/psychobunny">psychobunny</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
