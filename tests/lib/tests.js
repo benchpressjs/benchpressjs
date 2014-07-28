@@ -49,13 +49,18 @@ function prepare(callback) {
 
 function test(raw, expected) {
 	describe('templates.js', function() {
-		for (var key in raw) {
-			if (raw.hasOwnProperty(key)) {
-				it(key, function() {
-					assert.equal(templates.parse(raw[key], data), expected[key]);
-				});
+		var keys = Object.keys(raw);
+
+		async.each(keys, function(key, next) {
+			it(key, function() {
+				assert.equal(templates.parse(raw[key], data), expected[key]);
+				next();
+			});
+		}, function(err) {
+			if (err) {
+				throw new Error(err);
 			}
-		}
+		});
 	});
 }
 
