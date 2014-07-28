@@ -1,4 +1,5 @@
 {
+	"emptyarray": [],
 	"animals": [
 		{
 			"name": "Cat",
@@ -6,8 +7,27 @@
 			"isHuman": false,
 			"pet": {
 				"trainable": true,
-				"info": "Hates dogs, eats goldfish"
-			}
+				"info": "Hates dogs, eats goldfish",
+				"groups": [
+					{
+						"name": "group a"
+					},
+					{
+						"name": "group b"
+					},
+					{
+						"name": "group c"
+					}
+				]
+			},
+			"hates": [
+				{
+					"name": "dogs"
+				},
+				{
+					"name": "humans"
+				}
+			]
 		},
 		{
 			"name": "Dog",
@@ -15,8 +35,21 @@
 			"isHuman": false,
 			"pet": {
 				"trainable": true,
-				"info": "Hates cats"
-			}
+				"info": "Hates cats",
+				"groups": [
+					{
+						"name": "group d"
+					}
+				]
+			},
+			"hates": [
+				{
+					"name": "cats"
+				},
+				{
+					"name": "goldfish"
+				}
+			]
 		},
 		{
 			"name": "Goldfish",
@@ -24,8 +57,30 @@
 			"isHuman": false,
 			"pet": {
 				"trainable": false,
-				"info": "Keep away from cats"
-			}
+				"info": "Keep away from cats",
+				"groups": [
+					{
+						"name": "group e"
+					},
+					{
+						"name": "group b"
+					},
+					{
+						"name": "group c"
+					}
+				]
+			},
+			"hates": [
+				{
+					"name": "cats"
+				},
+				{
+					"name": "dogs"
+				},
+				{
+					"name": "humans"
+				}
+			]
 		},
 		{
 			"name": "Human",
@@ -102,5 +157,20 @@
 			"url": "#Black"
 		}
 	],
-	"double": true
+	"double": true,
+	"single": false,
+	"config": {
+		"allowLocalLogin": false
+	},
+	"alternate_logins": true,
+	"some_other": false,
+	"user": {
+		"username":"baris",
+		"userslug":"baris"
+	},
+	"userslug": "baris",
+	"username": "baris",
+	"integerFalse": 0,
+	"stringFalse": "0",
+	"stringEmpty": ""
 }
