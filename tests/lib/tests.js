@@ -53,7 +53,15 @@ function test(raw, expected) {
 
 		async.each(keys, function(key, next) {
 			it(key, function() {
-				assert.equal(templates.parse(raw[key], data), expected[key]);
+				var parsed = templates.parse(raw[key], data);
+				if (parsed !== expected[key]) {
+					fs.writeFile(path.join(TEMPLATES_DIRECTORY, key + '.log'), parsed);
+				} else {
+					fs.unlink(path.join(TEMPLATES_DIRECTORY, key + '.log'));
+				}
+
+				assert.equal(parsed, expected[key]);
+
 				next();
 			});
 		}, function(err) {
