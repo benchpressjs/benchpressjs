@@ -1,0 +1,1 @@
+<!-- BEGIN animals -->{animals.name}<!-- BEGIN hobbies -->{animals.hobbies.name}<!-- END hobbies --><!-- END animals -->

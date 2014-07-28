@@ -1,0 +1,1 @@
+Rendered using <a href="{package.url}">{package.name}</a> by {package.author}
