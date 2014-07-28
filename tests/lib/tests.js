@@ -8,7 +8,7 @@ var assert = require('assert'),
 	async = require('async'),
 	winston = require('winston'),
 
-	TEMPLATES_DIRECTORY = path.join(__dirname, '../templates/');
+	TEMPLATES_DIRECTORY = path.join(__dirname, '../temp/');
 
 
 
