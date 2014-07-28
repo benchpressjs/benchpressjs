@@ -11,6 +11,7 @@ var assert = require('assert'),
 	TEMPLATES_DIRECTORY = path.join(__dirname, '../templates/');
 
 
+
 function prepare(callback) {
 	var raw = {},
 		expected = {};
@@ -57,11 +58,10 @@ function test(raw, expected) {
 				if (parsed !== expected[key]) {
 					fs.writeFile(path.join(TEMPLATES_DIRECTORY, key + '.log'), parsed);
 				} else {
-					fs.unlink(path.join(TEMPLATES_DIRECTORY, key + '.log'));
+					fs.unlink(path.join(TEMPLATES_DIRECTORY, key + '.log'), function(){});
 				}
 
 				assert.equal(parsed, expected[key]);
-
 				next();
 			});
 		}, function(err) {
@@ -72,5 +72,13 @@ function test(raw, expected) {
 	});
 }
 
+
+templates.registerHelper('canspeak', function(data, iterator, numblocks) {
+	return (data.isHuman && data.name === "Human") ? "Can speak" : "Cannot speak";
+});
+
+templates.registerHelper('test', function(data) {
+	return (data.forum && !data.double);
+});
 
 prepare(test);

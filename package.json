@@ -24,8 +24,5 @@
   "license": "MIT",
   "engines": {
     "node": ">=0.6"
-  },
-  "dependencies": {
-    "winston": "^0.7.3"
   }
 }
