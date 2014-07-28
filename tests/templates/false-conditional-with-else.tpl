@@ -1,0 +1,1 @@
+<!-- IF function.test -->not works<!-- ELSE -->works<!-- ENDIF function.test -->
