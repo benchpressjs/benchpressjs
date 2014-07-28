@@ -1,1 +1,3 @@
-<!-- BEGIN animals -->{function.canspeak}<!-- END animals -->
+<!-- BEGIN animals -->
+{function.canspeak}
+<!-- END animals -->
