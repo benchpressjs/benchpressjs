@@ -18,9 +18,9 @@ app.configure(function() {
 
 describe('templates.js w/ express', function() {
 	it('app.render should work', function() {
-		var expected = fs.readFileSync(path.join(__dirname, '../templates/items-expected.tpl')).toString();
+		var expected = fs.readFileSync(path.join(__dirname, '../templates/basic.html')).toString();
 
-		app.render('items', data, function(err, parsed) {
+		app.render('basic', data, function(err, parsed) {
 			assert.equal(parsed, expected);
 		});
 	});

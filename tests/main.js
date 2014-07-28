@@ -1,4 +1,4 @@
 "use strict";
 
-require('./lib/basic');
+require('./lib/tests');
 require('./lib/express');

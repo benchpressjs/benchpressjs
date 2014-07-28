@@ -17,10 +17,15 @@
     "assert": "~1.1.1",
     "mocha": "~1.17.1",
     "express": "~3.4.8",
-    "path": "~0.4.9"
+    "path": "~0.4.9",
+    "async": "^0.9.0",
+    "winston": "^0.7.3"
   },
   "license": "MIT",
   "engines": {
     "node": ">=0.6"
+  },
+  "dependencies": {
+    "winston": "^0.7.3"
   }
 }
