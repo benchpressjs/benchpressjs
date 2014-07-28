@@ -8,7 +8,7 @@ var assert = require('assert'),
 	async = require('async'),
 	winston = require('winston'),
 
-	TEMPLATES_DIRECTORY = path.join(__dirname, '../temp/');
+	TEMPLATES_DIRECTORY = path.join(__dirname, '../templates/');
 
 
 
@@ -54,14 +54,16 @@ function test(raw, expected) {
 
 		async.each(keys, function(key, next) {
 			it(key, function() {
-				var parsed = templates.parse(raw[key], data);
-				if (parsed !== expected[key]) {
+				var parsed = templates.parse(raw[key], data).replace(/\r\n/g, '\n'),
+					expect = expected[key].replace(/\r\n/g, '\n');
+
+				if (parsed !== expect) {
 					fs.writeFile(path.join(TEMPLATES_DIRECTORY, key + '.log'), parsed);
 				} else {
 					fs.unlink(path.join(TEMPLATES_DIRECTORY, key + '.log'), function(){});
 				}
 
-				assert.equal(parsed, expected[key]);
+				assert.equal(parsed, expect);
 				next();
 			});
 		}, function(err) {
