@@ -172,5 +172,6 @@
 	"username": "baris",
 	"integerFalse": 0,
 	"stringFalse": "0",
-	"stringEmpty": ""
+	"stringEmpty": "",
+	"null": null
 }
