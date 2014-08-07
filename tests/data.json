@@ -173,5 +173,16 @@
 	"integerFalse": 0,
 	"stringFalse": "0",
 	"stringEmpty": "",
-	"null": null
+	"null": null,
+	"rooms": [
+        {
+            "name": "Test",
+            "slug": "test",
+            "description": "testing",
+            "author": 1,
+            "private": false,
+            "clients": [],
+            "loggedIn": true
+        }
+    ]
 }
