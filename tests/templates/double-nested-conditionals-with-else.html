@@ -1,0 +1,1 @@
+My favourite forum software is {forum}. This templating engine is written in {language}.
