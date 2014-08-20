@@ -1,7 +1,7 @@
 <h3>{header}</h3>
 <ul>
 <!-- BEGIN items -->
-	<!-- IF @first -->
+<!-- IF @first -->
 	<li>
 		<strong>{items.name}</strong>
 	</li>
@@ -9,7 +9,7 @@
 	<li>
 		<!-- IF items.link --><a href="{items.url}"><!-- ENDIF items.link -->{items.name}<!-- IF items.link --></a><!-- ENDIF items.link -->
 	</li>
-	<!-- ENDIF @first -->
+<!-- ENDIF @first -->
 <!-- END items -->
 </ul>
 <!-- IF something -->

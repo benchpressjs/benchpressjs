@@ -1,7 +1,7 @@
 <!-- IF double -->
-    <!-- IF !single -->
-    A
-    <!-- ENDIF !single -->B
+	<!-- IF !single -->
+	A
+	<!-- ENDIF !single -->B
 <!-- ELSE -->
 	<!-- IF !alternate_logins -->
 	C
