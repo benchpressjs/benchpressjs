@@ -1,9 +1,9 @@
 <!-- IF double -->
     <!-- IF !single -->
-    derp
-    <!-- ENDIF !single -->zxc
+    A
+    <!-- ENDIF !single -->B
 <!-- ELSE -->
 	<!-- IF !alternate_logins -->
-	herp
-	<!-- ENDIF !alternate_logins -->qwe
+	C
+	<!-- ENDIF !alternate_logins -->D
 <!-- ENDIF double -->
