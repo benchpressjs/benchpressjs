@@ -1,6 +1,6 @@
 {
   "name": "templates.js",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "author": "psychobunny <psycho.bunny@hotmail.com>",
   "description": "An ultralight and super fast templating framework",
   "scripts": {
