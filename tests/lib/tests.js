@@ -7,44 +7,39 @@ var assert = require('assert'),
 	path = require('path'),
 	async = require('async'),
 	winston = require('winston'),
-
 	TEMPLATES_DIRECTORY = path.join(__dirname, '../templates/');
-
-
 
 function prepare(callback) {
 	var raw = {},
 		expected = {};
 
-	fs.readdir(TEMPLATES_DIRECTORY, function(err, files) {
-		async.each(files, function(file, next) {
-			fs.readFile(path.join(TEMPLATES_DIRECTORY, file), 'utf-8', function(err, html) {
-				if (file.match(/\.html?/)) {
-					expected[file.replace(/\.html?/, '')] = html;
-				} else if (file.match(/\.tpl?/)) {
-					raw[file.replace(/\.tpl?/, '')] = html;
+	var files = fs.readdirSync(TEMPLATES_DIRECTORY);
+
+	async.each(files, function(file, next) {
+		var html = fs.readFileSync(path.join(TEMPLATES_DIRECTORY, file), 'utf-8');
+
+		if (file.match(/\.html?/)) {
+			expected[file.replace(/\.html?/, '')] = html;
+		} else if (file.match(/\.tpl?/)) {
+			raw[file.replace(/\.tpl?/, '')] = html;
+		}
+
+		next();
+	}, function(err) {
+		if (err) {
+			throw new Error(err);
+		}
+
+		for (var key in raw) {
+			if (raw.hasOwnProperty(key)) {
+				if (typeof expected[key] === 'undefined') {
+					winston.warn('Missing expected file: ' + key + '.html');
+					delete raw[key];
 				}
-
-				next();
-			});
-		}, function(err) {
-			if (err) {
-				throw new Error(err);
 			}
+		}
 
-			for (var key in raw) {
-				if (raw.hasOwnProperty(key)) {
-					if (typeof expected[key] === 'undefined') {
-						winston.warn('Missing expected file: ' + key + '.html');
-						delete raw[key];
-					}
-				}
-			}
-
-			callback(raw, expected);
-		});
-
-
+		callback(raw, expected);
 	});
 }
 
