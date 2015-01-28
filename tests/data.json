@@ -4,6 +4,9 @@
 	"myObject1": {
 		"myArray": [{"name": "name1"}, {"name":"name2"}]
 	},
+	"myObject2": {
+		"myArray": [{"name": "name3"}, {"name":"name4"}]
+	},
 	"animals": [
 		{
 			"name": "Cat",
