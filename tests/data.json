@@ -1,6 +1,9 @@
 {
 	"emptyarray": [],
 	"thisIsNull": null,
+	"myObject1": {
+		"myArray": [{"name": "name1"}, {"name":"name2"}]
+	},
 	"animals": [
 		{
 			"name": "Cat",
