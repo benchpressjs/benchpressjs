@@ -1,0 +1,2 @@
+{emptyarray.length}
+{animals.length}
