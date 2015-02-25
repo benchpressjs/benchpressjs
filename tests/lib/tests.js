@@ -78,4 +78,7 @@ templates.registerHelper('test', function(data) {
 	return (data.forum && !data.double);
 });
 
+templates.registerHelper('isHuman', function(data, iterator) {
+	return data.animals[iterator].isHuman;
+});
 prepare(test);
