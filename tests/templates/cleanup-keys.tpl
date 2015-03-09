@@ -1,2 +1,1 @@
-{missingkey}
-{missing.object}
+{missingkey}{missing.object}
