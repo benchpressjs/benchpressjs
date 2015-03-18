@@ -7,7 +7,6 @@
 	"myObject2": {
 		"myArray": [{"name": "name3"}, {"name":"name4"}]
 	},
-	"lol": {},
 	"animals": [
 		{
 			"name": "Cat",
