@@ -1,3 +1,3 @@
 <!-- BEGIN package -->
-{name}
+{package.name}
 <!-- END package -->

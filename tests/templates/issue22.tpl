@@ -1,3 +1,3 @@
 <!-- BEGIN myObject1.myArray -->
-{name}
+{../name}
 <!-- END myObject1.myArray -->
