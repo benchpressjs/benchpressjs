@@ -7,6 +7,25 @@
 	"myObject2": {
 		"myArray": [{"name": "name3"}, {"name":"name4"}]
 	},
+	"programmers": [
+		{
+			"name": "baris",
+			"hobbies": [
+				"trolling",
+				"warcraft"
+			]
+		},
+		{
+			"name": "andrew",
+			"hobbies": []
+		},
+		{
+			"name": "julian",
+			"hobbies": [
+				"music"
+			]
+		}
+	],
 	"animals": [
 		{
 			"name": "Cat",
