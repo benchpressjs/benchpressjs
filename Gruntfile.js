@@ -27,13 +27,18 @@ module.exports = function(grunt) {
 				},
 				src: ['tests/lib/tests.js']
 			}
+		},
+		benchmark: {
+			all: {
+				src: ['tests/bench/*.js']
+			}
 		}
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-mocha-test');
+	grunt.loadNpmTasks('grunt-benchmark');
 
-	grunt.registerTask('default', ['uglify']);
-	grunt.registerTask('default', 'mochaTest');
+	grunt.registerTask('default', ['uglify', 'mochaTest', 'benchmark']);
 };
