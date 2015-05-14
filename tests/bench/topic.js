@@ -1,10 +1,10 @@
 /*use strict*/
 
-var tjs = require('../../lib/templates.js'),
-	data = require('./topic.json'),
-	template = require('fs').readFileSync('tests/bench/topic.tpl').toString();
+global.tjs = require('../../lib/templates.js');
+global.data = require('./topic.json');
+global.template = require('fs').readFileSync('tests/bench/topic.tpl').toString();
 
 
 module.exports = function() {
-	tjs.parse(data, template);
+	global.tjs.parse(global.template, global.data);
 };
