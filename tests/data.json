@@ -7,6 +7,8 @@
 	"myObject2": {
 		"myArray": [{"name": "name3"}, {"name":"name4"}]
 	},
+	"myobject": {"one":"1", "two":"2", "three":"3"},
+	"myarray": ["one", "two", "three"],
 	"programmers": [
 		{
 			"name": "baris",
