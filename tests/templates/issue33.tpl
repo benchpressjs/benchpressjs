@@ -1,3 +1,3 @@
-<!-- IF users:reputation -->
-This should show up
-<!-- ENDIF users:reputation -->
+<!-- BEGIN users -->
+<!-- IF users.users:postcount -->This shouldn't show up<!-- ENDIF users.users:postcount -->
+<!-- END users -->
