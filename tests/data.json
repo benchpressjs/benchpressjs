@@ -7,7 +7,7 @@
 	"myObject2": {
 		"myArray": [{"name": "name3"}, {"name":"name4"}]
 	},
-	"users:reputation" :true,
+	"users:reputation" :false,
 	"users": [{"reputation": 0, "postcount": "123"}, {"reputation": 0, "postcount": "123"}],
 	"myobject": {"one":"1", "two":"2", "three":"3"},
 	"myarray": ["one", "two", "three"],
