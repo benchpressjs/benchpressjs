@@ -31,14 +31,59 @@ module.exports = function(grunt) {
 		benchmark: {
 			all: {
 				src: ['tests/bench/*.js']
+			},
+			remote: {
+				src: ['tests/bench/remote/index.js']
+			}
+		},
+		watch: {
+			all: {
+				files: ['**/*.js'],
+				tasks: ['default']
 			}
 		}
 	});
 
+	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-mocha-test');
 	grunt.loadNpmTasks('grunt-benchmark');
 
-	grunt.registerTask('default', ['uglify', 'mochaTest', 'benchmark']);
+	grunt.registerTask('loadRemote', 'Loading remote data', function() {
+		var done = this.async();
+
+		var api = nconf.get('api'),
+			tpl = nconf.get('tpl'),
+			request = require('request'),
+			fs = require('fs');
+
+		require('async').parallel({
+			api: function(next) {
+				request.get(api, function(err, response, body) {
+					fs.writeFile('tmp/api.json', body.toString(), next);
+				});
+			},
+			tpl: function(next) {
+				request.get(tpl, function(err, response, body) {
+					fs.writeFile('tmp/template.tpl', body.toString(), next);
+				});
+			}
+		}, function(err) {
+			if (err) {
+				return console.log(err);
+			}
+
+			done();
+		});
+	});
+
+	var nconf = require('nconf');
+	nconf.argv();
+
+	if(nconf.get('api')) {	
+		grunt.registerTask('default', ['uglify', 'mochaTest', 'loadRemote', 'benchmark:remote', 'watch']);
+	} else {
+		grunt.registerTask('default', ['uglify', 'mochaTest', 'benchmark:all', 'watch']);
+	}
 };
