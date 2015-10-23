@@ -34,6 +34,9 @@ module.exports = function(grunt) {
 			},
 			remote: {
 				src: ['tests/bench/remote/index.js']
+			},
+			local: {
+				src: ['tests/bench/local/index.js']
 			}
 		},
 		watch: {
@@ -81,7 +84,9 @@ module.exports = function(grunt) {
 	var nconf = require('nconf');
 	nconf.argv();
 
-	if(nconf.get('api')) {	
+	if (nconf.get('local')) {
+		grunt.registerTask('default', ['uglify', 'mochaTest', 'benchmark:local', 'watch']);
+	} else if(nconf.get('api')) {	
 		grunt.registerTask('default', ['uglify', 'mochaTest', 'loadRemote', 'benchmark:remote', 'watch']);
 	} else {
 		grunt.registerTask('default', ['uglify', 'mochaTest', 'benchmark:all', 'watch']);
