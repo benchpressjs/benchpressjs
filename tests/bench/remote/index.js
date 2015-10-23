@@ -10,6 +10,6 @@ module.exports = {
 		global.tjs.parse(global.template, global.data);
 	},
 	onComplete: function() {
-		console.log('>> ' + this.times.period.toFixed(4) + 'ms (' + this.times.elapsed + 's total)');
+		console.log('>> ' + this.times.period.toFixed(4) + 's (' + this.times.elapsed + 's total)');
 	}
 }
