@@ -9,7 +9,7 @@ global.data = JSON.parse(require('fs').readFileSync(path.join('./tmp/', nconf.ge
 global.template = require('fs').readFileSync(path.join('./tmp/', nconf.get('tpl'))).toString();
 
 module.exports = {
-	name: 'remote bench',
+	name: 'local bench',
 	fn: function() {
 		global.tjs.parse(global.template, global.data);
 	},
