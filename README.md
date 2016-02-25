@@ -109,7 +109,7 @@ My blog URL is {website}. The URL for this library is {package.url}
 <!-- ENDIF sayHello -->
 
 <!-- IF !somethingFalse -->
-  somethingFalse doensn't exist
+  somethingFalse doesn't exist
 <!-- ENDIF !somethingFalse -->
 ```
 
