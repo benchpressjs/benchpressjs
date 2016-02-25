@@ -110,7 +110,7 @@ My blog URL is {website}. The URL for this library is {package.url}
 
 <!-- IF !somethingFalse -->
   somethingFalse doensn't exist
-<!-- ENDFIF !somethingFalse -->
+<!-- ENDIF !somethingFalse -->
 ```
 
 ### Arrays
