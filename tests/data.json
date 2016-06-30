@@ -43,6 +43,9 @@
 	],
 	"animals": [
 		{
+			"children": {
+				"name": "Cat &amp; child"
+			},
 			"name": "Cat",
 			"species": "Felis silvestris catus",
 			"isHuman": false,
@@ -72,6 +75,9 @@
 		},
 		{
 			"name": "Dog",
+			"children": {
+				"name": "Dog & child"
+			},
 			"species": "Canis lupus familiaris",
 			"isHuman": false,
 			"pet": {
@@ -94,6 +100,9 @@
 		},
 		{
 			"name": "Goldfish",
+			"children": {
+				"name": "Goldfish child"
+			},
 			"species": "Carassius auratus auratus",
 			"isHuman": false,
 			"pet": {
@@ -125,6 +134,9 @@
 		},
 		{
 			"name": "Human",
+			"children": {
+				"name": "Human child"
+			},
 			"species": "Homo sapiens",
 			"isHuman": true,
 			"hobbies": [
