@@ -1,4 +1,5 @@
 'use strict';
 
-require('./lib/tests');
 require('./lib/express');
+require('./lib/parse');
+require('./lib/transpile');

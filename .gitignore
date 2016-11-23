@@ -222,3 +222,5 @@ sftp-config.json
 
 
 tmp/*
+.vscode
+tests/logs/*
