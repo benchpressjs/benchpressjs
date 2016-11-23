@@ -1,84 +1,95 @@
-/*global describe, it*/
+'use strict';
 
-var assert = require('assert'),
-	templates = require('./../../lib/templates.js'),
-	data = require('./../data.json'),
-	fs = require('fs'),
-	path = require('path'),
-	async = require('async'),
-	winston = require('winston'),
-	TEMPLATES_DIRECTORY = path.join(__dirname, '../templates/');
+/* global describe, it */
+
+const assert = require('assert');
+const templates = require('./../../lib/templates.js');
+const mainData = require('./../data.json');
+const fs = require('fs');
+const path = require('path');
+const async = require('async');
+const winston = require('winston');
+
+const templatesDir = path.join(__dirname, '../templates/');
+const logDir = path.join(__dirname, '../logs/');
 
 function prepare(callback) {
-	var raw = {},
-		expected = {};
+	const sourceDir = path.join(templatesDir, 'source');
+	const expectedDir = path.join(templatesDir, 'expected');
+	const sourceFiles = fs.readdirSync(sourceDir);
+	const expectedFiles = fs.readdirSync(expectedDir);
 
-	var files = fs.readdirSync(TEMPLATES_DIRECTORY);
-
-	async.each(files, function(file, next) {
-		var html = fs.readFileSync(path.join(TEMPLATES_DIRECTORY, file), 'utf-8');
-
-		if (file.match(/\.html?/)) {
-			expected[file.replace(/\.html?/, '')] = html;
-		} else if (file.match(/\.tpl?/)) {
-			raw[file.replace(/\.tpl?/, '')] = html;
-		}
-
-		next();
-	}, function(err) {
-		if (err) {
-			throw new Error(err);
-		}
-
-		for (var key in raw) {
-			if (raw.hasOwnProperty(key)) {
-				if (typeof expected[key] === 'undefined') {
-					winston.warn('Missing expected file: ' + key + '.html');
-					delete raw[key];
-				}
+	async.map([
+		[sourceDir, sourceFiles], 
+		[expectedDir, expectedFiles],
+	], ([dir, files], next) => async.map(files, (file, cb) => {
+		fs.readFile(path.join(dir, file), 'utf-8', (err, text) => {
+			if (err) {
+				cb(err);
+				return;
 			}
+			cb(null, [file.replace(/(\.tpl|\.html)$/, ''), text]);
+		});
+	}, next), (err, [sourceArr, expectedArr]) => {
+		if (err) {
+			callback(err);
+			return;
 		}
 
-		callback(raw, expected);
+		const expected = expectedArr.reduce((prev, [key, text]) => {
+			prev[key] = text;
+			return prev;
+		}, {});
+		const source = sourceArr.reduce((prev, [key, text]) => {
+			if (expected[key] == null) {
+				winston.warn(`Missing expected file: '${key}.html'`);
+				return prev;
+			}
+
+			prev[key] = text;
+			return prev;
+		}, {});
+
+		callback(null, source, expected);
 	});
 }
 
-function test(raw, expected) {
-	describe('templates.js', function() {
-		var keys = Object.keys(raw);
+function test(error, source, expected) {
+	if (error) {
+		throw error;
+	}
 
-		async.each(keys, function(key, next) {
-			it(key, function() {
-				var parsed = templates.parse(raw[key], data).replace(/\r\n/g, '\n'),
-					expect = expected[key].replace(/\r\n/g, '\n');
+	describe('templates.js', () => {
+		const keys = Object.keys(source);
+
+		async.each(keys, (key, next) => {
+			it(key, (done) => {
+				const parsed = templates.parse(source[key], mainData).replace(/\r\n/g, '\n');
+				const expect = expected[key].replace(/\r\n/g, '\n');
 
 				if (parsed !== expect) {
-					fs.writeFile(path.join(TEMPLATES_DIRECTORY, key + '.log'), parsed);
+					fs.writeFile(path.join(logDir, `${key}.log`), parsed);
 				} else {
-					fs.unlink(path.join(TEMPLATES_DIRECTORY, key + '.log'), function(){});
+					fs.unlink(path.join(logDir, `${key}.log`), () => {});
 				}
 
 				assert.equal(parsed, expect);
+				done();
 				next();
 			});
-		}, function(err) {
+		}, (err) => {
 			if (err) {
-				throw new Error(err);
+				throw err;
 			}
 		});
 	});
 }
 
 
-templates.registerHelper('canspeak', function(data, iterator, numblocks) {
-	return (data.isHuman && data.name === "Human") ? "Can speak" : "Cannot speak";
-});
+templates.registerHelper('canspeak', (data /* , iterator, numblocks */) => ((data.isHuman && data.name === 'Human') ? 'Can speak' : 'Cannot speak'));
 
-templates.registerHelper('test', function(data) {
-	return (data.forum && !data.double);
-});
+templates.registerHelper('test', data => (data.forum && !data.double));
 
-templates.registerHelper('isHuman', function(data, iterator) {
-	return data.animals[iterator].isHuman;
-});
+templates.registerHelper('isHuman', (data, iterator) => data.animals[iterator].isHuman);
+
 prepare(test);
