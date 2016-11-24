@@ -41,11 +41,13 @@ function test([source, expected, missing]) {
 }
 
 
-templates.registerHelper('canspeak', (data /* , iterator, numblocks */) => ((data.isHuman && data.name === 'Human') ? 'Can speak' : 'Cannot speak'));
+templates.registerHelper('canspeak', (data /* , iterator, numblocks */) => 
+	((data.isHuman && data.name === 'Human') ? 'Can speak' : 'Cannot speak'));
 
 templates.registerHelper('test', data => (data.forum && !data.double));
 
-templates.registerHelper('isHuman', (data, iterator) => data.animals[iterator].isHuman);
+templates.registerHelper('isHuman', (data, iterator) => 
+	data.animals[iterator].isHuman);
 
 const templatesDir = path.join(__dirname, '../templates/');
 const sourceDir = path.join(templatesDir, 'source');

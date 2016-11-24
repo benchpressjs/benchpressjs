@@ -1,0 +1,5 @@
+{{#each animals as |animals__item animals__key|}}
+	{{#if__function "isHuman" animals__key}}
+	{{animals__item.name}} is human
+	{{/if__function}}
+{{/each}}
