@@ -1,0 +1,17 @@
+{{#if isFalse}}
+<div class="select" component="topic/select">
+{{#if username}}
+<div class="user-picture"></div>
+{{else}}
+<div class="user-icon"></div>
+{{/if}}
+</div>
+{{else}}
+<a href="{{#if userslug}}/user{{else}}#{{/if}}">
+{{#if username}}
+<div class="user-picture"></div>
+{{else}}
+<div class="user-icon"></div>
+{{/if}}
+</a>
+{{/if}}
