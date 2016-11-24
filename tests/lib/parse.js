@@ -8,8 +8,8 @@ const path = require('path');
 const winston = require('winston');
 
 const prepare = require('./prepare');
-const templates = require('./../../lib/templates.js');
-const mainData = require('./../data.json');
+const templates = require('../../lib/templates.js');
+const mainData = require('../data.json');
 
 const logDir = path.join(__dirname, '../logs/');
 

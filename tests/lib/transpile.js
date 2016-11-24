@@ -8,7 +8,7 @@ const path = require('path');
 const winston = require('winston');
 
 const prepare = require('./prepare');
-const transpile = require('./../../lib/transpile');
+const transpile = require('../../lib/transpile');
 
 const logDir = path.join(__dirname, '../logs/');
 

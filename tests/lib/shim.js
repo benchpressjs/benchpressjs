@@ -8,9 +8,8 @@ const path = require('path');
 const winston = require('winston');
 
 const prepare = require('./prepare');
-const Handlebars = require('handlebars');
-const mainData = require('../data.json');
 const templates = require('../../lib/shim');
+const mainData = require('../data.json');
 
 const logDir = path.join(__dirname, '../logs/');
 const collapseWhitespace = str => str
@@ -20,12 +19,12 @@ const collapseWhitespace = str => str
 	.trim();
 
 function test([source, expected, missing]) {
-	describe('handlebars', () => {
+	describe('templates.js', () => {
 		const keys = Object.keys(source);
 
 		keys.forEach(key => {
 			it(key, () => {
-				const parsed = collapseWhitespace(Handlebars.compile(source[key])(mainData));
+				const parsed = collapseWhitespace(templates.parse(source[key], mainData));
 				const expect = collapseWhitespace(expected[key]);
 
 				if (parsed !== expect) {
@@ -40,11 +39,12 @@ function test([source, expected, missing]) {
 
 		if (missing.length) {
 			setTimeout(() => {
-				winston.warn(`[handlebars] Missing expected files: ${JSON.stringify(missing, null, 2)}`);
+				winston.warn(`[templates.js] Missing expected files: ${JSON.stringify(missing, null, 2)}`);
 			}, 200);
 		}
 	});
 }
+
 
 templates.registerHelper('canspeak', (data /* , iterator, numblocks */) => 
 	((data.isHuman && data.name === 'Human') ? 'Can speak' : 'Cannot speak'));
@@ -55,7 +55,7 @@ templates.registerHelper('isHuman', (data, iterator) =>
 	data.animals[iterator].isHuman);
 
 const templatesDir = path.join(__dirname, '../templates/');
-const hbsDir = path.join(templatesDir, 'handlebars');
+const sourceDir = path.join(templatesDir, 'source');
 const expectedDir = path.join(templatesDir, 'expected');
 
-test(prepare(hbsDir, expectedDir));
+test(prepare(sourceDir, expectedDir));

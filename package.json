@@ -4,7 +4,7 @@
   "author": "psychobunny <psycho.bunny@hotmail.com>",
   "description": "An ultralight and super fast templating framework",
   "scripts": {
-    "test": "./node_modules/.bin/mocha tests/main.js"
+    "test": "./node_modules/.bin/mocha tests/"
   },
   "repository": "git://github.com/psychobunny/templates.js",
   "main": "./index.js",

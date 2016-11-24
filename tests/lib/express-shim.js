@@ -7,7 +7,7 @@ const path = require('path');
 const fs = require('fs');
 const express = require('express');
 
-const templates = require('../../lib/templates.js');
+const templates = require('../../lib/shim');
 const data = require('../data.json');
 
 const app = express();
