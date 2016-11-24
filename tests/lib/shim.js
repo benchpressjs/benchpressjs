@@ -13,13 +13,13 @@ const mainData = require('../data.json');
 
 const logDir = path.join(__dirname, '../logs/');
 const collapseWhitespace = str => str
-	.replace(/[\r\n]+/g, '\n')
+	.replace(/(?:[ \t]*[\r\n]+[ \t]*)+/g, '\n')
 	.replace(/[\t ]+/g, ' ')
 	.replace(/ (<)|(>) /g, '$1$2')
 	.trim();
 
 function test([source, expected, missing]) {
-	describe('templates.js', () => {
+	describe('shim', () => {
 		const keys = Object.keys(source);
 
 		keys.forEach(key => {
