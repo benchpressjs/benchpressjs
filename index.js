@@ -1,3 +1,3 @@
 "use strict";
 
-module.exports = require('./lib/templates.js');
+module.exports = require('./lib/shim');

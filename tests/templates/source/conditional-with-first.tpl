@@ -3,5 +3,6 @@
 <!-- BEGIN hates -->
 	<!-- IF @first -->first<!-- ENDIF @first -->
 	{animals.hates.name}
-<!-- END hates --><br />
+<!-- END hates -->
+<br />
 <!-- END animals -->

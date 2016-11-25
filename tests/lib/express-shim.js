@@ -20,7 +20,7 @@ app.configure(() => {
 	app.set('views', templatesDir);
 });
 
-describe('templates.js w/ express', () => {
+describe('shim w/ express', () => {
 	it('app.render should work', (done) => {
 		fs.readFile(path.join(__dirname, '../templates/expected/basic.html'), (err, file) => {
 			if (err) {
