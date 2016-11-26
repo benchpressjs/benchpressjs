@@ -1,13 +1,13 @@
-<h3>{{header}}</h3>
+<h3>{{esc header}}</h3>
 <ul>
 {{#each items as |items__item items__key|}}
 {{#if @first}}
 	<li>
-		<strong>{{items__item.name}}</strong>
+		<strong>{{esc items__item.name}}</strong>
 	</li>
 	{{else}}
 	<li>
-		{{#if items__item.link}}<a href="{{items__item.url}}">{{/if}}{{items__item.name}}{{#if items__item.link}}</a>{{/if}}
+		{{#if items__item.link}}<a href="{{esc items__item.url}}">{{/if}}{{esc items__item.name}}{{#if items__item.link}}</a>{{/if}}
 	</li>
 {{/if}}
 {{/each}}

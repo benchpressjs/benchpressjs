@@ -1,5 +1,5 @@
 {{#each animals as |animals__item animals__key|}}
 	{{#each animals__item.pet.groups as |groups__item groups__key|}}
-		{{groups__item.name}}
+		{{esc groups__item.name}}
 	{{/each}}
 {{/each}}

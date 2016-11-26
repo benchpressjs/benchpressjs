@@ -1,7 +1,7 @@
 {{#each animals as |animals__item animals__key|}}
-{{animals__item.name}}{{#each hates as |hates__item hates__key|}} hates: {{hates__item.name}}{{/each}}
+{{esc animals__item.name}}{{#each hates as |hates__item hates__key|}} hates: {{esc hates__item.name}}{{/each}}
 {{/each}}
 
 {{#each animals as |animals__item animals__key|}}
-{{animals__item.name}}{{#each hobbies as |hobbies__item hobbies__key|}} plays: {{hobbies__item.name}}{{/each}}
+{{esc animals__item.name}}{{#each hobbies as |hobbies__item hobbies__key|}} plays: {{esc hobbies__item.name}}{{/each}}
 {{/each}}

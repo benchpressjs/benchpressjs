@@ -1,9 +1,9 @@
 {{#if rooms.length}}
 	{{#each rooms as |rooms__item rooms__key|}}
 		{{#unless rooms__item.private}}
-			<a data-func="webrtc.joinRoom" data-room="{{rooms__item.slug}}" href="#" class="list-group-item">
-				<h4 class="list-group-item-heading">{{rooms__item.name}}</h4>
-				<p class="list-group-item-text">{{rooms__item.description}}</p>
+			<a data-func="webrtc.joinRoom" data-room="{{esc rooms__item.slug}}" href="#" class="list-group-item">
+				<h4 class="list-group-item-heading">{{esc rooms__item.name}}</h4>
+				<p class="list-group-item-text">{{esc rooms__item.description}}</p>
 			</a>
 		{{/unless}}
 	{{/each}}

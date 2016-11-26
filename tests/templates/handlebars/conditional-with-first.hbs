@@ -2,7 +2,7 @@
 	{{#if @first}}main{{/if}}
 {{#each hates as |hates__item hates__key|}}
 	{{#if @first}}first{{/if}}
-	{{hates__item.name}}
+	{{esc hates__item.name}}
 {{/each}}
 <br />
 {{/each}}

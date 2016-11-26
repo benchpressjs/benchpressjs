@@ -1,11 +1,11 @@
 {{#each myobject as |myobject__item myobject__key|}}
-Values are: {{myobject__key}} - {{myobject__item}}<br />
-Values should be even: {{myobject__key}} - {{myobject__item}}<br />
-Values should always be: {{myobject__key}} - {{myobject__item}}<br />
+Values are: {{esc myobject__key}} - {{esc myobject__item}}<br />
+Values should be even: {{esc myobject__key}} - {{esc myobject__item}}<br />
+Values should always be: {{esc myobject__key}} - {{esc myobject__item}}<br />
 {{/each}}
 
 {{#each myarray as |myarray__item myarray__key|}}
-Values are: {{myarray__key}} - {{myarray__item}}<br />
-Values should be even: {{myarray__key}} - {{myarray__item}}<br />
-Values should always be: {{myarray__key}} - {{myarray__item}}<br />
+Values are: {{esc myarray__key}} - {{esc myarray__item}}<br />
+Values should be even: {{esc myarray__key}} - {{esc myarray__item}}<br />
+Values should always be: {{esc myarray__key}} - {{esc myarray__item}}<br />
 {{/each}}

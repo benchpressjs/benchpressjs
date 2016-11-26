@@ -1,3 +1,3 @@
 {{#each animals as |animals__item animals__key|}}
-{{this.name}}: {{#each hobbies as |hobbies__item hobbies__key|}}{{this.name}}{{#unless @last}}, {{/unless}}{{/each}}
+{{esc this.name}}: {{#each hobbies as |hobbies__item hobbies__key|}}{{esc this.name}}{{#unless @last}}, {{/unless}}{{/each}}
 {{/each}}

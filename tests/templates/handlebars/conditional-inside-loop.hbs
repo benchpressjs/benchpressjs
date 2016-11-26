@@ -1,7 +1,7 @@
 {{#each animals as |animals__item animals__key|}}
 {{#if animals__item.pet.trainable}}
-{{animals__item.name}} @can be trained
+{{esc animals__item.name}} @can be trained
 {{else}}
-{{animals__item.name}} cannot be trained
+{{esc animals__item.name}} cannot be trained
 {{/if}}
 {{/each}}

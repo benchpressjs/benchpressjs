@@ -1,7 +1,7 @@
 {{#each animals as |animals__item animals__key|}}
 {{#if animals__item.isHuman}}
-{{animals__item.name}} is human
+{{esc animals__item.name}} is human
 {{else}}
-{{animals__item.name}} is not human
+{{esc animals__item.name}} is not human
 {{/if}}
 {{/each}}
