@@ -150,7 +150,7 @@
 	"isTrue": true,
 	"isFalse": false,
 	"website": "http://burnaftercompiling.com",
-    "sayHello": true,
+	"sayHello": true,
 	"header": "Colors",
 	"items": [
 		{
@@ -216,21 +216,22 @@
 	"stringEmpty": "",
 	"null": null,
 	"rooms": [
-        {
-            "name": "Test",
-            "slug": "test",
-            "description": "testing",
-            "author": 1,
-            "private": false,
-            "clients": [],
-            "loggedIn": true
-        }
-    ],
+		{
+			"name": "Test",
+			"slug": "test",
+			"description": "testing",
+			"author": 1,
+			"private": false,
+			"clients": [],
+			"loggedIn": true
+		}
+	],
 	"someObject": {
 		"one": 1,
 		"two": 2,
 		"three": false,
 		"four": null,
 		"five": ""
-	}
+	},
+	"arrayOfBools": [true, false]
 }
