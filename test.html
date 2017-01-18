@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript" src="lib/templates.js"></script>
+	<script type="text/javascript">
+		var data = {
+			"somearr": [
+				{
+					"name": "andrew",
+					"anotherarr": [
+						{
+							"age": "29"
+						}
+					]
+				},
+				{
+					"name": "julian",
+					"anotherarr": [
+						{
+							"age": "7"
+						}
+					]
+				},
+				{
+					"name": "baris",
+					"anotherarr": [
+						{
+							"age": "99"
+						}
+					]
+				}
+			]
+		};
+
+		window.onload = function() {
+			templates.parse(document.getElementById('tpl').innerText, data, function(html) {
+				console.log(html);
+			});
+		}
+		
+	</script>
+</head>
+<body>
+	<script type="tjs" id="tpl">
+	A $ /
+	<!-- BEGIN somearr -->
+		{somearr.name} B $ /
+		<!-- BEGIN anotherarr -->
+			{somearr.anotherarr.age} C $ /
+		<!-- END anotherarr -->
+	<!-- END somearr -->
+	</script type="tjs">
+</body>
+</html>
