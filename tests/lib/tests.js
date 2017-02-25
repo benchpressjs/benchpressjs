@@ -69,6 +69,16 @@ function test(raw, expected) {
 	});
 }
 
+templates.registerHelper('unescape', function(data) {
+	if (!data)
+		return '';
+
+	return data
+		.replace(/&amp;/gmi, '&')
+		.replace(/&quot;/gmi, '"')
+		.replace(/&gt;/gmi, '>')
+		.replace(/&lt;/gmi, '<');
+});
 
 templates.registerHelper('canspeak', function(data, iterator, numblocks) {
 	return (data.isHuman && data.name === "Human") ? "Can speak" : "Cannot speak";
