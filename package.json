@@ -1,5 +1,5 @@
 {
-  "name": "templates.js",
+  "name": "benchpressjs",
   "version": "1.0.0",
   "author": "psychobunny <psycho.bunny@hotmail.com>",
   "description": "An ultralight and super fast templating framework",
@@ -7,7 +7,7 @@
     "pretest": "eslint .",
     "test": "mocha -R spec -- tests"
   },
-  "repository": "git://github.com/psychobunny/templates.js",
+  "repository": "git://github.com/benchpressjs/benchpressjs",
   "main": "./index.js",
   "keywords": [
     "templates",

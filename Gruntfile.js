@@ -19,8 +19,8 @@ module.exports = function Gruntfile(grunt) {
 				banner: '/*! <%= pkg.name %> by psychobunny, built on <%= grunt.template.today("yyyy-mm-dd") %> */\n',
 			},
 			build: {
-				src: 'build/templates.js',
-				dest: 'build/templates.min.js',
+				src: 'build/benchpress.js',
+				dest: 'build/benchpress.min.js',
 			},
 		},
 		watch: {
@@ -77,7 +77,7 @@ module.exports = function Gruntfile(grunt) {
 
 				const wrapped = `(function (factory) {
 					if (typeof define === 'function' && define.amd) {
-						define('templates', factory);
+						define('benchpress', factory);
 					}
 				})(function () {
 					const runtime = (function () {
@@ -104,7 +104,7 @@ module.exports = function Gruntfile(grunt) {
 
 				next(null, transpiled);
 			},
-			(file, next) => fs.writeFile('build/templates.js', file, next),
+			(file, next) => fs.writeFile('build/benchpress.js', file, next),
 		], done);
 	});
 
