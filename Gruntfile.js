@@ -1,11 +1,13 @@
-/* eslint import/no-extraneous-dependencies: ["error", { devDependencies: true }] */
-/* eslint no-console: off */
+'use strict';
 
-const request = require('request');
+/* eslint import/no-extraneous-dependencies: [error, { devDependencies: true }], no-console: off */
+
 const fs = require('fs');
 const nconf = require('nconf');
 const async = require('async');
 const babel = require('babel-core');
+
+const bench = require('./tests/bench');
 
 nconf.argv();
 
@@ -39,48 +41,23 @@ module.exports = function Gruntfile(grunt) {
 				src: ['tests/index.js'],
 			},
 		},
-		benchmark: {
-			all: {
-				src: ['tests/bench/*.js'],
-			},
-			remote: {
-				src: ['tests/bench/remote/index.js'],
-			},
-			local: {
-				src: ['tests/bench/local/index.js'],
-			},
-		},
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-mocha-test');
-	grunt.loadNpmTasks('grunt-benchmark');
 
-	grunt.registerTask('loadRemote', 'Loading remote data', function loadRemote() {
+	grunt.registerTask('benchmark', 'Run benchmarks', function benchmark() {
 		const done = this.async();
 
-		const api = nconf.get('api');
-		const tpl = nconf.get('tpl');
-
-		async.parallel({
-			api(next) {
-				request.get(api, (err, response, body) => {
-					fs.writeFile('tmp/api.json', body.toString(), next);
-				});
-			},
-			tpl(next) {
-				request.get(tpl, (err, response, body) => {
-					fs.writeFile('tmp/template.tpl', body.toString(), next);
-				});
-			},
-		}, (err) => {
+		bench((err, output) => {
 			if (err) {
-				console.log(err);
+				done(err);
 				return;
 			}
 
+			output.forEach(x => console.log(x));
 			done();
 		});
 	});
@@ -89,30 +66,40 @@ module.exports = function Gruntfile(grunt) {
 		const done = this.async();
 
 		async.waterfall([
-			fs.readFile.bind(null, 'lib/shim.js'),
-			(file, next) => {
+			next => async.parallel([
+				cb => fs.readFile('lib/benchpress.js', cb),
+				cb => fs.readFile('lib/compiler/runtime.js', cb),
+			], next),
+			([shimFile, runtimeFile], next) => {
 				const cutout = /\/\* build:SERVER-ONLY:open \*\/[\s\S]*?\/\* build:SERVER-ONLY:close \*\//g;
-				const source = file.toString().replace(cutout, '');
+				const shimSource = shimFile.toString().replace(cutout, '');
+				const runtimeSource = runtimeFile.toString().replace(cutout, '');
 
 				const wrapped = `(function (factory) {
 					if (typeof define === 'function' && define.amd) {
-						define('templates', ['handlebars.runtime'], function (Handlebars) {
-							return factory(Handlebars.default);
-						});
-					} else {
-						window.Templates = factory(window.Handlebars);
+						define('templates', factory);
 					}
-				})(function (Handlebars) {
-					${source}
+				})(function () {
+					const runtime = (function () {
+						${runtimeSource}
 
-					return Shim;
-				});
-				require(['templates'], function (Templates) {
-					window.templates = Templates;
+						return runtime;
+					})();
+
+					${shimSource}
+
+					return Benchpress;
 				});`;
 
 				const transpiled = babel.transform(wrapped, {
-					presets: ['es2015'],
+					plugins: [
+						'check-es2015-constants',
+						'transform-es2015-arrow-functions',
+						'transform-es2015-block-scoped-functions',
+						'transform-es2015-block-scoping',
+						'transform-es2015-function-name',
+						'transform-es2015-shorthand-properties',
+					],
 				}).code;
 
 				next(null, transpiled);
@@ -121,11 +108,5 @@ module.exports = function Gruntfile(grunt) {
 		], done);
 	});
 
-	if (nconf.get('local')) {
-		grunt.registerTask('default', ['build', 'uglify', 'mochaTest', 'benchmark:local', 'watch']);
-	} else if (nconf.get('api')) {	
-		grunt.registerTask('default', ['build', 'uglify', 'mochaTest', 'loadRemote', 'benchmark:remote', 'watch']);
-	} else {
-		grunt.registerTask('default', ['build', 'uglify', 'mochaTest', 'benchmark:all', 'watch']);
-	}
+	grunt.registerTask('default', ['build', 'uglify', 'mochaTest', 'benchmark', 'watch']);
 };

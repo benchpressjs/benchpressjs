@@ -1,3 +1,3 @@
-"use strict";
+'use strict';
 
-module.exports = require('./lib/shim');
+module.exports = require('./lib/benchpress');

@@ -1,2 +1,7 @@
 .vscode
-tests/logs/*
+tests
+.eslintrc
+.eslintignore
+.gitignore
+.gitattributes
+*.log

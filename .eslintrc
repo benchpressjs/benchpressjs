@@ -11,9 +11,8 @@
     "rules": {
         "indent": ["error", "tab"],
         "no-tabs": "off",
-        "no-trailing-spaces": "off",
+        "no-trailing-spaces": "error",
         "no-param-reassign": "off",
-        "arrow-parens": "off",
         "no-underscore-dangle": "off",
         "comma-dangle": ["error", {
             "arrays": "always-multiline",
@@ -22,6 +21,8 @@
             "exports": "always-multiline",
             "functions": "ignore"
         }],
-        "strict": "off"
+        "strict": ["error", "global"],
+        "no-use-before-define": ["error", "nofunc"],
+        "no-multi-assign": "off"
     }
 }
