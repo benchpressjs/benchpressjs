@@ -1,10 +1,27 @@
-/*use strict*/
+'use strict';
 
-global.tjs = require('../../lib/templates.js');
-global.data = require('./topic.json');
-global.template = require('fs').readFileSync('tests/bench/topic.tpl').toString();
+const path = require('path');
+const fs = require('fs');
+const async = require('async');
 
+const benchpress = require('../../lib/benchpress');
+const data = require('./topic.json');
 
-module.exports = function() {
-	global.tjs.parse(global.template, global.data);
-};
+const templatePath = path.join(__dirname, 'topic.tpl');
+
+function prep(callback) {
+	async.waterfall([
+		next => fs.readFile(templatePath, next),
+		(file, next) => benchpress.precompile({ source: file.toString() }, next),
+		(code, next) => {
+			const template = benchpress.evaluate(code);
+			function bench(deferred) {
+				benchpress.parse('topic', data, () => deferred.resolve());
+			}
+
+			next(null, { bench, template });
+		},
+	], callback);
+}
+
+module.exports = prep;

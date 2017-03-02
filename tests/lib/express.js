@@ -1,39 +1,39 @@
 'use strict';
 
-/* global describe, it */
-
 const assert = require('assert');
 const path = require('path');
 const fs = require('fs');
 const express = require('express');
+const async = require('async');
 
-const templates = require('../../lib/templates.js');
+const benchpress = require('../../lib/benchpress');
+const { compileTemplate, collapseWhitespace } = require('./utils');
 const data = require('../data.json');
 
 const app = express();
 
-const templatesDir = path.join(__dirname, '../templates/source/');
+const templatesDir = path.join(__dirname, '../templates/build');
 
 app.configure(() => {
-	app.engine('tpl', templates.__express);
-	app.set('view engine', 'tpl');
+	app.engine('jst', benchpress.__express);
+	app.set('view engine', 'jst');
 	app.set('views', templatesDir);
 });
 
-describe('templates.js w/ express', () => {
+describe('express', () => {
 	it('app.render should work', (done) => {
-		fs.readFile(path.join(__dirname, '../templates/expected/basic.html'), (err, file) => {
-			if (err) {
-				done(err);
-			}
-			const expected = file.toString();
-			app.render('basic', data, (error, parsed) => {
-				if (error) {
-					done(error);
-				}
-				assert.equal(parsed, expected);
-				done();
-			});
-		});
+		const name = 'basic';
+		async.waterfall([
+			next => compileTemplate(path.join(__dirname, `../templates/source/${name}.tpl`), path.join(templatesDir, `${name}.jst`), next),
+			next => fs.readFile(path.join(__dirname, `../templates/expected/${name}.html`), next),
+			(file, next) => {
+				const expected = file.toString();
+				app.render(name, data, (err, parsed) => next(err, parsed, expected));
+			},
+			(parsed, expected, next) => {
+				assert.equal(collapseWhitespace(parsed), collapseWhitespace(expected));
+				next();
+			},
+		], done);
 	});
 });
