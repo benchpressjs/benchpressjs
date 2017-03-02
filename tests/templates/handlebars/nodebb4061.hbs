@@ -1,1 +1,0 @@
-unix:DEFINES += VERSION=\\\"$$VERSION\\\"
