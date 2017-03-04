@@ -84,6 +84,37 @@ function test([source, expected, missing]) {
 			}, 200);
 		}
 	});
+
+	describe('named-blocks', () => {
+		it('should work', (done) => {
+			const name = 'loop-inside-if-else';
+			const blockName = 'rooms';
+			benchpress.precompile({ source: source[name] }, (err, code) => {
+				if (err) {
+					done(err);
+					return;
+				}
+
+				cache[name] = benchpress.evaluate(code);
+
+				benchpress.parse(name, blockName, mainData, (parsed) => {
+					const output = collapseWhitespace(parsed);
+					const expect = collapseWhitespace(expected[name]);
+
+					logFailure({
+						name,
+						source: source[name],
+						code,
+						expected: expect,
+						output,
+					});
+
+					assert.equal(output, expect);
+					done();
+				});
+			});
+		});
+	});
 }
 
 
