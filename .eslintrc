@@ -1,6 +1,5 @@
 {
     "env": {
-        "browser": true,
         "es6": true,
         "node": true
     },
@@ -11,7 +10,6 @@
     "rules": {
         "indent": ["error", "tab"],
         "no-tabs": "off",
-        "no-trailing-spaces": "error",
         "no-param-reassign": "off",
         "no-underscore-dangle": "off",
         "comma-dangle": ["error", {

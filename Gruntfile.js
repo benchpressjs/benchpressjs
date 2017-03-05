@@ -3,13 +3,10 @@
 /* eslint import/no-extraneous-dependencies: [error, { devDependencies: true }], no-console: off */
 
 const fs = require('fs');
-const nconf = require('nconf');
 const async = require('async');
 const babel = require('babel-core');
 
 const bench = require('./tests/bench');
-
-nconf.argv();
 
 module.exports = function Gruntfile(grunt) {
 	grunt.initConfig({
