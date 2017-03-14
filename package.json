@@ -16,6 +16,8 @@
     "javascript"
   ],
   "devDependencies": {
+    "async": "^2.1.5",
+    "babel-core": "^6.23.1",
     "babel-plugin-check-es2015-constants": "^6.22.0",
     "babel-plugin-transform-es2015-arrow-functions": "^6.22.0",
     "babel-plugin-transform-es2015-block-scoped-functions": "^6.22.0",
@@ -31,6 +33,7 @@
     "grunt-contrib-uglify": "^0.9.1",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-mocha-test": "^0.12.7",
+    "mkdirp": "^0.5.1",
     "mocha": "^2.2.5",
     "request": "^2.65.0",
     "winston": "^0.7.3"
@@ -40,8 +43,7 @@
     "node": ">=6"
   },
   "dependencies": {
-    "async": "^2.1.5",
-    "babel-core": "^6.23.1",
+    "babel-generator": "^6.24.0",
     "babel-types": "^6.23.0",
     "uglify-js": "^2.6.4"
   }

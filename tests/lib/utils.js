@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const async = require('async');
+const mkdirp = require('mkdirp');
 
 const benchpress = require('../../lib/benchpress');
 
@@ -45,6 +46,7 @@ function compileTemplate(src, dest, callback) {
 	async.waterfall([
 		next => fs.readFile(src, next),
 		(file, next) => benchpress.precompile({ source: file.toString() }, next),
+		(code, next) => mkdirp(path.dirname(dest), err => next(err, code)),
 		(code, next) => fs.writeFile(dest, code, next),
 	], callback);
 }

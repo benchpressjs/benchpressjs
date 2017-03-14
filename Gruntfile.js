@@ -4,6 +4,7 @@
 
 const fs = require('fs');
 const async = require('async');
+const mkdirp = require('mkdirp');
 const babel = require('babel-core');
 
 const bench = require('./tests/bench');
@@ -101,6 +102,7 @@ module.exports = function Gruntfile(grunt) {
 
 				next(null, transpiled);
 			},
+			(file, next) => mkdirp('build', err => next(err, file)),
 			(file, next) => fs.writeFile('build/benchpress.js', file, next),
 		], done);
 	});
