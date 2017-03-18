@@ -1,4 +1,4 @@
-# <img alt="benchpress" src="benchpress.svg" />
+# <img alt="benchpress" src="https://cdn.rawgit.com/benchpressjs/templates.js/benchpress/benchpress.svg" />
 
 [![Build Status](https://travis-ci.org/benchpressjs/benchpress.png?branch=master)](https://travis-ci.org/benchpressjs/benchpress)
 [![Code Climate](https://codeclimate.com/github/benchpressjs/benchpress.png)](https://codeclimate.com/github/benchpressjs/benchpress)
