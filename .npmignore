@@ -2,6 +2,7 @@
 tests
 .eslintrc
 .eslintignore
+.eslintcache
 .gitignore
 .gitattributes
 *.log

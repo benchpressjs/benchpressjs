@@ -4,8 +4,10 @@
   "author": "psychobunny <psycho.bunny@hotmail.com>",
   "description": "An ultralight and super fast templating framework",
   "scripts": {
-    "pretest": "eslint .",
-    "test": "mocha -R spec -- tests"
+    "pretest": "eslint --cache .",
+    "test": "mocha -R spec -- tests",
+    "docs": "documentation build lib/benchpress.js -f md -o docs.md --shallow",
+    "prepublish": "grunt build uglify"
   },
   "repository": "git://github.com/benchpressjs/benchpressjs",
   "main": "./index.js",
@@ -25,6 +27,7 @@
     "babel-plugin-transform-es2015-function-name": "^6.22.0",
     "babel-plugin-transform-es2015-shorthand-properties": "^6.22.0",
     "benchmark": "^1.0.0",
+    "documentation": "^4.0.0-beta.18",
     "eslint": "^3.10.2",
     "eslint-config-airbnb-base": "^11.1.0",
     "eslint-plugin-import": "^2.2.0",
