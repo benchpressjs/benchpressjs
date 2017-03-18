@@ -1,5 +1,5 @@
 <!-- BEGIN animals -->
-	<!-- BEGIN groups -->
+	<!-- BEGIN ../pet.groups -->
 		{animals.pet.groups.name}
-	<!-- END groups -->
+	<!-- END -->
 <!-- END animals -->
