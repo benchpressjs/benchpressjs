@@ -1,3 +1,3 @@
 'use strict';
 
-module.exports = require('./lib/benchpress');
+module.exports = require('./build/lib/benchpress');

@@ -6,7 +6,7 @@ const fs = require('fs');
 const express = require('express');
 const async = require('async');
 
-const benchpress = require('../../lib/benchpress');
+const benchpress = require('../../build/lib/benchpress');
 const { compileTemplate, collapseWhitespace } = require('./utils');
 const data = require('../data.json');
 
@@ -14,11 +14,9 @@ const app = express();
 
 const templatesDir = path.join(__dirname, '../templates/build');
 
-app.configure(() => {
-	app.engine('jst', benchpress.__express);
-	app.set('view engine', 'jst');
-	app.set('views', templatesDir);
-});
+app.engine('jst', benchpress.__express);
+app.set('view engine', 'jst');
+app.set('views', templatesDir);
 
 describe('express', () => {
 	it('app.render should work', (done) => {

@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const async = require('async');
 
-const benchpress = require('../../lib/benchpress');
+const benchpress = require('../../build/lib/benchpress');
 const data = require('./categories.json');
 
 const templatePath = path.join(__dirname, 'categories.tpl');

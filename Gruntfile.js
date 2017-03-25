@@ -1,13 +1,15 @@
 'use strict';
 
-/* eslint import/no-extraneous-dependencies: [error, { devDependencies: true }], no-console: off */
+/* eslint
+	import/no-extraneous-dependencies: [error, { devDependencies: true }],
+	no-console: off,
+	global-require: off,
+*/
 
 const fs = require('fs');
 const async = require('async');
 const mkdirp = require('mkdirp');
 const babel = require('babel-core');
-
-const bench = require('./tests/bench');
 
 module.exports = function Gruntfile(grunt) {
 	grunt.initConfig({
@@ -24,7 +26,7 @@ module.exports = function Gruntfile(grunt) {
 		watch: {
 			scripts: {
 				files: ['**/*.js'],
-				tasks: ['default'],
+				tasks: ['babel', 'build', 'uglify', 'mochaTest'],
 				options: {
 					spawn: true,
 				},
@@ -39,14 +41,34 @@ module.exports = function Gruntfile(grunt) {
 				src: ['tests/index.js'],
 			},
 		},
+		babel: {
+			options: {
+				sourceMap: true,
+				plugins: [
+					'transform-class-properties',
+				],
+			},
+			dist: {
+				files: [
+					{
+						expand: true,
+						cwd: 'lib',
+						src: ['**/*.js'],
+						dest: 'build/lib',
+					},
+				],
+			},
+		},
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-mocha-test');
+	grunt.loadNpmTasks('grunt-babel');
 
 	grunt.registerTask('benchmark', 'Run benchmarks', function benchmark() {
+		const bench = require('./tests/bench');
 		const done = this.async();
 
 		bench((err, output) => {
@@ -107,5 +129,5 @@ module.exports = function Gruntfile(grunt) {
 		], done);
 	});
 
-	grunt.registerTask('default', ['build', 'uglify', 'mochaTest', 'benchmark', 'watch']);
+	grunt.registerTask('default', ['babel', 'build', 'uglify', 'mochaTest', 'benchmark']);
 };

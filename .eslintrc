@@ -3,6 +3,7 @@
         "es6": true,
         "node": true
     },
+    "parser": "babel-eslint",
     "parserOptions": {
         "sourceType": "script"
     },

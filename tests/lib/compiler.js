@@ -6,7 +6,7 @@ const path = require('path');
 const winston = require('winston');
 
 const { prepare, collapseWhitespace } = require('./utils');
-const benchpress = require('../../lib/benchpress');
+const benchpress = require('../../build/lib/benchpress');
 const mainData = require('../data.json');
 
 const logDir = path.join(__dirname, '../logs/');

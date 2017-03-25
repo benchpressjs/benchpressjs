@@ -5,7 +5,7 @@ const path = require('path');
 const async = require('async');
 const mkdirp = require('mkdirp');
 
-const benchpress = require('../../lib/benchpress');
+const benchpress = require('../../build/lib/benchpress');
 
 function prepare(sourceDir, expectedDir) {
 	const [sourceArr, expectedArr] = [sourceDir, expectedDir]

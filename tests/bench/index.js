@@ -3,7 +3,7 @@
 const async = require('async');
 const Benchmark = require('benchmark');
 
-const benchpress = require('../../lib/benchpress');
+const benchpress = require('../../build/lib/benchpress');
 const categories = require('./categories');
 const topic = require('./topic');
 
