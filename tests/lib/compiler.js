@@ -13,7 +13,7 @@ const logDir = path.join(__dirname, '../logs/');
 
 function logFailure({ name, source, code, expected, output }) {
 	if (output !== expected) {
-		fs.writeFile(path.join(logDir, `${name}.log`), `
+		fs.writeFileSync(path.join(logDir, `${name}.log`), `
 ==== source ====
 ${source}
 
@@ -28,9 +28,16 @@ ${output || 'PRECOMPILE FAILED'}
 
 ==== expected ====
 ${expected}
-		`, () => {});
+		`);
 	} else {
-		fs.unlink(path.join(logDir, `${name}.log`), () => {});
+		try {
+			fs.unlinkSync(path.join(logDir, `${name}.log`));
+		} catch (e) {
+			if (e.code !== 'ENOENT') {
+				throw e;
+			}
+			// ignore error
+		}
 	}
 }
 
