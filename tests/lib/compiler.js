@@ -11,7 +11,7 @@ const mainData = require('../data.json');
 
 const logDir = path.join(__dirname, '../logs/');
 
-function logFailure({ name, source, code, expected, output }) {
+function logFailure({ name, source, code, expected, output, err }) {
 	if (output !== expected) {
 		fs.writeFileSync(path.join(logDir, `${name}.log`), `
 ==== source ====
@@ -19,11 +19,11 @@ ${source}
 
 
 ==== code ====
-${code || 'PRECOMPILE FAILED'}
+${code == null ? `PRECOMPILE FAILED: ${err}` : code}
 
 
 ==== output ====
-${output || 'PRECOMPILE FAILED'}
+${output == null ? `PRECOMPILE FAILED: ${err}` : output}
 
 
 ==== expected ====
@@ -59,6 +59,7 @@ function test([source, expected, missing]) {
 							source: source[key],
 							expected: expected[key],
 							name: key,
+							err: err.message,
 						});
 						done(err);
 						return;

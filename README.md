@@ -33,12 +33,8 @@ benchpress.precompile(template, (err, precompiled) => {
 		define(factory);
 	}
 })(function () {
-	function compiled(get, iter, helper, echo) {
-		echo('My favourite forum software is ');
-		echo(get(['forum']));
-		echo('. This templating engine is written in ');
-		echo(get(['language']));
-		echo('.');
+	function compiled(helpers, context, get, iter, helper) {
+		return 'My favourite forum software is ' + get(context, ['forum']) + '. This templating engine is written in ' + get(context, ['language']) + '.';
 	}
 
 	return compiled;
@@ -75,7 +71,7 @@ app.get('/myroute', function(res, req, next) {
 
 ### `.parse(template, data, callback)`
 
-This method is used mainly to parse templates on the client-side. 
+This method is used mainly to parse templates on the client-side.
 To use it, `.registerLoader(loader)` must be used to set the callback for fetching compiled template modules.
 
 ```js
@@ -131,7 +127,7 @@ Sample data, see test cases for more:
 ```
 My blog URL is {website}. The URL for this library is {{package.url}}
 ```
-Double brackets ad single brackets are identical since there is no longer a use case for escaping **templates.js** tokens.
+Double brackets and single brackets are identical since there is no longer a use case for escaping **templates.js** tokens.
 
 ### Conditionals
 ```html
@@ -143,7 +139,7 @@ Double brackets ad single brackets are identical since there is no longer a use 
   somethingFalse doesn't exist
 <!-- END -->
 ```
-Benchpress supports several syntaxes for conditionals in order to be backwards compatible with **templates.js**. 
+Benchpress supports several syntaxes for conditionals in order to be backwards compatible with **templates.js**.
 `<!-- ENDIF abcd -->`, `<!-- END abcd -->`, `<!-- ENDIF !foobar -->`, and `<!-- END -->` are all equivalent tokens as far as Benchpress is concerned.
 
 ### Iteration
@@ -177,8 +173,8 @@ There is a grey zone where if you wish to print a field of the object you are it
 Helpers are JavaScript methods for advanced logic in templates. This example shows a really simple example of a function called `print_is_human` which will render text depending on the current block's data.
 
 ```js
-templates.registerHelper('print_is_human', function(data, iterator, numblocks) {
-	return (data.isHuman) ? "Is human" : "Isn't human";
+benchpress.registerHelper('print_is_human', function (data) {
+  return (data.isHuman) ? "Is human" : "Isn't human";
 });
 ```
 
