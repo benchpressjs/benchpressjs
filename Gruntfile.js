@@ -19,8 +19,9 @@ module.exports = function Gruntfile(grunt) {
 				banner: '/*! <%= pkg.name %> by psychobunny, built on <%= grunt.template.today("yyyy-mm-dd") %> */\n',
 			},
 			build: {
-				src: 'build/benchpress.js',
-				dest: 'build/benchpress.min.js',
+				files: {
+					'build/benchpress.min.js': ['build/benchpress.js'],
+				},
 			},
 		},
 		watch: {
@@ -130,4 +131,5 @@ module.exports = function Gruntfile(grunt) {
 	});
 
 	grunt.registerTask('default', ['babel', 'build', 'uglify', 'mochaTest', 'benchmark']);
+	grunt.registerTask('test', ['babel', 'mochaTest']);
 };
