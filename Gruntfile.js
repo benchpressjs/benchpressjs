@@ -130,6 +130,6 @@ module.exports = function Gruntfile(grunt) {
 		], done);
 	});
 
-	grunt.registerTask('default', ['babel', 'build', 'uglify', 'mochaTest', 'benchmark']);
-	grunt.registerTask('test', ['babel', 'mochaTest']);
+	grunt.registerTask('default', ['babel', 'build', 'uglify', 'mochaTest']);
+	grunt.registerTask('bench', ['default', 'benchmark']);
 };

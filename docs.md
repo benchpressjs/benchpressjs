@@ -4,6 +4,7 @@
 
 -   [precompile](#precompile)
 -   [\_\_express](#__express)
+-   [compileParse](#compileparse)
 -   [registerHelper](#registerhelper)
 -   [setGlobal](#setglobal)
 -   [flush](#flush)
@@ -18,7 +19,7 @@ Precompile a benchpress template
 
 -   `options` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
     -   `options.source` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Template source
-    -   `options.minify` **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?** Whether to output minified code (optional, default `false`)
+    -   `options.minify` **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** Whether to output minified code (optional, default `false`)
 -   `callback` **[function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** (err, output)
 
 ## \_\_express
@@ -30,6 +31,18 @@ Provide functionality to act as an express engine
 -   `filepath` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Compiled template file path
 -   `data` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Data with which to parse the template
 -   `next` **[function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** (err, output)
+
+## compileParse
+
+Compile a template and parse it
+Automatically caches template function based on hash of input template
+
+**Parameters**
+
+-   `templateSource` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+-   `block` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)?** 
+-   `data` **any** 
+-   `callback` **[function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** (err, output)
 
 ## registerHelper
 

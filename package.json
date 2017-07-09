@@ -51,6 +51,8 @@
   "dependencies": {
     "babel-generator": "^6.25.0",
     "babel-types": "^6.25.0",
+    "md5": "^2.2.1",
+    "node-cache": "^4.1.1",
     "uglify-js": "^3.0.24"
   }
 }
