@@ -1,7 +1,7 @@
-# <img alt="benchpress" src="https://cdn.rawgit.com/benchpressjs/templates.js/benchpress/benchpress.svg" />
+# <img alt="benchpress" src="https://cdn.rawgit.com/benchpressjs/benchpressjs/master/benchpress.svg" />
 
-[![Build Status](https://travis-ci.org/benchpressjs/benchpress.png?branch=master)](https://travis-ci.org/benchpressjs/benchpress)
-[![Code Climate](https://codeclimate.com/github/benchpressjs/benchpress.png)](https://codeclimate.com/github/benchpressjs/benchpress)
+[![Build Status](https://travis-ci.org/benchpressjs/benchpressjs.png?branch=master)](https://travis-ci.org/benchpressjs/benchpressjs)
+[![Code Climate](https://codeclimate.com/github/benchpressjs/benchpressjs.png)](https://codeclimate.com/github/benchpressjs/benchpressjs)
 
 Benchpress is an ultralight (1.3kb minified) and super fast templating framework for Javascript and node.js.
 
@@ -34,7 +34,7 @@ benchpress.precompile(template, (err, precompiled) => {
 	}
 })(function () {
 	function compiled(helpers, context, get, iter, helper) {
-		return 'My favourite forum software is ' + get(context, ['forum']) + '. This templating engine is written in ' + get(context, ['language']) + '.';
+		return 'My favourite forum software is ' + get(context && context['forum']) + '. This templating engine is written in ' + get(context && context['language']) + '.';
 	}
 
 	return compiled;
