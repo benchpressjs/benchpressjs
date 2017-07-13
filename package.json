@@ -1,12 +1,15 @@
 {
-  "name": "templates.js",
-  "version": "0.3.11",
+  "name": "benchpressjs",
+  "version": "1.0.0",
   "author": "psychobunny <psycho.bunny@hotmail.com>",
   "description": "An ultralight and super fast templating framework",
   "scripts": {
-    "test": "./node_modules/.bin/mocha tests/main.js"
+    "pretest": "eslint --cache .",
+    "test": "grunt",
+    "docs": "documentation build lib/benchpress.js -f md -o docs.md --shallow",
+    "prepublish": "grunt build uglify"
   },
-  "repository": "git://github.com/psychobunny/templates.js",
+  "repository": "git://github.com/benchpressjs/benchpressjs",
   "main": "./index.js",
   "keywords": [
     "templates",
@@ -15,23 +18,41 @@
     "javascript"
   ],
   "devDependencies": {
-    "assert": "~1.1.1",
-    "async": "^0.9.0",
-    "benchmark": "^1.0.0",
-    "express": "~3.4.8",
-    "grunt": "^0.4.5",
-    "grunt-benchmark": "^0.3.0",
-    "grunt-contrib-uglify": "^0.9.1",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-mocha-test": "^0.12.7",
-    "mocha": "^2.2.5",
-    "nconf": "^0.8.2",
-    "path": "~0.4.9",
+    "async": "^2.5.0",
+    "babel-core": "^6.25.0",
+    "babel-eslint": "^7.2.3",
+    "babel-plugin-check-es2015-constants": "^6.22.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-es2015-arrow-functions": "^6.22.0",
+    "babel-plugin-transform-es2015-block-scoped-functions": "^6.22.0",
+    "babel-plugin-transform-es2015-block-scoping": "^6.24.1",
+    "babel-plugin-transform-es2015-function-name": "^6.24.1",
+    "babel-plugin-transform-es2015-shorthand-properties": "^6.24.1",
+    "benchmark": "^2.1.4",
+    "documentation": "^4.0.0-rc.1",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb-base": "^11.2.0",
+    "eslint-plugin-import": "^2.7.0",
+    "express": "^4.15.3",
+    "grunt": "^1.0.1",
+    "grunt-babel": "^6.0.0",
+    "grunt-contrib-uglify": "^3.0.1",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-mocha-test": "^0.13.2",
+    "mkdirp": "^0.5.1",
+    "mocha": "^3.4.2",
     "request": "^2.65.0",
-    "winston": "^0.7.3"
+    "winston": "^2.3.1"
   },
   "license": "MIT",
   "engines": {
-    "node": ">=0.6"
+    "node": ">=6"
+  },
+  "dependencies": {
+    "babel-generator": "^6.25.0",
+    "babel-types": "^6.25.0",
+    "md5": "^2.2.1",
+    "node-cache": "^4.1.1",
+    "uglify-js": "^3.0.24"
   }
 }

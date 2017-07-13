@@ -1,4 +1,5 @@
 {
+	"cache-buster": "abcdefg",
 	"emptyarray": [],
 	"thisIsNull": null,
 	"myObject1": {

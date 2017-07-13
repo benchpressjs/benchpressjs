@@ -1,0 +1,27 @@
+{
+    "env": {
+        "es6": true,
+        "node": true
+    },
+    "parser": "babel-eslint",
+    "parserOptions": {
+        "sourceType": "script"
+    },
+    "extends": "airbnb-base",
+    "rules": {
+        "indent": ["error", "tab"],
+        "no-tabs": "off",
+        "no-param-reassign": "off",
+        "no-underscore-dangle": "off",
+        "comma-dangle": ["error", {
+            "arrays": "always-multiline",
+            "objects": "always-multiline",
+            "imports": "always-multiline",
+            "exports": "always-multiline",
+            "functions": "ignore"
+        }],
+        "strict": ["error", "global"],
+        "no-use-before-define": ["error", "nofunc"],
+        "no-multi-assign": "off"
+    }
+}

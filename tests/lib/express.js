@@ -1,27 +1,37 @@
-"use strict";
-/*global describe, it*/
+'use strict';
 
-var assert = require('assert'),
-	path = require('path'),
-	fs = require('fs'),
-	express = require('express'),
-	app = express(),
+const assert = require('assert');
+const path = require('path');
+const fs = require('fs');
+const express = require('express');
+const async = require('async');
 
-	templates = require('./../../lib/templates.js'),
-	data = require('./../data.json');
+const benchpress = require('../../build/lib/benchpress');
+const { compileTemplate, collapseWhitespace } = require('./utils');
+const data = require('../data.json');
 
-app.configure(function() {
-	app.engine('tpl', templates.__express);
-	app.set('view engine', 'tpl');
-	app.set('views', path.join(__dirname, '../templates'));
-});
+const app = express();
 
-describe('templates.js w/ express', function() {
-	it('app.render should work', function() {
-		var expected = fs.readFileSync(path.join(__dirname, '../templates/basic.html')).toString();
+const templatesDir = path.join(__dirname, '../templates/build');
 
-		app.render('basic', data, function(err, parsed) {
-			assert.equal(parsed, expected);
-		});
+app.engine('jst', benchpress.__express);
+app.set('view engine', 'jst');
+app.set('views', templatesDir);
+
+describe('express', () => {
+	it('app.render should work', (done) => {
+		const name = 'basic';
+		async.waterfall([
+			next => compileTemplate(path.join(__dirname, `../templates/source/${name}.tpl`), path.join(templatesDir, `${name}.jst`), next),
+			next => fs.readFile(path.join(__dirname, `../templates/expected/${name}.html`), next),
+			(file, next) => {
+				const expected = file.toString();
+				app.render(name, data, (err, parsed) => next(err, parsed, expected));
+			},
+			(parsed, expected, next) => {
+				assert.equal(collapseWhitespace(parsed), collapseWhitespace(expected));
+				next();
+			},
+		], done);
 	});
 });
