@@ -4,13 +4,13 @@
   "author": "psychobunny <psycho.bunny@hotmail.com>",
   "description": "An ultralight and super fast templating framework",
   "scripts": {
-    "pretest": "eslint --cache .",
+    "pretest": "grunt babel && eslint --cache .",
     "test": "grunt",
     "docs": "documentation build lib/benchpress.js -f md -o docs.md --shallow",
     "prepublish": "grunt build uglify"
   },
   "repository": "git://github.com/benchpressjs/benchpressjs",
-  "main": "./index.js",
+  "main": "build/lib/benchpress",
   "keywords": [
     "templates",
     "templating",
