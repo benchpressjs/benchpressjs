@@ -126,7 +126,7 @@ function test([source, expected, missing]) {
 }
 
 
-benchpress.registerHelper('canspeak', data /* , iterator, numblocks )*/ =>
+benchpress.registerHelper('canspeak', data /* , iterator, numblocks ) */ =>
 	((data.isHuman && data.name === 'Human') ? 'Can speak' : 'Cannot speak'));
 
 benchpress.registerHelper('test', data => (data.forum && !data.double));
