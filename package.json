@@ -6,7 +6,7 @@
   "scripts": {
     "pretest": "grunt babel && eslint --cache .",
     "test": "grunt",
-    "docs": "documentation build lib/benchpress.js -f md -o docs.md --shallow",
+    "docs": "documentation build lib/benchpress.js -f md -o docs/api.md --shallow",
     "prepublish": "grunt build uglify"
   },
   "repository": "git://github.com/benchpressjs/benchpressjs",
