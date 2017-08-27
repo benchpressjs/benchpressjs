@@ -133,6 +133,8 @@ benchpress.registerHelper('test', data => (data.forum && !data.double));
 
 benchpress.registerHelper('isHuman', (data, iterator) => data.animals[iterator].isHuman);
 
+benchpress.registerHelper('caps', text => text.toUpperCase());
+
 const templatesDir = path.join(__dirname, '../templates');
 const sourceDir = path.join(templatesDir, 'source');
 const expectedDir = path.join(templatesDir, 'expected');

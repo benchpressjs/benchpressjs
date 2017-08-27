@@ -1,0 +1,1 @@
+{function.caps, "Lorem ipsum dolar sit amet"}
