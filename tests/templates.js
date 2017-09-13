@@ -1,33 +1,29 @@
 'use strict';
 
-const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 const winston = require('winston');
 
-const { prepare, collapseWhitespace } = require('./utils');
-const benchpress = require('../../build/lib/benchpress');
-const mainData = require('../data.json');
+const { prepare, equalsIgnoreWhitespace } = require('./lib/utils');
+const benchpress = require('../build/lib/benchpress');
+const mainData = require('./data.json');
 
-const logDir = path.join(__dirname, '../logs/');
+const logDir = path.join(__dirname, 'logs');
 
 function logFailure({ name, source, code, expected, output, err }) {
 	if (output !== expected) {
 		fs.writeFileSync(path.join(logDir, `${name}.log`), `
-==== source ====
-${source}
+			==== source ====
+			${source}
 
+			==== code ====
+			${code == null ? `PRECOMPILE FAILED: ${err}` : code}
 
-==== code ====
-${code == null ? `PRECOMPILE FAILED: ${err}` : code}
+			==== output ====
+			${output == null ? `PRECOMPILE FAILED: ${err}` : output}
 
-
-==== output ====
-${output == null ? `PRECOMPILE FAILED: ${err}` : output}
-
-
-==== expected ====
-${expected}
+			==== expected ====
+			${expected}
 		`);
 	} else {
 		try {
@@ -68,18 +64,17 @@ function test([source, expected, missing]) {
 					cache[key] = benchpress.evaluate(code);
 
 					benchpress.parse(key, mainData, (parsed) => {
-						const output = collapseWhitespace(parsed);
-						const expect = collapseWhitespace(expected[key]);
+						const expect = expected[key];
 
 						logFailure({
 							source: source[key],
 							expected: expect,
 							code,
-							output,
+							parsed,
 							name: key,
 						});
 
-						assert.equal(output, expect);
+						equalsIgnoreWhitespace(parsed, expect);
 						done();
 					});
 				});
@@ -106,18 +101,17 @@ function test([source, expected, missing]) {
 				cache[name] = benchpress.evaluate(code);
 
 				benchpress.parse(name, blockName, mainData, (parsed) => {
-					const output = collapseWhitespace(parsed);
-					const expect = collapseWhitespace(expected[name]);
+					const expect = expected[name];
 
 					logFailure({
 						name,
 						source: source[name],
 						code,
 						expected: expect,
-						output,
+						parsed,
 					});
 
-					assert.equal(output, expect);
+					equalsIgnoreWhitespace(parsed, expect);
 					done();
 				});
 			});
@@ -135,7 +129,7 @@ benchpress.registerHelper('isHuman', (data, iterator) => data.animals[iterator].
 
 benchpress.registerHelper('caps', text => text.toUpperCase());
 
-const templatesDir = path.join(__dirname, '../templates');
+const templatesDir = path.join(__dirname, 'templates');
 const sourceDir = path.join(templatesDir, 'source');
 const expectedDir = path.join(templatesDir, 'expected');
 

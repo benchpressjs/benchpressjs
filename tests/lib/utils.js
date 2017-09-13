@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const async = require('async');
 const mkdirp = require('mkdirp');
+const assert = require('assert');
 
 const benchpress = require('../../build/lib/benchpress');
 
@@ -51,6 +52,11 @@ function compileTemplate(src, dest, callback) {
 	], callback);
 }
 
+function equalsIgnoreWhitespace(actual, expected) {
+	return assert.equal(collapseWhitespace(actual), collapseWhitespace(expected));
+}
+
+exports.equalsIgnoreWhitespace = equalsIgnoreWhitespace;
 exports.compileTemplate = compileTemplate;
 exports.prepare = prepare;
 exports.collapseWhitespace = collapseWhitespace;

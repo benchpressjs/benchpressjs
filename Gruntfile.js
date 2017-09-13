@@ -39,7 +39,7 @@ module.exports = function Gruntfile(grunt) {
 					reporter: 'spec',
 					clearRequireCache: true,
 				},
-				src: ['tests/index.js'],
+				src: ['tests/*.js'],
 			},
 		},
 		babel: {
