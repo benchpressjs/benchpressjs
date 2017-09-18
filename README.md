@@ -89,7 +89,7 @@ require(['benchpress'], (benchpress) => {
 });
 ```
 
-This has been a quick rundown of the API. [See the full docs](docs.md)
+This has been a quick rundown of the API. [See the full docs](docs/readme.md)
 
 ## Template Syntax
 Sample data, see test cases for more:
