@@ -5,6 +5,7 @@ const fs = require('fs');
 const async = require('async');
 
 const benchpress = require('../../build/lib/benchpress');
+const evaluate = require('../../build/lib/evaluate');
 const data = require('./topic.json');
 
 const templatePath = path.join(__dirname, 'topic.tpl');
@@ -14,7 +15,7 @@ function prep(callback) {
 		next => fs.readFile(templatePath, next),
 		(file, next) => benchpress.precompile({ source: file.toString() }, next),
 		(code, next) => {
-			const template = benchpress.evaluate(code);
+			const template = evaluate(code);
 			function bench(deferred) {
 				benchpress.parse('topic', data, () => deferred.resolve());
 			}

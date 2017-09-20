@@ -6,6 +6,7 @@ const winston = require('winston');
 
 const { prepare, equalsIgnoreWhitespace } = require('./lib/utils');
 const benchpress = require('../build/lib/benchpress');
+const evaluate = require('../build/lib/evaluate');
 const mainData = require('./data.json');
 
 const logDir = path.join(__dirname, 'logs');
@@ -61,7 +62,7 @@ function test([source, expected, missing]) {
 						return;
 					}
 
-					cache[key] = benchpress.evaluate(code);
+					cache[key] = evaluate(code);
 
 					benchpress.parse(key, mainData, (parsed) => {
 						const expect = expected[key];
@@ -98,7 +99,7 @@ function test([source, expected, missing]) {
 					return;
 				}
 
-				cache[name] = benchpress.evaluate(code);
+				cache[name] = evaluate(code);
 
 				benchpress.parse(name, blockName, mainData, (parsed) => {
 					const expect = expected[name];

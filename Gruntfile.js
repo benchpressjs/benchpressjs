@@ -89,7 +89,7 @@ module.exports = function Gruntfile(grunt) {
 		async.waterfall([
 			next => async.parallel([
 				cb => fs.readFile('lib/benchpress.js', cb),
-				cb => fs.readFile('lib/compiler/runtime.js', cb),
+				cb => fs.readFile('lib/runtime.js', cb),
 			], next),
 			([shimFile, runtimeFile], next) => {
 				const cutout = /\/\* build:SERVER-ONLY:open \*\/[\s\S]*?\/\* build:SERVER-ONLY:close \*\//g;
