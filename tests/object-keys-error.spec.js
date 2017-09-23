@@ -9,31 +9,31 @@ const { equalsIgnoreWhitespace } = require('./lib/utils');
 const mainData = require('./data.json');
 
 describe('each Object.keys("")', () => {
-	const keys = Object.keys;
+  const keys = Object.keys;
 
-	before(() => {
-		Object.keys = (obj) => {
-			assert.equal(typeof obj, 'object');
-			return keys(obj);
-		};
-	});
+  before(() => {
+    Object.keys = (obj) => {
+      assert.equal(typeof obj, 'object');
+      return keys(obj);
+    };
+  });
 
-	it('ES5 behavior is correct', () => {
-		assert.throws(() => {
-			Object.keys('');
-		});
-	});
+  it('ES5 behavior is correct', () => {
+    assert.throws(() => {
+      Object.keys('');
+    });
+  });
 
-	it('should work with ES5 behavior', () => {
-		const source = fs.readFileSync(path.join(__dirname, 'templates/source/object-keys-error.tpl')).toString();
-		const expected = fs.readFileSync(path.join(__dirname, 'templates/expected/object-keys-error.html')).toString();
+  it('should work with ES5 behavior', () => {
+    const source = fs.readFileSync(path.join(__dirname, 'templates/source/object-keys-error.tpl')).toString();
+    const expected = fs.readFileSync(path.join(__dirname, 'templates/expected/object-keys-error.html')).toString();
 
-		return Benchpress.compileRender(source, mainData).then((output) => {
-			equalsIgnoreWhitespace(expected, output);
-		});
-	});
+    return Benchpress.compileRender(source, mainData).then((output) => {
+      equalsIgnoreWhitespace(expected, output);
+    });
+  });
 
-	after(() => {
-		Object.keys = keys;
-	});
+  after(() => {
+    Object.keys = keys;
+  });
 });

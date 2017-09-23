@@ -1,5 +1,5 @@
 <!-- BEGIN animals -->
-	{animals.name}
+  {animals.name}
 <!-- BEGIN hates -->
 {animals.hates.name}
 <!-- END hates -->

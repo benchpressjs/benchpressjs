@@ -1,11 +1,11 @@
 <!-- IF double -->
-	<!-- IF !single -->
-	A
-	<!-- ENDIF !single -->
-	B
+  <!-- IF !single -->
+  A
+  <!-- ENDIF !single -->
+  B
 <!-- ELSE -->
-	<!-- IF !alternate_logins -->
-	C
-	<!-- ENDIF !alternate_logins -->
-	D
+  <!-- IF !alternate_logins -->
+  C
+  <!-- ENDIF !alternate_logins -->
+  D
 <!-- ENDIF double -->

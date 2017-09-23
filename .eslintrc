@@ -9,8 +9,6 @@
     },
     "extends": "airbnb-base",
     "rules": {
-        "indent": ["error", "tab"],
-        "no-tabs": "off",
         "no-param-reassign": "off",
         "no-underscore-dangle": "off",
         "comma-dangle": ["error", {

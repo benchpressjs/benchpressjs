@@ -1,7 +1,7 @@
 <!-- IF !isTrue -->
-	<!-- BEGIN animals -->
-		{animals.name}
-	<!-- END animals -->
+  <!-- BEGIN animals -->
+    {animals.name}
+  <!-- END animals -->
 <!-- ELSE -->
-	testing
+  testing
 <!-- ENDIF !isTrue -->

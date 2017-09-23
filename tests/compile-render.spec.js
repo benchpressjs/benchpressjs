@@ -12,33 +12,33 @@ const source = fs.readFileSync(path.join(__dirname, 'templates/source/loop-insid
 const expected = fs.readFileSync(path.join(__dirname, 'templates/expected/loop-inside-if-else.html')).toString();
 
 describe('compileRender', () => {
-	it('should work', () =>
-		Benchpress.compileRender(source, mainData)
-			.then(output => equalsIgnoreWhitespace(expected, output))
-	);
+  it('should work', () =>
+    Benchpress.compileRender(source, mainData)
+      .then(output => equalsIgnoreWhitespace(expected, output))
+  );
 
-	it('should work with block', () =>
-		Benchpress.compileRender(source, mainData, 'rooms')
-			.then(output => equalsIgnoreWhitespace(expected, output))
-	);
+  it('should work with block', () =>
+    Benchpress.compileRender(source, mainData, 'rooms')
+      .then(output => equalsIgnoreWhitespace(expected, output))
+  );
 });
 
 describe('compileParse', () => {
-	it('should work', (done) => {
-		Benchpress.compileParse(source, mainData, (err, output) => {
-			assert.ifError(err);
+  it('should work', (done) => {
+    Benchpress.compileParse(source, mainData, (err, output) => {
+      assert.ifError(err);
 
-			equalsIgnoreWhitespace(expected, output);
-			done();
-		});
-	});
+      equalsIgnoreWhitespace(expected, output);
+      done();
+    });
+  });
 
-	it('should work with block', (done) => {
-		Benchpress.compileParse(source, 'rooms', mainData, (err, output) => {
-			assert.ifError(err);
+  it('should work with block', (done) => {
+    Benchpress.compileParse(source, 'rooms', mainData, (err, output) => {
+      assert.ifError(err);
 
-			equalsIgnoreWhitespace(expected, output);
-			done();
-		});
-	});
+      equalsIgnoreWhitespace(expected, output);
+      done();
+    });
+  });
 });

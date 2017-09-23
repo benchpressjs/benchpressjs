@@ -1,3 +1,3 @@
 <!-- IF !package -->
-	{package.name}
+  {package.name}
 <!-- ENDIF !package -->

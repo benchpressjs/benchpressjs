@@ -11,10 +11,10 @@ const source = fs.readFileSync(path.join(__dirname, './templates/source/loop-ins
 const expected = fs.readFileSync(path.join(__dirname, './templates/expected/loop-inside-if-else.html')).toString();
 
 describe('named-blocks', () => {
-	it('should work', () => {
-		const blockName = 'rooms';
+  it('should work', () => {
+    const blockName = 'rooms';
 
-		return Benchpress.compileRender(source, mainData, blockName)
-			.then(output => equalsIgnoreWhitespace(output, expected));
-	});
+    return Benchpress.compileRender(source, mainData, blockName)
+      .then(output => equalsIgnoreWhitespace(output, expected));
+  });
 });

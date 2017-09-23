@@ -1,3 +1,3 @@
 <script>
-	functionCall('thing', {prop: prop});
+  functionCall('thing', {prop: prop});
 </script>

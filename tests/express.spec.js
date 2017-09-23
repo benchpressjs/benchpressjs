@@ -18,19 +18,19 @@ app.set('view engine', 'jst');
 app.set('views', templatesDir);
 
 describe('express', () => {
-	it('app.render should work', (done) => {
-		const name = 'basic';
-		async.waterfall([
-			next => compileTemplate(path.join(__dirname, `templates/source/${name}.tpl`), path.join(templatesDir, `${name}.jst`), next),
-			next => fs.readFile(path.join(__dirname, `templates/expected/${name}.html`), next),
-			(file, next) => {
-				const expected = file.toString();
-				app.render(name, data, (err, parsed) => next(err, parsed, expected));
-			},
-			(parsed, expected, next) => {
-				equalsIgnoreWhitespace(parsed, expected);
-				next();
-			},
-		], done);
-	});
+  it('app.render should work', (done) => {
+    const name = 'basic';
+    async.waterfall([
+      next => compileTemplate(path.join(__dirname, `templates/source/${name}.tpl`), path.join(templatesDir, `${name}.jst`), next),
+      next => fs.readFile(path.join(__dirname, `templates/expected/${name}.html`), next),
+      (file, next) => {
+        const expected = file.toString();
+        app.render(name, data, (err, parsed) => next(err, parsed, expected));
+      },
+      (parsed, expected, next) => {
+        equalsIgnoreWhitespace(parsed, expected);
+        next();
+      },
+    ], done);
+  });
 });

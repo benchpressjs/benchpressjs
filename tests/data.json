@@ -1,238 +1,238 @@
 {
-	"cache-buster": "abcdefg",
-	"emptyarray": [],
-	"thisIsNull": null,
-	"myObject1": {
-		"myArray": [{"name": "name1"}, {"name":"name2"}]
-	},
-	"myObject2": {
-		"myArray": [{"name": "name3"}, {"name":"name4"}]
-	},
-	"users:reputation" :true,
-	"users": [{"reputation": 0, "postcount": "123"}, {"reputation": 0, "postcount": "123"}],
-	"myobject": {"one":"1", "two":"2", "three":"3"},
-	"myarray": ["one", "two", "three"],
-	"arrayWithNumbers": [
-		{
-			"value": 10000
-		},
-		{
-			"value": 9999
-		},
-		{
-			"value": 9998
-		}
-	],
-	"programmers": [
-		{
-			"name": "baris",
-			"hobbies": [
-				"trolling",
-				"warcraft"
-			]
-		},
-		{
-			"name": "andrew",
-			"hobbies": []
-		},
-		{
-			"name": "julian",
-			"hobbies": [
-				"music"
-			]
-		}
-	],
-	"animals": [
-		{
-			"name": "Cat",
-			"species": "Felis silvestris catus",
-			"isHuman": false,
-			"pet": {
-				"trainable": true,
-				"info": "Hates dogs, eats goldfish",
-				"groups": [
-					{
-						"name": "group a"
-					},
-					{
-						"name": "group b"
-					},
-					{
-						"name": "group c"
-					}
-				]
-			},
-			"hates": [
-				{
-					"name": "dogs"
-				},
-				{
-					"name": "humans"
-				}
-			]
-		},
-		{
-			"name": "Dog",
-			"species": "Canis lupus familiaris",
-			"isHuman": false,
-			"pet": {
-				"trainable": true,
-				"info": "Hates cats",
-				"groups": [
-					{
-						"name": "group d"
-					}
-				]
-			},
-			"hates": [
-				{
-					"name": "cats"
-				},
-				{
-					"name": "goldfish"
-				}
-			]
-		},
-		{
-			"name": "Goldfish",
-			"species": "Carassius auratus auratus",
-			"isHuman": false,
-			"pet": {
-				"trainable": false,
-				"info": "Keep away from cats",
-				"groups": [
-					{
-						"name": "group e"
-					},
-					{
-						"name": "group b"
-					},
-					{
-						"name": "group c"
-					}
-				]
-			},
-			"hates": [
-				{
-					"name": "cats"
-				},
-				{
-					"name": "dogs"
-				},
-				{
-					"name": "humans"
-				}
-			]
-		},
-		{
-			"name": "Human",
-			"species": "Homo sapiens",
-			"isHuman": true,
-			"hobbies": [
-				{
-					"name": "guitar"
-				},
-				{
-					"name": "programming"
-				},
-				{
-					"name": "sports"
-				}
-			]
-		}
-	],
-	"package": {
-		"name": "templates.js",
-		"author": "psychobunny",
-		"url": "http://www.github.com/psychobunny/templates.js"
-	},
-	"forum": "NodeBB",
-	"language": "JavaScript",
-	"isTrue": true,
-	"isFalse": false,
-	"website": "http://burnaftercompiling.com",
-	"sayHello": true,
-	"header": "Colors",
-	"items": [
-		{
-			"name": "rainbow",
-			"url": "#Rainbow"
-		},
-		{
-			"name": "red",
-			"link": true,
-			"url": "#Red"
-		},
-		{
-			"name": "orange",
-			"link": true,
-			"url": "#Orange"
-		},
-		{
-			"name": "yellow",
-			"link": true,
-			"url": "#Yellow"
-		},
-		{
-			"name": "green",
-			"link": true,
-			"url": "#Green"
-		},
-		{
-			"name": "blue",
-			"link": true,
-			"url": "#Blue"
-		},
-		{
-			"name": "purple",
-			"link": true,
-			"url": "#Purple"
-		},
-		{
-			"name": "white",
-			"link": false,
-			"url": "#While"
-		},
-		{
-			"name": "black",
-			"link": false,
-			"url": "#Black"
-		}
-	],
-	"double": true,
-	"single": false,
-	"config": {
-		"allowLocalLogin": false
-	},
-	"alternate_logins": true,
-	"some_other": false,
-	"user": {
-		"username":"andrew",
-		"userslug":"andrew"
-	},
-	"userslug": "baris",
-	"username": "baris",
-	"integerFalse": 0,
-	"stringFalse": "0",
-	"stringEmpty": "",
-	"null": null,
-	"rooms": [
-		{
-			"name": "Test",
-			"slug": "test",
-			"description": "testing",
-			"author": 1,
-			"private": false,
-			"clients": [],
-			"loggedIn": true
-		}
-	],
-	"someObject": {
-		"one": 1,
-		"two": 2,
-		"three": false,
-		"four": null,
-		"five": ""
-	},
-	"arrayOfBools": [true, false]
+  "cache-buster": "abcdefg",
+  "emptyarray": [],
+  "thisIsNull": null,
+  "myObject1": {
+    "myArray": [{"name": "name1"}, {"name":"name2"}]
+  },
+  "myObject2": {
+    "myArray": [{"name": "name3"}, {"name":"name4"}]
+  },
+  "users:reputation" :true,
+  "users": [{"reputation": 0, "postcount": "123"}, {"reputation": 0, "postcount": "123"}],
+  "myobject": {"one":"1", "two":"2", "three":"3"},
+  "myarray": ["one", "two", "three"],
+  "arrayWithNumbers": [
+    {
+      "value": 10000
+    },
+    {
+      "value": 9999
+    },
+    {
+      "value": 9998
+    }
+  ],
+  "programmers": [
+    {
+      "name": "baris",
+      "hobbies": [
+        "trolling",
+        "warcraft"
+      ]
+    },
+    {
+      "name": "andrew",
+      "hobbies": []
+    },
+    {
+      "name": "julian",
+      "hobbies": [
+        "music"
+      ]
+    }
+  ],
+  "animals": [
+    {
+      "name": "Cat",
+      "species": "Felis silvestris catus",
+      "isHuman": false,
+      "pet": {
+        "trainable": true,
+        "info": "Hates dogs, eats goldfish",
+        "groups": [
+          {
+            "name": "group a"
+          },
+          {
+            "name": "group b"
+          },
+          {
+            "name": "group c"
+          }
+        ]
+      },
+      "hates": [
+        {
+          "name": "dogs"
+        },
+        {
+          "name": "humans"
+        }
+      ]
+    },
+    {
+      "name": "Dog",
+      "species": "Canis lupus familiaris",
+      "isHuman": false,
+      "pet": {
+        "trainable": true,
+        "info": "Hates cats",
+        "groups": [
+          {
+            "name": "group d"
+          }
+        ]
+      },
+      "hates": [
+        {
+          "name": "cats"
+        },
+        {
+          "name": "goldfish"
+        }
+      ]
+    },
+    {
+      "name": "Goldfish",
+      "species": "Carassius auratus auratus",
+      "isHuman": false,
+      "pet": {
+        "trainable": false,
+        "info": "Keep away from cats",
+        "groups": [
+          {
+            "name": "group e"
+          },
+          {
+            "name": "group b"
+          },
+          {
+            "name": "group c"
+          }
+        ]
+      },
+      "hates": [
+        {
+          "name": "cats"
+        },
+        {
+          "name": "dogs"
+        },
+        {
+          "name": "humans"
+        }
+      ]
+    },
+    {
+      "name": "Human",
+      "species": "Homo sapiens",
+      "isHuman": true,
+      "hobbies": [
+        {
+          "name": "guitar"
+        },
+        {
+          "name": "programming"
+        },
+        {
+          "name": "sports"
+        }
+      ]
+    }
+  ],
+  "package": {
+    "name": "templates.js",
+    "author": "psychobunny",
+    "url": "http://www.github.com/psychobunny/templates.js"
+  },
+  "forum": "NodeBB",
+  "language": "JavaScript",
+  "isTrue": true,
+  "isFalse": false,
+  "website": "http://burnaftercompiling.com",
+  "sayHello": true,
+  "header": "Colors",
+  "items": [
+    {
+      "name": "rainbow",
+      "url": "#Rainbow"
+    },
+    {
+      "name": "red",
+      "link": true,
+      "url": "#Red"
+    },
+    {
+      "name": "orange",
+      "link": true,
+      "url": "#Orange"
+    },
+    {
+      "name": "yellow",
+      "link": true,
+      "url": "#Yellow"
+    },
+    {
+      "name": "green",
+      "link": true,
+      "url": "#Green"
+    },
+    {
+      "name": "blue",
+      "link": true,
+      "url": "#Blue"
+    },
+    {
+      "name": "purple",
+      "link": true,
+      "url": "#Purple"
+    },
+    {
+      "name": "white",
+      "link": false,
+      "url": "#While"
+    },
+    {
+      "name": "black",
+      "link": false,
+      "url": "#Black"
+    }
+  ],
+  "double": true,
+  "single": false,
+  "config": {
+    "allowLocalLogin": false
+  },
+  "alternate_logins": true,
+  "some_other": false,
+  "user": {
+    "username":"andrew",
+    "userslug":"andrew"
+  },
+  "userslug": "baris",
+  "username": "baris",
+  "integerFalse": 0,
+  "stringFalse": "0",
+  "stringEmpty": "",
+  "null": null,
+  "rooms": [
+    {
+      "name": "Test",
+      "slug": "test",
+      "description": "testing",
+      "author": 1,
+      "private": false,
+      "clients": [],
+      "loggedIn": true
+    }
+  ],
+  "someObject": {
+    "one": 1,
+    "two": 2,
+    "three": false,
+    "four": null,
+    "five": ""
+  },
+  "arrayOfBools": [true, false]
 }

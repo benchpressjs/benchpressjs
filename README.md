@@ -22,22 +22,22 @@ This method compiles a template source into Javascript code, optionally minifyin
 const benchpress = require('benchpressjs');
 const template = 'My favourite forum software is {forum}. This templating engine is written in {language}.';
 benchpress.precompile(template, {}).then((precompiled) => {
-	// store it somewhere
+  // store it somewhere
 });
 
 // precompiled output
 (function (factory) {
-	if (typeof module === 'object' && module.exports) {
-		module.exports = factory();
-	} else if (typeof define === 'function' && define.amd) {
-		define(factory);
-	}
+  if (typeof module === 'object' && module.exports) {
+    module.exports = factory();
+  } else if (typeof define === 'function' && define.amd) {
+    define(factory);
+  }
 })(function () {
-	function compiled(helpers, context, get, iter, helper) {
-		return 'My favourite forum software is ' + get(context && context['forum']) + '. This templating engine is written in ' + get(context && context['language']) + '.';
-	}
+  function compiled(helpers, context, get, iter, helper) {
+    return 'My favourite forum software is ' + get(context && context['forum']) + '. This templating engine is written in ' + get(context && context['language']) + '.';
+  }
 
-	return compiled;
+  return compiled;
 });
 ```
 
@@ -51,21 +51,21 @@ const app = express();
 const benchpress = require('benchpressjs');
 
 const data = {
-	foo: 'bar',
+  foo: 'bar',
 };
 
 app.configure(function() {
-	app.engine('jst', benchpress.__express);
-	app.set('view engine', 'jst');
-	app.set('views', 'path/to/compiled/templates');
+  app.engine('jst', benchpress.__express);
+  app.set('view engine', 'jst');
+  app.set('views', 'path/to/compiled/templates');
 });
 
 app.render('myview', data, function(err, html) {
-	console.log(html);
+  console.log(html);
 });
 
 app.get('/myroute', function(res, req, next) {
-	res.render('myview', data);
+  res.render('myview', data);
 });
 ```
 
@@ -76,16 +76,16 @@ To use it, `.registerLoader(loader)` must be used to set the callback for fetchi
 
 ```js
 require(['benchpress'], (benchpress) => {
-	benchpress.registerLoader((name, callback) => {
-		// fetch `name` template module
-	});
+  benchpress.registerLoader((name, callback) => {
+    // fetch `name` template module
+  });
 
-	benchpress.render('basic', {
-		forum: 'NodeBB',
-		language: 'Javascript',
-	}).then((output) => {
-		// do something with output
-	});
+  benchpress.render('basic', {
+    forum: 'NodeBB',
+    language: 'Javascript',
+  }).then((output) => {
+    // do something with output
+  });
 });
 ```
 
@@ -96,30 +96,30 @@ Sample data, see test cases for more:
 
 ```json
 {
-	"animals": [
-		{
-			"name": "Cat",
-			"species": "Felis silvestris catus",
-			"isHuman": false,
-		},
-		{
-			"name": "Dog",
-			"species": "Canis lupus familiaris",
-			"isHuman": false,
-		},
-		{
-			"name": "Human",
-			"species": "Homo sapiens",
-			"isHuman": true
-		}
-	],
-	"package": {
-		"name": "benchpressjs",
-		"author": "psychobunny",
-		"url": "http://www.github.com/benchpressjs/benchpress"
-	},
-	"website": "http://burnaftercompiling.com",
-	"sayHello": true
+  "animals": [
+    {
+      "name": "Cat",
+      "species": "Felis silvestris catus",
+      "isHuman": false,
+    },
+    {
+      "name": "Dog",
+      "species": "Canis lupus familiaris",
+      "isHuman": false,
+    },
+    {
+      "name": "Human",
+      "species": "Homo sapiens",
+      "isHuman": true
+    }
+  ],
+  "package": {
+    "name": "benchpressjs",
+    "author": "psychobunny",
+    "url": "http://www.github.com/benchpressjs/benchpress"
+  },
+  "website": "http://burnaftercompiling.com",
+  "sayHello": true
 }
 ```
 
