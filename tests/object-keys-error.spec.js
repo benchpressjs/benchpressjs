@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
 
-const benchpress = require('../build/lib/benchpress');
+const Benchpress = require('../build/lib/benchpress');
 const { equalsIgnoreWhitespace } = require('./lib/utils');
 const mainData = require('./data.json');
 
@@ -24,15 +24,12 @@ describe('each Object.keys("")', () => {
 		});
 	});
 
-	it('should work with ES5 behavior', (done) => {
-		const source = fs.readFileSync(path.join(__dirname, 'templates/source/object-keys-error.tpl'));
-		const expected = fs.readFileSync(path.join(__dirname, 'templates/expected/object-keys-error.html'));
+	it('should work with ES5 behavior', () => {
+		const source = fs.readFileSync(path.join(__dirname, 'templates/source/object-keys-error.tpl')).toString();
+		const expected = fs.readFileSync(path.join(__dirname, 'templates/expected/object-keys-error.html')).toString();
 
-		benchpress.compileParse(source.toString(), mainData, (err, output) => {
-			assert.ifError(err);
-
-			equalsIgnoreWhitespace(expected.toString(), output);
-			done();
+		return Benchpress.compileRender(source, mainData).then((output) => {
+			equalsIgnoreWhitespace(expected, output);
 		});
 	});
 

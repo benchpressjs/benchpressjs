@@ -2,25 +2,52 @@
 
 ### Table of Contents
 
--   [precompile](#precompile)
+-   [Benchpress](#benchpress)
+    -   [registerHelper](#registerhelper)
+    -   [setGlobal](#setglobal)
+    -   [flush](#flush)
+    -   [registerLoader](#registerloader)
 -   [\_\_express](#__express)
+-   [precompile](#precompile)
+-   [compileRender](#compilerender)
 -   [compileParse](#compileparse)
--   [registerHelper](#registerhelper)
--   [setGlobal](#setglobal)
--   [flush](#flush)
+-   [render](#render)
 -   [parse](#parse)
--   [registerLoader](#registerloader)
 
-## precompile
+## Benchpress
 
-Precompile a benchpress template
+### registerHelper
+
+Register a helper function
 
 **Parameters**
 
--   `options` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
-    -   `options.source` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Template source
-    -   `options.minify` **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** Whether to output minified code (optional, default `false`)
--   `callback` **[function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** (err, output)
+-   `name` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Helper name
+-   `fn` **[function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** Helper function
+
+### setGlobal
+
+Set a global data value
+
+**Parameters**
+
+-   `key` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Property key
+-   `value` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Property value
+
+### flush
+
+Clear the template cache
+
+### registerLoader
+
+Register a loader function to fetch templates
+
+-   `loader(name, callback) => callback(templateFunction)`
+-   `loader(name) => Promise<string>`
+
+**Parameters**
+
+-   `loader` **[function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** 
 
 ## \_\_express
 
@@ -32,10 +59,40 @@ Provide functionality to act as an express engine
 -   `data` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Data with which to parse the template
 -   `next` **[function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** (err, output)
 
+## precompile
+
+Precompile a benchpress template
+
+-   `precompiled(source, options): Promise<string>`
+-   `precompile(source, options, callback) => callback(err, output)`
+-   `precompile({ source, ...options }, callback) => callback(err, output)`
+
+**Parameters**
+
+-   `source` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Template source
+-   `options` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
+    -   `options.minify` **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** Output minified code (optional, default `false`)
+    -   `options.unsafe` **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** Disable safety checks, will throw on misshapen data (optional, default `false`)
+-   `callback` **[function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)?** (err, output)
+
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)>** output code
+
+## compileRender
+
+Compile a template and render it
+Automatically caches template function based on hash of input template
+
+**Parameters**
+
+-   `templateSource` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+-   `data` **any** 
+-   `block` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)?** 
+
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)>** rendered output
+
 ## compileParse
 
-Compile a template and parse it
-Automatically caches template function based on hash of input template
+Alias for [compileRender](#compilerender), but uses a callback
 
 **Parameters**
 
@@ -44,43 +101,35 @@ Automatically caches template function based on hash of input template
 -   `data` **any** 
 -   `callback` **[function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** (err, output)
 
-## registerHelper
+**Meta**
 
-Register a helper function
+-   **deprecated**: Use [compileRender](#compilerender) instead
 
-**Parameters**
 
--   `name` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Helper name
--   `fn` **[function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** Helper function
-
-## setGlobal
-
-Set a global data value
-
-**Parameters**
-
--   `key` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Property key
--   `value` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Property value
-
-## flush
-
-Clear the template cache
-
-## parse
+## render
 
 Fetch and run the given template
 
 **Parameters**
 
 -   `template` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Name of template to fetch
--   `block` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)?** Parse only this block in the template
 -   `data` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Data with which to run the template
--   `callback` **[function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** callback(output)
+-   `block` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)?** Parse only this block in the template
 
-## registerLoader
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)>** Rendered output
 
-Register a loader function to fetch templates
+## parse
+
+Alias for [render](#render), but uses a callback
 
 **Parameters**
 
--   `loader` **[function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** (name, callback) => callback(templateFunction)
+-   `template` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Name of template to fetch
+-   `block` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)?** Render only this block in the template
+-   `data` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Data with which to run the template
+-   `callback` **[function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** callback(output)
+
+**Meta**
+
+-   **deprecated**: Use [render](#render) instead
+

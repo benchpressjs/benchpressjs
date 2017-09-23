@@ -15,13 +15,13 @@ Benchpress is available as an npm module:
 ## API
 Benchpress uses an ahead of time (AOT) compilation model. It requires that you precompile templates into Javascript modules before using them.
 
-### `.precompile({ source, minify = false }, callback)`
+### `.precompile(source, { minify = false, unsafe = false }): Promise<string>`
 This method compiles a template source into Javascript code, optionally minifying the result with UglifyJS
 
 ```js
 const benchpress = require('benchpressjs');
 const template = 'My favourite forum software is {forum}. This templating engine is written in {language}.';
-benchpress.precompile(template, (err, precompiled) => {
+benchpress.precompile(template, {}).then((precompiled) => {
 	// store it somewhere
 });
 
@@ -69,7 +69,7 @@ app.get('/myroute', function(res, req, next) {
 });
 ```
 
-### `.parse(template, data, callback)`
+### `.render(template, data): Promise<string>` (alias: `.parse(template, data, callback(string))`)
 
 This method is used mainly to parse templates on the client-side.
 To use it, `.registerLoader(loader)` must be used to set the callback for fetching compiled template modules.
@@ -80,10 +80,10 @@ require(['benchpress'], (benchpress) => {
 		// fetch `name` template module
 	});
 
-	benchpress.parse('basic', {
+	benchpress.render('basic', {
 		forum: 'NodeBB',
 		language: 'Javascript',
-	}, (output) => {
+	}).then((output) => {
 		// do something with output
 	});
 });
@@ -127,7 +127,6 @@ Sample data, see test cases for more:
 ```
 My blog URL is {website}. The URL for this library is {{package.url}}
 ```
-Double brackets and single brackets are identical since there is no longer a use case for escaping **templates.js** tokens.
 
 ### Conditionals
 ```html
@@ -162,7 +161,7 @@ Dog is from the Canis lupus familiaris.
 Human is from the species Homo sapiens.
 ```
 
-Benchpress supports several syntaxes for iteration in order to be backwards compatible with **tempates.js**:
+Benchpress supports several syntaxes for iteration in order to be backwards compatible with **templates.js**:
  - `<!-- END abcd -->` == `<!-- END foo -->` == `<!-- END -->`
  - `<!-- BEGIN abc --> {abc.def} <!-- END -->` == `<!-- BEGIN abc --> {../def} <!-- END -->` which will print the `def` key of every item in `abc`.
 
