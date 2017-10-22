@@ -25,7 +25,7 @@ describe('', () => {
   describe('render', () => {
     it('should work', () =>
       Benchpress.render(name, mainData)
-      .then(output => equalsIgnoreWhitespace(expected, output))
+        .then(output => equalsIgnoreWhitespace(expected, output))
     );
 
     it('should work with block', () =>

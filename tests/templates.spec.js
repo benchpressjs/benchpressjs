@@ -89,3 +89,5 @@ Benchpress.registerHelper('test', data => (data.forum && !data.double));
 Benchpress.registerHelper('isHuman', (data, iterator) => data.animals[iterator].isHuman);
 
 Benchpress.registerHelper('caps', text => text.toUpperCase());
+
+Benchpress.registerHelper('join', (joiner, ...args) => args.join(joiner));
