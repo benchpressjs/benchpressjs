@@ -37,10 +37,10 @@ function prepare(sourceDir, expectedDir) {
 
 function collapseWhitespace(str) {
   return str
-  .replace(/(?:[ \t]*[\r\n]+[ \t]*)+/g, '\n')
-  .replace(/[\t ]+/g, ' ')
-  .replace(/ (<)|(>) /g, '$1$2')
-  .trim();
+    .replace(/(?:[ \t]*[\r\n]+[ \t]*)+/g, '\n')
+    .replace(/[\t ]+/g, ' ')
+    .replace(/ (<)|(>) /g, '$1$2')
+    .trim();
 }
 
 function compileTemplate(src, dest, callback) {

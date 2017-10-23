@@ -8,8 +8,8 @@
     -   [flush](#flush)
     -   [registerLoader](#registerloader)
 -   [\_\_express](#__express)
--   [precompile](#precompile)
 -   [compileRender](#compilerender)
+-   [precompile](#precompile)
 -   [compileParse](#compileparse)
 -   [render](#render)
 -   [parse](#parse)
@@ -59,6 +59,19 @@ Provide functionality to act as an express engine
 -   `data` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Data with which to parse the template
 -   `next` **[function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** (err, output)
 
+## compileRender
+
+Compile a template and render it
+Automatically caches template function based on hash of input template
+
+**Parameters**
+
+-   `templateSource` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+-   `data` **any** 
+-   `block` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)?** 
+
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)>** rendered output
+
 ## precompile
 
 Precompile a benchpress template
@@ -76,19 +89,6 @@ Precompile a benchpress template
 -   `callback` **[function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)?** (err, output)
 
 Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)>** output code
-
-## compileRender
-
-Compile a template and render it
-Automatically caches template function based on hash of input template
-
-**Parameters**
-
--   `templateSource` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
--   `data` **any** 
--   `block` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)?** 
-
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)>** rendered output
 
 ## compileParse
 
