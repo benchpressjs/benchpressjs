@@ -88,6 +88,20 @@ Benchpress.registerHelper('test', data => (data.forum && !data.double));
 
 Benchpress.registerHelper('isHuman', (data, iterator) => data.animals[iterator].isHuman);
 
-Benchpress.registerHelper('caps', text => text.toUpperCase());
+// the following helper definitions are from examples, copied as-is
+/* eslint-disable func-names, prefer-arrow-callback */
 
+Benchpress.registerHelper('caps', function (text) {
+  return String(text).toUpperCase();
+});
+
+Benchpress.registerHelper('isEven', function (num) {
+  return num % 2 === 0;
+});
+// in legacy IF syntax, the root context is provided as the first argument
+Benchpress.registerHelper('isEvenLegacy', function (context, num) {
+  return num % 2 === 0;
+});
+
+// ES6 array function syntax
 Benchpress.registerHelper('join', (joiner, ...args) => args.join(joiner));
