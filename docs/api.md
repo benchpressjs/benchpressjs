@@ -43,7 +43,7 @@ Clear the template cache
 Register a loader function to fetch templates
 
 -   `loader(name, callback) => callback(templateFunction)`
--   `loader(name) => Promise<string>`
+-   `loader(name) => Promise<templateFunction>`
 
 **Parameters**
 
