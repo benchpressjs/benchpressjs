@@ -122,7 +122,7 @@ Output
 
 ### Example #2
 ```js
-var users = {
+var admins = {
     'jumpbugger': {
         name: 'Jacob Harley',
     },
@@ -135,15 +135,15 @@ var users = {
 };
 ```
 ```html
-<!-- BEGIN users -->
+<!-- BEGIN admins -->
 username: {@key}
-name: {users.name}
+name: {admins.name}
 
 <!-- END -->
 
-{{{ each users }}}
+{{{ each admins }}}
 username: {@key}
-name: {users.name}
+name: {admins.name}
 
 {{{ end }}}
 ```

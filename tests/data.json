@@ -1,5 +1,57 @@
 {
+  ".1": "from conditionals examples",
+  "test": true,
+  "not_test": false,
+
+  ".2": "from helpers examples",
   "cache-buster": "abcdefg",
+  "ten": 10,
+  "eleven": 11,
+  "lorem": "Lorem ipsum dolar sit amet",
+
+  ".3": "from interpolation examples",
+  "html": "<span>Here are two odd numbers:  3 and 1</span>",
+  "text": "One number is greater than the other:  3 > 1",
+
+  ".4": "from iteration examples",
+  "arr": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e"
+  ],
+  "people": [
+    {
+      "name": "John Smith",
+      "age": 34
+    },
+    {
+      "name": "Samantha Walker",
+      "age": 67
+    },
+    {
+      "name": "Josh Hawkins",
+      "age": 12
+    }
+  ],
+  "usernames": {
+    "jumpbugger": "Jacob Harley",
+    "neatoooo": "Kate Worden",
+    "hamster": "Nate Francis"
+  },
+  "admins": {
+    "jumpbugger": {
+      "name": "Jacob Harley"
+    },
+    "neatoooo": {
+      "name": "Kate Worden"
+    },
+    "hamster": {
+      "name": "Nate Francis"
+    }
+  },
+
   "emptyarray": [],
   "thisIsNull": null,
   "myObject1": {

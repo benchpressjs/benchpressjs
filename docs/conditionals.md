@@ -25,18 +25,31 @@ This is a test!
 {{{ end }}}
 ```
 
+```
+This is a test!
+
+This is a test!
+```
+
 ## If-Not-Then
 
 The if-not-then syntax has a different opener in which an exclamation point (`!`) is prepended to the test: `<!-- IF !condition -->` or `{{{ if !condition }}}`.
 
 ```html
-<!-- IF !test -->
+<!-- IF !not_test -->
 This is not a test!
 <!-- END -->
 
-{{{ if !test }}}
+{{{ if !not_test }}}
 This is not a test!
 {{{ end }}}
+```
+
+Output
+```
+This is not a test!
+
+This is not a test!
 ```
 
 ## If-Then-Else
@@ -51,9 +64,16 @@ This is a test!
 This is not a test!
 <!-- END -->
 
-{{{ if test }}}
+{{{ if not_test }}}
 This is a test!
 {{{ else }}}
 This is not a test!
 {{{ end }}}
+```
+
+Output
+```
+This is a test!
+
+This is not a test!
 ```
