@@ -1,3 +1,9 @@
+## Version 1.2.0 (2017-11-24)
+
+### New
+
+- Add new helper syntax which looks like a function call: `helperName(...args)`
+
 ## Version 1.1.0 (2017-9-23)
 
 ### New
