@@ -1,7 +1,7 @@
 # <img alt="benchpress" src="https://cdn.rawgit.com/benchpressjs/benchpressjs/master/benchpress.svg" />
 
 [![Build Status](https://travis-ci.org/benchpressjs/benchpressjs.png?branch=master)](https://travis-ci.org/benchpressjs/benchpressjs)
-[![Coverage]()]
+[![Coverage Status](https://coveralls.io/repos/github/benchpressjs/benchpressjs/badge.svg?branch=master)](https://coveralls.io/github/benchpressjs/benchpressjs?branch=master)
 [![Dependency Status](https://david-dm.org/benchpressjs/benchpressjs.svg)](https://david-dm.org/benchpressjs/benchpressjs)
 [![Code Climate](https://codeclimate.com/github/benchpressjs/benchpressjs.png)](https://codeclimate.com/github/benchpressjs/benchpressjs)
 
