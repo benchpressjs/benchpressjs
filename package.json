@@ -5,7 +5,8 @@
   "description": "An ultralight and super fast templating framework",
   "scripts": {
     "pretest": "grunt babel && eslint --cache .",
-    "test": "grunt",
+    "test": "nyc --reporter=html --reporter=text mocha -R spec -- tests",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
     "docs": "documentation build lib/benchpress.js lib/precompile.js lib/compile-render.js lib/express.js -f md -o docs/api.md --shallow",
     "prepare": "grunt build uglify"
   },
@@ -29,6 +30,7 @@
     "babel-plugin-transform-es2015-function-name": "^6.24.1",
     "babel-plugin-transform-es2015-shorthand-properties": "^6.24.1",
     "benchmark": "^2.1.4",
+    "coveralls": "^3.0.0",
     "documentation": "^5.3.3",
     "eslint": "^4.9.0",
     "eslint-config-airbnb-base": "^12.1.0",
@@ -41,6 +43,7 @@
     "grunt-mocha-test": "^0.13.3",
     "mkdirp": "^0.5.1",
     "mocha": "^4.0.1",
+    "nyc": "^11.3.0",
     "request": "^2.83.0"
   },
   "license": "MIT",
@@ -54,5 +57,10 @@
     "md5": "^2.2.1",
     "node-cache": "^4.1.1",
     "uglify-js": "^3.1.5"
+  },
+  "nyc": {
+    "exclude": [
+      "tests"
+    ]
   }
 }

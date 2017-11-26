@@ -36,4 +36,16 @@ describe('precompile', () => {
       done();
     });
   });
+
+  it('should work with minify on', () =>
+    Benchpress.precompile(template, { minify: true })
+      .then((minified) => {
+        assert(minified);
+
+        return Benchpress.precompile(template, { minify: false })
+          .then((code) => {
+            assert(minified.length < code.length);
+          });
+      })
+  );
 });

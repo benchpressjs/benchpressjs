@@ -1,6 +1,8 @@
 # <img alt="benchpress" src="https://cdn.rawgit.com/benchpressjs/benchpressjs/master/benchpress.svg" />
 
 [![Build Status](https://travis-ci.org/benchpressjs/benchpressjs.png?branch=master)](https://travis-ci.org/benchpressjs/benchpressjs)
+[![Coverage]()]
+[![Dependency Status](https://david-dm.org/benchpressjs/benchpressjs.svg)](https://david-dm.org/benchpressjs/benchpressjs)
 [![Code Climate](https://codeclimate.com/github/benchpressjs/benchpressjs.png)](https://codeclimate.com/github/benchpressjs/benchpressjs)
 
 Benchpress is an ultralight (1.3kb minified) and super fast templating framework for Javascript and node.js.

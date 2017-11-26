@@ -1,2 +1,4 @@
 *.jst
 build
+coverage
+.nyc_output

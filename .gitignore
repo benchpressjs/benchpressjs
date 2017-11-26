@@ -217,6 +217,9 @@ sftp-config.json
 *.sublime-project
 *.sublime-workspace
 
+#Coverage output
+.nyc_output
+coverage
 
 tmp/*
 .vscode
