@@ -11,6 +11,7 @@ const mainData = require('./data.json');
 describe('unsafe', () => {
   before(() => {
     benchpress.precompile.defaults.unsafe = true;
+    benchpress.precompile.defaults.native = false;
   });
 
   it('should throw if property does not exist', () => {
@@ -36,6 +37,20 @@ describe('unsafe', () => {
   });
 
   it('should work without the runtime', () => {
+    const source = fs.readFileSync(path.join(__dirname, 'templates/source/loop-nested-with-conditional.tpl')).toString();
+    const expected = fs.readFileSync(path.join(__dirname, 'templates/expected/loop-nested-with-conditional.html')).toString();
+
+    return benchpress.precompile(source, {}).then((compiled) => {
+      const template = benchpress.evaluate(compiled);
+      const output = template(benchpress.helpers, mainData);
+
+      equalsIgnoreWhitespace(expected, output);
+    });
+  });
+
+  it('should fall back if native is enabled', () => {
+    benchpress.precompile.defaults.native = true;
+
     const source = fs.readFileSync(path.join(__dirname, 'templates/source/loop-nested-with-conditional.tpl')).toString();
     const expected = fs.readFileSync(path.join(__dirname, 'templates/expected/loop-nested-with-conditional.html')).toString();
 

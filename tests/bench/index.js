@@ -6,14 +6,18 @@ const Benchmark = require('benchmark');
 const benchpress = require('../../build/lib/benchpress');
 const categories = require('./categories');
 const topic = require('./topic');
+const compilation = require('./compilation');
 
+Benchmark.options.defer = true;
+Benchmark.options.minSamples = 100;
 const suite = new Benchmark.Suite();
 
 function benchmark(done) {
   async.parallel([
     categories,
     topic,
-  ], (err, [cats, top]) => {
+    compilation,
+  ], (err, [cats, top, comp]) => {
     const cache = {
       categories: cats.template,
       topic: top.template,
@@ -26,12 +30,10 @@ function benchmark(done) {
     const output = [];
 
     suite
-      .add('categories', cats.bench, {
-        defer: true,
-      })
-      .add('topic', top.bench, {
-        defer: true,
-      })
+      .add('categories', cats.bench)
+      .add('topic', top.bench)
+      .add('compilation', comp.bench)
+      .add('native compilation', comp.benchNative)
       .on('cycle', (event) => {
         output.push(event.target.toString());
       })
@@ -43,4 +45,5 @@ function benchmark(done) {
       });
   });
 }
+
 module.exports = benchmark;
