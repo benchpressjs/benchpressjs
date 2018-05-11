@@ -14,6 +14,7 @@ pub mod paths;
 pub mod pre_fixer;
 pub mod templates;
 pub mod generator;
+pub mod minify;
 
 use neon::vm::{Call, JsResult};
 use neon::js::error::{JsError, Kind};
