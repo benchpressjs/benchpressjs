@@ -63,8 +63,22 @@ describe('templates', () => {
           throw err;
         })
         .then((code) => {
-          const template = Benchpress.evaluate(code);
-          const output = Benchpress.runtime(Benchpress.helpers, mainData, template);
+          let template = null;
+          let output = '';
+          let err = null;
+
+          try {
+            template = Benchpress.evaluate(code);
+
+            try {
+              output = Benchpress.runtime(Benchpress.helpers, mainData, template);
+            } catch (e) {
+              err = e;
+            }
+          } catch (e) {
+            err = e;
+          }
+
           const expect = expected[name];
 
           logFailure({
@@ -73,6 +87,7 @@ describe('templates', () => {
             code,
             output,
             name,
+            err,
           });
 
           equalsIgnoreWhitespace(output, expect);

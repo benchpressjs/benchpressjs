@@ -25,26 +25,26 @@ describe('', () => {
   describe('render', () => {
     it('should work', () =>
       Benchpress.render(name, mainData)
-        .then(output => equalsIgnoreWhitespace(expected, output))
+        .then(output => equalsIgnoreWhitespace(output, expected))
     );
 
     it('should work with block', () =>
       Benchpress.render(name, mainData, 'rooms')
-        .then(output => equalsIgnoreWhitespace(expected, output))
+        .then(output => equalsIgnoreWhitespace(output, expected))
     );
   });
 
   describe('parse', () => {
     it('should work', (done) => {
       Benchpress.parse(name, mainData, (output) => {
-        equalsIgnoreWhitespace(expected, output);
+        equalsIgnoreWhitespace(output, expected);
         done();
       });
     });
 
     it('should work with block', (done) => {
       Benchpress.parse(name, 'rooms', mainData, (output) => {
-        equalsIgnoreWhitespace(expected, output);
+        equalsIgnoreWhitespace(output, expected);
         done();
       });
     });

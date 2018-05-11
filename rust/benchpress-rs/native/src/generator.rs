@@ -5,9 +5,9 @@ use json;
 
 use std::collections::HashSet;
 
-pub fn gen_body(entry: Vec<Control>, top: bool, mut block_names: HashSet<String>) -> (String, Vec<String>) {
+pub fn gen_body(entry: Vec<Control>, top: bool, mut block_names: HashSet<String>) -> (String, Vec<String>, HashSet<String>) {
     if entry.len() == 0 {
-        return (String::from("\"\""), Vec::new())
+        return (String::from("\"\""), Vec::new(), block_names)
     }
 
     let mut blocks: Vec<String> = Vec::new();
@@ -17,8 +17,11 @@ pub fn gen_body(entry: Vec<Control>, top: bool, mut block_names: HashSet<String>
             json::stringify(json::from(source))
         },
         Control::If { neg, test, body, alt } => {
-            let (b, mut b_blocks) = gen_body(body, top, block_names.clone());
-            let (a, mut a_blocks) = gen_body(alt, top, block_names.clone());
+            let (b, mut b_blocks, mut b_block_names) = gen_body(body, top, block_names.clone());
+            block_names.extend(b_block_names);
+
+            let (a, mut a_blocks, mut a_block_names) = gen_body(alt, top, block_names.clone());
+            block_names.extend(a_block_names);
 
             blocks.append(&mut b_blocks);
             blocks.append(&mut a_blocks);
@@ -31,10 +34,6 @@ pub fn gen_body(entry: Vec<Control>, top: bool, mut block_names: HashSet<String>
             )
         },
         Control::Iter { subject_raw, suffix, subject, body, alt } => {
-            if top && !block_names.contains(&subject_raw) {
-                block_names.insert(subject_raw.clone());
-            }
-
             let block = templates::iter(
                 suffix,
                 templates::expression(subject),
@@ -43,6 +42,7 @@ pub fn gen_body(entry: Vec<Control>, top: bool, mut block_names: HashSet<String>
             );
 
             if top && !block_names.contains(&subject_raw) {
+                block_names.insert(subject_raw.clone());
                 blocks.push(templates::block(subject_raw.clone(), block));
                 templates::block_call(subject_raw)
             } else {
@@ -55,11 +55,11 @@ pub fn gen_body(entry: Vec<Control>, top: bool, mut block_names: HashSet<String>
         Control::Raw { subject } => templates::expression(subject),
     }).filter(|x| x.len() > 0).collect::<Vec<String>>();
 
-    (templates::concat(output), blocks)
+    (templates::concat(output), blocks, block_names)
 }
 
 pub fn generate(input: Vec<Control>) -> String {
-    let (body, blocks) = gen_body(input, true, HashSet::new());
+    let (body, blocks, _) = gen_body(input, true, HashSet::new());
 
     templates::wrapper(body, blocks)
 }

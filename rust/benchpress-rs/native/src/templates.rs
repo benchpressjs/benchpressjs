@@ -13,10 +13,10 @@ pub static COMPILED: &str = "compiled";
 pub static BLOCKS: &str = "compiled.blocks";
 
 pub fn key_i(i: u16) -> String {
-    format!("key{}", i)
+    format!("{}{}", KEY, i)
 }
 pub fn length_i(i: u16) -> String {
-    format!("length{}", i)
+    format!("{}{}", LENGTH, i)
 }
 
 lazy_static! {

@@ -14,12 +14,12 @@ const expected = fs.readFileSync(path.join(__dirname, 'templates/expected/loop-i
 describe('compileRender', () => {
   it('should work', () =>
     Benchpress.compileRender(source, mainData)
-      .then(output => equalsIgnoreWhitespace(expected, output))
+      .then(output => equalsIgnoreWhitespace(output, expected))
   );
 
   it('should work with block', () =>
     Benchpress.compileRender(source, mainData, 'rooms')
-      .then(output => equalsIgnoreWhitespace(expected, output))
+      .then(output => equalsIgnoreWhitespace(output, expected))
   );
 });
 
@@ -28,7 +28,7 @@ describe('compileParse', () => {
     Benchpress.compileParse(source, mainData, (err, output) => {
       assert.ifError(err);
 
-      equalsIgnoreWhitespace(expected, output);
+      equalsIgnoreWhitespace(output, expected);
       done();
     });
   });
@@ -37,7 +37,7 @@ describe('compileParse', () => {
     Benchpress.compileParse(source, 'rooms', mainData, (err, output) => {
       assert.ifError(err);
 
-      equalsIgnoreWhitespace(expected, output);
+      equalsIgnoreWhitespace(output, expected);
       done();
     });
   });
