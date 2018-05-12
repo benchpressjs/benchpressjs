@@ -8,7 +8,16 @@ const assert = require('assert');
 
 const benchpress = require('../../build/lib/benchpress');
 
-function prepare(sourceDir, expectedDir) {
+let cache = null;
+function prepare() {
+  if (cache) {
+    return cache;
+  }
+
+  const templatesDir = path.join(__dirname, '../templates');
+  const sourceDir = path.join(templatesDir, 'source');
+  const expectedDir = path.join(templatesDir, 'expected');
+
   const [sourceArr, expectedArr] = [sourceDir, expectedDir]
     .map(dir => fs.readdirSync(dir).map(file => [
       file.replace(/(\.tpl|\.html|\.hbs)$/, ''),
@@ -32,7 +41,9 @@ function prepare(sourceDir, expectedDir) {
     return prev;
   }, {});
 
-  return [source, expected, missing];
+  cache = [source, expected, missing];
+
+  return cache;
 }
 
 function collapseWhitespace(str) {
@@ -45,8 +56,8 @@ function collapseWhitespace(str) {
 
 function compileTemplate(src, dest, callback) {
   async.waterfall([
-    next => fs.readFile(src, next),
-    (file, next) => benchpress.precompile({ source: file.toString() }, next),
+    next => fs.readFile(src, 'utf8', next),
+    (source, next) => benchpress.precompile({ source }, next),
     (code, next) => mkdirp(path.dirname(dest), err => next(err, code)),
     (code, next) => fs.writeFile(dest, code, next),
   ], callback);

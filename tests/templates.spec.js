@@ -36,63 +36,68 @@ function logFailure({ name, source, code, expected, output, err }) {
   }
 }
 
-const templatesDir = path.join(__dirname, 'templates');
-const sourceDir = path.join(templatesDir, 'source');
-const expectedDir = path.join(templatesDir, 'expected');
+[true, false].forEach((native) => {
+  const type = native ? 'native' : 'fallback';
 
-describe('templates', () => {
-  const [source, expected, missing] = prepare(sourceDir, expectedDir);
+  describe(`templates (${type})`, () => {
+    before(() => {
+      Benchpress.precompile.defaults.native = native;
+      Benchpress.flush();
+    });
 
-  if (missing.length) {
-    // eslint-disable-next-line no-console
-    console.warn(`[templates.js] Missing expected files: ${JSON.stringify(missing, null, 2)}`);
-  }
+    const [source, expected, missing] = prepare();
 
-  const keys = Object.keys(source);
+    if (missing.length) {
+      // eslint-disable-next-line no-console
+      console.warn(`[templates.js] Missing expected files: ${JSON.stringify(missing, null, 2)}`);
+    }
 
-  keys.forEach((name) => {
-    it(name, () =>
-      Benchpress.precompile(source[name], {})
-        .catch((err) => {
-          logFailure({
-            source: source[name],
-            expected: expected[name],
-            name,
-            err: err.message,
-          });
-          throw err;
-        })
-        .then((code) => {
-          let template = null;
-          let output = '';
-          let err = null;
+    const keys = Object.keys(source);
 
-          try {
-            template = Benchpress.evaluate(code);
+    keys.forEach((name) => {
+      it(name, () =>
+        Benchpress.precompile(source[name], {})
+          .catch((err) => {
+            logFailure({
+              source: source[name],
+              expected: expected[name],
+              name,
+              err: err.message,
+            });
+            throw err;
+          })
+          .then((code) => {
+            let template = null;
+            let output = '';
+            let err = null;
 
             try {
-              output = Benchpress.runtime(Benchpress.helpers, mainData, template);
+              template = Benchpress.evaluate(code);
+
+              try {
+                output = Benchpress.runtime(Benchpress.helpers, mainData, template);
+              } catch (e) {
+                err = e;
+              }
             } catch (e) {
               err = e;
             }
-          } catch (e) {
-            err = e;
-          }
 
-          const expect = expected[name];
+            const expect = expected[name];
 
-          logFailure({
-            source: source[name],
-            expected: expect,
-            code,
-            output,
-            name,
-            err,
-          });
+            logFailure({
+              source: source[name],
+              expected: expect,
+              code,
+              output,
+              name,
+              err,
+            });
 
-          equalsIgnoreWhitespace(output, expect);
-        })
-    );
+            equalsIgnoreWhitespace(output, expect);
+          })
+      );
+    });
   });
 });
 
