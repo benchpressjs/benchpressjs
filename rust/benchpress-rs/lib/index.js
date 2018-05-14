@@ -1,6 +1,14 @@
 'use strict';
 
-const addon = require('../native'); // eslint-disable-line import/no-unresolved
+const addon = (() => {
+  try {
+    // eslint-disable-next-line global-require, import/no-unresolved
+    return require('../native');
+  } catch (e) {
+    // eslint-disable-next-line global-require, import/no-dynamic-require
+    return require(`../pre-built/${process.platform}_${process.versions.modules}`);
+  }
+})();
 
 /**
  * Precompile a template into a JS module

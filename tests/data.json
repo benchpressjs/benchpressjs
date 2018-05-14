@@ -286,5 +286,11 @@
     "four": null,
     "five": ""
   },
-  "arrayOfBools": [true, false]
+  "arrayOfBools": [true, false],
+  "relative_path": "",
+  "configJSON": "{}",
+  "template": {
+    "name": "header"
+  },
+  "userJSON": "{}"
 }

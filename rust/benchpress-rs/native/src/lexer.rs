@@ -225,19 +225,37 @@ pub fn second_pass(input: Vec<Token>) -> Vec<Token> {
                 let mut valid = true;
                 let mut pulled = String::from(open_og.as_ref());
 
-                if let Some(Token::Unknown(block)) = iter.next() {
-                    pulled.push_str(block.as_ref());
+                match iter.next() {
+                    Some(Token::Unknown(block)) => {
+                        pulled.push_str(block.as_ref());
 
-                    if let Some(Token::BlockClose(close_og)) = iter.next() {
-                        pulled.push_str(close_og.as_ref());
-                        // we have an Unknown sandwiched between an open and close
-                        if let Some(mut tokens) = lex_block(block) {
-                            output.push(Token::BlockOpen(open_og));
-                            output.append(&mut tokens);
-                            output.push(Token::BlockClose(close_og));
-                        } else { valid = false; }
-                    } else { valid = false; }
-                } else { valid = false; }
+                        match iter.next() {
+                            Some(Token::BlockClose(close_og)) => {
+                                pulled.push_str(close_og.as_ref());
+                                // we have an Unknown sandwiched between an open and close
+                                if let Some(mut tokens) = lex_block(block) {
+                                    output.push(Token::BlockOpen(open_og));
+                                    output.append(&mut tokens);
+                                    output.push(Token::BlockClose(close_og));
+                                } else { valid = false; }
+                            },
+                            Some(tok) => {
+                                pulled.push_str(tok.to_string().as_ref());
+                                valid = false;
+                            },
+                            None => {
+                                valid = false;
+                            }
+                        }
+                    },
+                    Some(tok) => {
+                        pulled.push_str(tok.to_string().as_ref());
+                        valid = false;
+                    },
+                    None => {
+                        valid = false;
+                    }
+                }
 
                 if !valid {
                     output.push(Token::Text(pulled));
@@ -247,20 +265,38 @@ pub fn second_pass(input: Vec<Token>) -> Vec<Token> {
                 let mut valid = true;
                 let mut pulled = String::from("{");
 
-                if let Some(Token::Unknown(expression)) = iter.next() {
-                    pulled.push_str(expression.as_ref());
+                match iter.next() {
+                    Some(Token::Unknown(expression)) => {
+                        pulled.push_str(expression.as_ref());
 
-                    if let Some(Token::EscapedClose) = iter.next() {
-                        pulled.push_str("}");
+                        match iter.next() {
+                            Some(Token::EscapedClose) => {
+                                pulled.push_str("}");
 
-                        // we have an Unknown sandwiched between an open and close
-                        if let Some(mut tokens) = lex_expression(expression) {
-                            output.push(tok);
-                            output.append(&mut tokens);
-                            output.push(Token::EscapedClose);
-                        } else { valid = false; }
-                    } else { valid = false; }
-                } else { valid = false; }
+                                // we have an Unknown sandwiched between an open and close
+                                if let Some(mut tokens) = lex_expression(expression) {
+                                    output.push(tok);
+                                    output.append(&mut tokens);
+                                    output.push(Token::EscapedClose);
+                                } else { valid = false; }
+                            },
+                            Some(tok) => {
+                                pulled.push_str(tok.to_string().as_ref());
+                                valid = false;
+                            },
+                            None => {
+                                valid = false;
+                            }
+                        }
+                    },
+                    Some(tok) => {
+                        pulled.push_str(tok.to_string().as_ref());
+                        valid = false;
+                    },
+                    None => {
+                        valid = false;
+                    }
+                }
 
                 if !valid {
                     output.push(Token::Text(pulled));
@@ -270,20 +306,38 @@ pub fn second_pass(input: Vec<Token>) -> Vec<Token> {
                 let mut valid = true;
                 let mut pulled = String::from("{{");
 
-                if let Some(Token::Unknown(expression)) = iter.next() {
-                    pulled.push_str(expression.as_ref());
+                match iter.next() {
+                    Some(Token::Unknown(expression)) => {
+                        pulled.push_str(expression.as_ref());
 
-                    if let Some(Token::RawClose) = iter.next() {
-                        pulled.push_str("}}");
+                        match iter.next() {
+                            Some(Token::RawClose) => {
+                                pulled.push_str("}");
 
-                        // we have an Unknown sandwiched between an open and close
-                        if let Some(mut tokens) = lex_expression(expression) {
-                            output.push(tok);
-                            output.append(&mut tokens);
-                            output.push(Token::RawClose);
-                        } else { valid = false; }
-                    } else { valid = false; }
-                } else { valid = false; }
+                                // we have an Unknown sandwiched between an open and close
+                                if let Some(mut tokens) = lex_expression(expression) {
+                                    output.push(tok);
+                                    output.append(&mut tokens);
+                                    output.push(Token::RawClose);
+                                } else { valid = false; }
+                            },
+                            Some(tok) => {
+                                pulled.push_str(tok.to_string().as_ref());
+                                valid = false;
+                            },
+                            None => {
+                                valid = false;
+                            }
+                        }
+                    },
+                    Some(tok) => {
+                        pulled.push_str(tok.to_string().as_ref());
+                        valid = false;
+                    },
+                    None => {
+                        valid = false;
+                    }
+                }
 
                 if !valid {
                     output.push(Token::Text(pulled));

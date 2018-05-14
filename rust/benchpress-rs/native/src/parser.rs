@@ -172,9 +172,26 @@ pub fn first_pass(input: Vec<Token>) -> Vec<MetaToken> {
 
 use std::collections::HashSet;
 
+pub fn starts_with(full: &Vec<Token>, part: &Vec<Token>) -> bool {
+    if part.len() > full.len() {
+        return false;
+    }
+
+    for i in 0..part.len() {
+        if full[i] != part[i] {
+            return false;
+        }
+    }
+
+    true
+}
+
 pub fn fix_extra_tokens(input: Vec<MetaToken>) -> Vec<MetaToken> {
     let mut remove: HashSet<MetaToken> = HashSet::new();
     let mut expected_subjects: Vec<Vec<Token>> = Vec::new();
+
+    let mut starts_count: u16 = 0;
+    let mut ends_count: u16 = 0;
 
     // try to find a Close with no corresponding Open
     for index in 0..input.len() {
@@ -184,10 +201,13 @@ pub fn fix_extra_tokens(input: Vec<MetaToken>) -> Vec<MetaToken> {
             &MetaToken::IfStart { raw: _, neg: _, test: ref subject } | 
             &MetaToken::IterStart { raw: _, ref subject } => {
                 expected_subjects.push(subject.clone());
+                starts_count += 1;
             },
             &MetaToken::End { raw: _, ref subject } => {
+                ends_count += 1;
+
                 if let Some(expected_subject) = expected_subjects.pop() {
-                    if subject.len() > 0 && subject.clone() != expected_subject {
+                    if subject.len() > 0 && !starts_with(&expected_subject, subject) {
                         remove.insert(elem.clone());
                         expected_subjects.push(expected_subject);
                     } else {
@@ -221,10 +241,24 @@ pub fn fix_extra_tokens(input: Vec<MetaToken>) -> Vec<MetaToken> {
         }
     }
 
-    // input.into_iter().map(|x| if remove.contains(&x) {
-    //     MetaToken::Text { source: x.to_string() }
-    // } else { x }).collect::<Vec<MetaToken>>()
-    input.into_iter().filter(|x| !remove.contains(x)).collect::<Vec<MetaToken>>()
+    if ends_count > starts_count {
+        let mut diff = ends_count - starts_count;
+
+        println!("Found extra token(s):");
+
+        let output = input.into_iter().map(|x| if remove.contains(&x) && diff > 0 {
+            println!("{}", x.to_string());
+
+            diff -= 1;
+            MetaToken::Text { source: x.to_string() }
+        } else { x }).collect::<Vec<MetaToken>>();
+
+        println!("These tokens will be passed through as text, but you should remove them to prevent issues in the future.");
+
+        output
+    } else {
+        input
+    }
 }
 
 #[derive(Debug, PartialEq, Clone)]

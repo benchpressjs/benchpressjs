@@ -8,7 +8,9 @@
     "test": "nyc --reporter=html --reporter=text mocha -R spec -- tests",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "docs": "documentation build lib/benchpress.js lib/precompile.js lib/compile-render.js lib/express.js -f md -o docs/api.md --shallow",
-    "prepare": "grunt build uglify"
+    "prepare": "grunt build uglify && cd rust/benchpress-rs && npm run build 2>&1 | tee -a build.log || exit 0",
+    "prepublishOnly": "grunt",
+    "install": "cd rust/benchpress-rs && npm install"
   },
   "repository": "git://github.com/benchpressjs/benchpressjs",
   "main": "build/lib/benchpress",

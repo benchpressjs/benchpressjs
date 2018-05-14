@@ -1,4 +1,5 @@
-#[macro_use] extern crate lazy_static;
+#[macro_use]
+extern crate lazy_static;
 extern crate regex;
 extern crate onig;
 extern crate itertools;
@@ -56,12 +57,16 @@ fn go(input: String, debug: bool) {
     if debug {
         println!("/*");
 
-        println!("pre fixed   \n-------------\n{}  \n\n", pre_fixed);
-        println!("first lexed \n-------------\n{:?}\n\n", first_lexed);
-        println!("second lexed\n-------------\n{:?}\n\n", second_lexed);
-        println!("first parsed\n-------------\n{:?}\n\n", first_parsed);
-        println!("extras fixed\n-------------\n{:?}\n\n", extras_fixed);
-        println!("parse tree  \n-------------\n{}  \n\n", tree_tostring(tree));
+        println!("pre fixed   \n-------------\n{}\n\n", pre_fixed);
+        let first_lexed_fixed = format!("{:?}", first_lexed).replace("), ", "}, ");
+        println!("first lexed \n-------------\n{}\n\n", first_lexed_fixed);
+        let second_lexed_fixed = format!("{:?}", second_lexed).replace("), ", "}, ");
+        println!("second lexed\n-------------\n{}\n\n", second_lexed_fixed);
+        let first_parsed_fixed = format!("{:?}", first_parsed).replace("), ", "}, ");
+        println!("first parsed\n-------------\n{}\n\n", first_parsed_fixed);
+        let extras_fixed_fixed = format!("{:?}", extras_fixed).replace("), ", "}, ");
+        println!("extras fixed\n-------------\n{}\n\n", extras_fixed_fixed);
+        println!("parse tree  \n-------------\n{}\n\n", tree_tostring(tree));
 
         println!("code        \n-------------*/");
     }

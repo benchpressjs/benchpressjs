@@ -8,6 +8,11 @@ build = "build.rs"
 [lib]
 name = "benchpress_rs"
 crate-type = ["dylib"]
+path = "src/lib.rs"
+
+[[bin]]
+name = "bcp"
+path = "src/bcp.rs"
 
 [build-dependencies]
 neon-build = "0.1.22"
