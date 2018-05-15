@@ -17,10 +17,10 @@ pub fn gen_body(entry: Vec<Control>, top: bool, mut block_names: HashSet<String>
             json::stringify(json::from(source))
         },
         Control::If { neg, test, body, alt } => {
-            let (b, mut b_blocks, mut b_block_names) = gen_body(body, top, block_names.clone());
+            let (b, mut b_blocks, b_block_names) = gen_body(body, top, block_names.clone());
             block_names.extend(b_block_names);
 
-            let (a, mut a_blocks, mut a_block_names) = gen_body(alt, top, block_names.clone());
+            let (a, mut a_blocks, a_block_names) = gen_body(alt, top, block_names.clone());
             block_names.extend(a_block_names);
 
             blocks.append(&mut b_blocks);
