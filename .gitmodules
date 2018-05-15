@@ -1,0 +1,3 @@
+[submodule "rust/benchpress-rs"]
+	path = rust/benchpress-rs
+	url = git@github.com:benchpressjs/benchpress-rs
