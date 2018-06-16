@@ -10,7 +10,6 @@
   "extends": "airbnb-base",
   "rules": {
     "no-param-reassign": "off",
-    "no-new-func": "off",
     "no-underscore-dangle": "off",
     "comma-dangle": ["error", {
       "arrays": "always-multiline",
