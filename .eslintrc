@@ -26,6 +26,8 @@
       "multiline": true,
       "consistent": true
     }],
-    "function-paren-newline": "off"
+    "function-paren-newline": "off",
+    "operator-linebreak": ["error", "after"],
+    "implicit-arrow-linebreak": "off"
   }
 }
