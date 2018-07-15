@@ -6,3 +6,8 @@ tests
 .gitignore
 .gitattributes
 *.log
+rust/native/target
+rust/benchpress_sys/target
+tmp
+coverage
+.nyc_output
