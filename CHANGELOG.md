@@ -1,3 +1,62 @@
+<!--
+Detail changes here upon release
+
+Format:
+
+## Version <version> (<date>)
+
+### New
+
+- Large improvements
+- Features
+
+### Fixes
+
+- Bug fixes
+- Small improvements
+-->
+
+## Version 1.2.4 (2018-7-16)
+
+### Fixes
+
+- Rust compiler optimizations
+
+## Version 1.2.3 (2018-7-14)
+
+### Fixes
+
+- Update dependencies
+- Ignore unnecessary build artifacts
+
+## Version 1.2.2 (2018-7-14)
+
+### New
+
+- Re-implement the compiler in rust
+  + Speed up compile times by orders of magnitude
+  + Native bindings with JS fallback
+  + Fully compatible (except unsafe)
+  + Will attempt to compile on install
+  + If that fails, will try precompiled version
+  + If that fails, will fall back to JS version
+  + Add more tests to catch previously untested bugs
+  + Make the extra tokens algorithm more forgiving
+  + Add benchmarks for compilation
+  + Build binaries with CI
+  + benchchpress-rs in a separate repo with a git submodule here
+
+### Fixes
+
+- Use `new Function` instead of `vm.runInNewContext` (#77)
+  + Results in slight performance improvements client-side
+
+## Version 1.2.1 (2018-2-19)
+
+### Fixes
+
+- Empty template files will now render to an empty string (#75)
+
 ## Version 1.2.0 (2017-11-24)
 
 ### New
