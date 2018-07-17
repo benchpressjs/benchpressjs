@@ -10,4 +10,4 @@ rust/**/target
 tmp
 coverage
 .nyc_output
-*.symlink
+*.tmp
