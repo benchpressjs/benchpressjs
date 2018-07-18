@@ -12,8 +12,8 @@ const templatePath = path.join(__dirname, 'topic.tpl');
 
 function prep(callback) {
   async.waterfall([
-    next => fs.readFile(templatePath, next),
-    (file, next) => benchpress.precompile({ source: file.toString() }, next),
+    next => fs.readFile(templatePath, 'utf8', next),
+    (source, next) => benchpress.precompile({ source }, next),
     (code, next) => {
       const template = evaluate(code);
       function bench(deferred) {
