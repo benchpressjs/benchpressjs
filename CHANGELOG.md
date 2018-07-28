@@ -16,6 +16,13 @@ Format:
 - Small improvements
 -->
 
+## Version 1.2.6 (2018-7-28)
+
+### Fixes
+
+- Legacy helpers without arguments at the top level no longer result in runtime errors
+- Legacy syntax (`IF stuff`) no longer allowed within modern block syntax (`{{{ if stuff }}}`) and vice-versa
+
 ## Version 1.2.5 (2018-7-17)
 
 ### Fixes

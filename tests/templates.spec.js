@@ -108,6 +108,10 @@ Benchpress.registerHelper('test', data => (data.forum && !data.double));
 
 Benchpress.registerHelper('isHuman', (data, iterator) => data.animals[iterator].isHuman);
 
+Benchpress.registerHelper('wordpressHome', () => 'wordpress-home');
+
+Benchpress.registerHelper('stylesheetLocation', () => 'stylesheet-location');
+
 // the following helper definitions are from examples, copied as-is
 /* eslint-disable func-names, prefer-arrow-callback */
 
