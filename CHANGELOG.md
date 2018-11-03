@@ -16,6 +16,17 @@ Format:
 - Small improvements
 -->
 
+## Version 1.2.7 (2018-11-03)
+
+### New
+
+- Remove Onig dependency
+
+### Fixes
+
+- Upgrade neon to v0.2
+- Add warning for VS2015 requirement
+
 ## Version 1.2.6 (2018-7-28)
 
 ### Fixes
