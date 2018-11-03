@@ -14,6 +14,10 @@ Benchpress is available as an npm module:
 
     npm i benchpressjs
 
+For native module acceleration on Windows, you must have the VS2015 Redistributable binaries installed:
+
+[Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
+
 ## API
 Benchpress uses an ahead of time (AOT) compilation model. It requires that you precompile templates into Javascript modules before using them.
 
