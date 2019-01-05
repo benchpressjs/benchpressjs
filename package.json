@@ -1,6 +1,6 @@
 {
   "name": "benchpressjs",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "author": "psychobunny <psycho.bunny@hotmail.com>",
   "description": "An ultralight and super fast templating framework",
   "scripts": {
