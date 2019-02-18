@@ -21,9 +21,9 @@
     "javascript"
   ],
   "devDependencies": {
-    "async": "^2.6.1",
+    "async": "^2.6.2",
     "babel-core": "^6.26.3",
-    "babel-eslint": "^8.2.6",
+    "babel-eslint": "^10.0.1",
     "babel-plugin-check-es2015-constants": "^6.22.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-es2015-arrow-functions": "^6.22.0",
@@ -33,20 +33,20 @@
     "babel-plugin-transform-es2015-shorthand-properties": "^6.24.1",
     "benchmark": "^2.1.4",
     "coveralls": "^3.0.2",
-    "documentation": "^8.0.0",
-    "eslint": "^5.1.0",
-    "eslint-config-airbnb-base": "^13.0.0",
-    "eslint-plugin-import": "^2.13.0",
-    "express": "^4.16.3",
+    "documentation": "^9.1.1",
+    "eslint": "^5.14.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.16.0",
+    "express": "^4.16.4",
     "grunt": "^1.0.3",
-    "grunt-babel": "^7.0.0",
-    "grunt-contrib-uglify": "^3.3.0",
+    "grunt-babel": "^8.0.0",
+    "grunt-contrib-uglify": "^4.0.0",
     "grunt-contrib-watch": "^1.1.0",
     "grunt-mocha-test": "^0.13.3",
     "mkdirp": "^0.5.1",
-    "mocha": "^4.0.1",
-    "nyc": "^12.0.2",
-    "request": "^2.87.0"
+    "mocha": "^5.2.0",
+    "nyc": "^13.3.2",
+    "request": "^2.88.0"
   },
   "license": "MIT",
   "engines": {
@@ -58,7 +58,7 @@
     "lodash": "^4.17.10",
     "md5": "^2.2.1",
     "node-cache": "^4.2.0",
-    "uglify-js": "^3.4.4"
+    "uglify-js": "^3.4.9"
   },
   "nyc": {
     "exclude": [

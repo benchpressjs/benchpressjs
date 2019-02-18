@@ -1,6 +1,6 @@
 {{{each animals}}}
   {{{if @first}}}main{{{end}}}
-  {{{ each ../hates }}}
+  {{{ each ./hates }}}
     {{{ if @first }}}first{{{ end }}}
     {animals.hates.name}
   {{{ end }}}
