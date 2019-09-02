@@ -16,6 +16,54 @@ Format:
 - Small improvements
 -->
 
+## Version 2.0.0 (2019-09-01)
+
+### New
+
+- Node 12 now supported by native rust compiler
+
+### Fixes
+
+- Removed md5 hashing in `compileRender`
+
+### Deprecations
+
+The following features deprecated in earlier versions (slated for removal in v2.0.0) will instead be removed in v3.0.0:
+
+- use `.render` instead of `.parse`
+- use `.compileRender` instead of `.compileParse`
+- `loader` functions should return a Promise instead of receiving a callback
+
+### Removals
+
+- Node 6 is no longer supported
+
+## Version 1.2.11 (2019-04-27)
+
+### Fixes
+
+- Empty `if`s no longer RTE JS compiler
+
+## Version 1.2.10 (2019-02-18)
+
+### Fixes
+
+- Corrected `nyc` dependency version
+
+## Version 1.2.9 (2019-02-17)
+
+### Fixes
+
+- Correct behavior of `./prop`
+- Bump dependencies
+
+## Version 1.2.8 (2019-01-09)
+
+### Fixes
+
+- Rust compiler bug fixes
+- Exclude dev material from distribution
+
 ## Version 1.2.7 (2018-11-03)
 
 ### New
