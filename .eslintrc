@@ -28,6 +28,9 @@
     }],
     "function-paren-newline": "off",
     "operator-linebreak": ["error", "after"],
-    "implicit-arrow-linebreak": "off"
+    "implicit-arrow-linebreak": "off",
+    "arrow-parens": ["error", "as-needed", { "requireForBlockBody": true }],
+    "prefer-object-spread": "off",
+    "max-classes-per-file": "off"
   }
 }

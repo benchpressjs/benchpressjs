@@ -9,7 +9,7 @@
 const fs = require('fs');
 const async = require('async');
 const mkdirp = require('mkdirp');
-const babel = require('babel-core');
+const babel = require('@babel/core');
 
 const config = {
   uglify: {
@@ -44,7 +44,7 @@ const config = {
     options: {
       sourceMap: true,
       plugins: [
-        'transform-class-properties',
+        '@babel/plugin-proposal-class-properties',
       ],
     },
     dist: {
@@ -77,12 +77,11 @@ function benchmark() {
 
 const babelConfig = {
   plugins: [
-    'check-es2015-constants',
-    'transform-es2015-arrow-functions',
-    'transform-es2015-block-scoped-functions',
-    'transform-es2015-block-scoping',
-    'transform-es2015-function-name',
-    'transform-es2015-shorthand-properties',
+    '@babel/plugin-transform-arrow-functions',
+    '@babel/plugin-transform-block-scoped-functions',
+    '@babel/plugin-transform-block-scoping',
+    '@babel/plugin-transform-function-name',
+    '@babel/plugin-transform-shorthand-properties',
   ],
 };
 
