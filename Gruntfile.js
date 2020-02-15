@@ -120,7 +120,10 @@ function build() {
       cb => fs.readFile('lib/runtime.js', cb),
     ], next),
     wrap,
-    (file, next) => mkdirp('build', err => next(err, file)),
+    async (file) => {
+      await mkdirp('build');
+      return file;
+    },
     (file, next) => fs.writeFile('build/benchpress.js', file, next),
   ], done);
 }

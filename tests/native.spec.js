@@ -1,10 +1,10 @@
 'use strict';
 
 const assert = require('assert');
+const Benchpress = require('../build/lib/benchpress');
 
 describe('native', () => {
   it('is available', () => {
-    // eslint-disable-next-line global-require
-    assert.doesNotThrow(() => require('../rust/benchpress-rs'));
+    assert(Benchpress.precompile.isNative);
   });
 });

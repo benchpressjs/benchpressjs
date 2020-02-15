@@ -58,7 +58,10 @@ function compileTemplate(src, dest, callback) {
   async.waterfall([
     next => fs.readFile(src, 'utf8', next),
     (source, next) => benchpress.precompile({ source }, next),
-    (code, next) => mkdirp(path.dirname(dest), err => next(err, code)),
+    async (code) => {
+      await mkdirp(path.dirname(dest));
+      return code;
+    },
     (code, next) => fs.writeFile(dest, code, next),
   ], callback);
 }

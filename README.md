@@ -18,6 +18,13 @@ For native module acceleration on Windows, you must have the VS2015 Redistributa
 
 [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
 
+### Manually Building Native Module
+The rust native module template compiler is approximately 30 times faster than the Javascript-based compiler. Binaries are pre-built for most of the latest versions of Node on both linux and Windows. If for some reason a pre-built binary is not available or will not function, building one manually on your system is possible.
+
+First, [Install the required dependencies for Neon](https://neon-bindings.com/docs/getting-started/#install-node-build-tools).
+
+Then, re-run `npm install` to re-run the build script, which should build a native module at `rust/benchpress-rs/native/index.node`. If that doesn't work, ask for help, including the information from  `rust/benchpress-rs/build.log`.
+
 ## API
 Benchpress uses an ahead of time (AOT) compilation model. It requires that you precompile templates into Javascript modules before using them.
 
