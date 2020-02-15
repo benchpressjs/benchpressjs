@@ -16,6 +16,17 @@ Format:
 - Small improvements
 -->
 
+## Version 2.0.1 (2020-02-14)
+
+### New
+
+- Node 13 now supported by native rust compiler
+
+### Fixes
+
+- Update dependencies
+- Native rust compiler build script fixed to build in release mode with optimizations
+
 ## Version 2.0.0 (2019-09-01)
 
 ### New
