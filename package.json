@@ -14,6 +14,7 @@
   },
   "repository": "git://github.com/benchpressjs/benchpressjs",
   "main": "build/lib/benchpress",
+  "browser": "build/benchpress",
   "keywords": [
     "templates",
     "templating",
