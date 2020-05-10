@@ -16,7 +16,7 @@ Format:
 - Small improvements
 -->
 
-## Version 2.0.2 (2020-05-09)
+## Version 2.0.3 (2020-05-09)
 
 ### New
 
