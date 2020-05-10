@@ -16,6 +16,17 @@ Format:
 - Small improvements
 -->
 
+## Version 2.0.2 (2020-05-09)
+
+### New
+
+- Now pre-builds native module binaries for Node 14
+
+### Fixes
+
+- Native module should now build successfully on Mac OS (#86)
+- Update dependencies
+
 ## Version 2.0.1 (2020-02-14)
 
 ### New
