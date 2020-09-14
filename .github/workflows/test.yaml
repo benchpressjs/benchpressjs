@@ -9,6 +9,10 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         node: ['10', '12', '13', '14']
+        include:
+          - os: ubuntu-latest
+            node: '14'
+            coverage: true
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -26,5 +30,8 @@ jobs:
       - name: Node tests
         run: npm test
 
-      - name: Code coverage
-        run: npm run coverage
+      - name: Test coverage
+        uses: coverallsapp/github-action@master
+        if: matrix.coverage
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}

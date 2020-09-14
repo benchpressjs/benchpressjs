@@ -6,7 +6,7 @@
   "scripts": {
     "pretest": "grunt babel && eslint --cache .",
     "test": "nyc --reporter=html --reporter=text mocha -R spec tests",
-    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "coverage": "nyc report --reporter=text-lcov > ./coverage/lcov.info",
     "docs": "documentation build lib/benchpress.js lib/precompile.js lib/compile-render.js lib/express.js -f md -o docs/api.md --shallow",
     "prepare": "grunt build uglify",
     "prepublishOnly": "grunt",
