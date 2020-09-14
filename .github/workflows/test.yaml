@@ -1,0 +1,40 @@
+name: Lint and test
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: Lint and test
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: ['10', '12', '13', '14']
+        include:
+          - os: ubuntu-latest
+            node: '14'
+            coverage: true
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Install Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: NPM install
+        run: npm install
+
+      - name: Node tests
+        run: npm test
+
+      - name: Extract coverage info
+        run: npm run coverage
+
+      - name: Test coverage
+        uses: coverallsapp/github-action@master
+        if: matrix.coverage
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
