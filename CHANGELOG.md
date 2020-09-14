@@ -16,6 +16,13 @@ Format:
 - Small improvements
 -->
 
+## Version 2.0.4 (2020-09-13)
+
+### Fixes
+
+- Remove old/unsupported native module binaries
+- Update dependencies
+
 ## Version 2.0.3 (2020-05-09)
 
 ### New
