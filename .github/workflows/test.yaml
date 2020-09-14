@@ -1,0 +1,30 @@
+name: Lint and test
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: Lint and test
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: ['10', '12', '13', '14']
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Install Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: NPM install
+        run: npm install
+
+      - name: Node tests
+        run: npm test
+
+      - name: Code coverage
+        run: npm run coverage
