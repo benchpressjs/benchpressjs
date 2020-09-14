@@ -29,7 +29,7 @@ jobs:
 
       - name: Node tests
         run: npm test
-      
+
       - name: Extract coverage info
         run: npm run coverage
 
