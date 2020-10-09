@@ -16,6 +16,16 @@ Format:
 - Small improvements
 -->
 
+## Version 2.0.6 (2020-10-08)
+
+### New
+
+- Native module compiler will now provide context around extra token warnings
+
+### Fixes
+
+- Update dependencies
+
 ## Version 2.0.4 (2020-09-13)
 
 ### Fixes
