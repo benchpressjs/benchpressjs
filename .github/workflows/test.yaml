@@ -25,7 +25,8 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - name: NPM install
-        run: npm install
+        # Skip fallback to make sure it tests the pre-built modules
+        run: BENCHPRESS_SKIP_FALLBACK=true npm install
 
       - name: Node tests
         run: npm test
