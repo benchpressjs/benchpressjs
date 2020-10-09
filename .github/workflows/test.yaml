@@ -2,6 +2,10 @@ name: Lint and test
 
 on: [push, pull_request]
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   test:
     name: Lint and test
