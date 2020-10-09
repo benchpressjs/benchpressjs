@@ -4,7 +4,9 @@ Data
 ```js
 {
   html: '<span>Here are two odd numbers:  3 and 1</span>',
-  text: 'One number is greater than the other:  3 > 1',
+  text: {
+    123: 'One number is greater than the other:  3 > 1',
+  }
 }
 ```
 
@@ -40,7 +42,7 @@ undefined |
 Wrapping an expression in single braces creates an escaped interpolation token:
 
 ```html
-<div>{text}</div>
+<div>{text.123}</div>
 ```
 
 Output

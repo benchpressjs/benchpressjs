@@ -72,3 +72,16 @@ In legacy syntax, helpers behave in inconsistent ways:
 - Unfortunately, accessing properties of any value named `function` is impossible.
 - In a conditional test, helpers are automatically given the full root context as the first parameter.
 - In an iteration body, a helper with no arguments is automatically called with the value of the current element.
+
+### Note on numeric properties
+Benchpress does not have numeric literals. This means that the following code may not act as one may expect:
+```html
+{helper(abc, 2)}
+```
+Instead of calling the function `helper` with the literal value `2`, it will look up the value stored in the top-level property `"2"`. This usually results in a value of `undefined` being passed to the function (since the property `"2"` is not defined).
+
+Instead, pass a string literal to the helper:
+```html
+{helper(abc, "2")}
+```
+And within your helper function you can either choose to convert the string into an actual number or pass it on as is.
