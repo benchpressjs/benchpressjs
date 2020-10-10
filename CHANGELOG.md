@@ -16,6 +16,12 @@ Format:
 - Small improvements
 -->
 
+## Version 2.0.7 (2020-10-10)
+
+### Fixes
+
+- Fix missing script in npm package
+
 ## Version 2.0.6 (2020-10-08)
 
 ### New
@@ -43,6 +49,10 @@ Format:
 
 - Native module should now build successfully on Mac OS (#86)
 - Update dependencies
+
+### Removals
+
+- Node 8 no longer supported by native rust compiler
 
 ## Version 2.0.1 (2020-02-14)
 
