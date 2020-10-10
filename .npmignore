@@ -17,4 +17,3 @@ coverage
 .travis.yml
 appveyor.yml
 Gruntfile.js
-rust/benchpress-rs/scripts
