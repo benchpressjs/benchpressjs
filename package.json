@@ -10,7 +10,7 @@
     "docs": "documentation build lib/benchpress.js lib/precompile.js lib/compile-render.js lib/express.js -f md -o docs/api.md --shallow",
     "prepare": "grunt build uglify",
     "prepublishOnly": "grunt",
-    "install": "cd rust/benchpress-rs && npm install"
+    "postinstall": "cd rust/benchpress-rs && npm install || echo '[benchpress] Native module install failed. Will use the fallback JS compiler.'"
   },
   "repository": "git://github.com/benchpressjs/benchpressjs",
   "main": "build/lib/benchpress",
@@ -22,7 +22,6 @@
     "javascript"
   ],
   "devDependencies": {
-    "async": "^3.2.0",
     "@babel/core": "^7.11.6",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@babel/plugin-transform-arrow-functions": "^7.10.4",
@@ -30,6 +29,7 @@
     "@babel/plugin-transform-block-scoping": "^7.11.1",
     "@babel/plugin-transform-function-name": "^7.10.4",
     "@babel/plugin-transform-shorthand-properties": "^7.10.4",
+    "async": "^3.2.0",
     "babel-eslint": "^10.1.0",
     "benchmark": "^2.1.4",
     "coveralls": "^3.1.0",

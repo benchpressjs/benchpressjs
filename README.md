@@ -19,11 +19,54 @@ For native module acceleration on Windows, you must have the VS2015 Redistributa
 [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
 
 ### Manually Building Native Module
-The rust native module template compiler is approximately 30 times faster than the Javascript-based compiler. Binaries are pre-built for most of the latest versions of Node on both linux and Windows. If for some reason a pre-built binary is not available or will not function, building one manually on your system is possible.
+The rust native module template compiler is approximately 30 times faster than the Javascript-based compiler. Binaries are pre-built for most of the latest versions of Node on both Linux and Windows (build matrix can be seen in the [latest build listed here](https://github.com/benchpressjs/benchpress-rs/actions?query=workflow%3A%22Build+and+publish+binaries+for+distribution+with+npm+package%22)). If a pre-built binary is unavailable, you'll see something similar to the following during an install:
 
-First, [Install the required dependencies for Neon](https://neon-bindings.com/docs/getting-started/#install-node-build-tools).
+```text
+> benchpressjs@2.0.7 postinstall /home/peter/Dev/benchpressjs
+> cd rust/benchpress-rs && npm install || echo '[benchpress] Native module install failed. Will use the fallback JS compiler.'
 
-Then, re-run `npm install` to re-run the build script, which should build a native module at `rust/benchpress-rs/native/index.node`. If that doesn't work, ask for help, including the information from  `rust/benchpress-rs/build.log`.
+
+> benchpress-rs@0.1.0 postinstall /home/peter/Dev/benchpress-rs
+> node scripts/install
+
+[benchpress] No compatible pre-built native module found! { platform: 'linux', module_version: '67', node: '11.15.0' }
+[benchpress] Building native module from source...
+neon ERR! spawn cargo ENOENT
+
+Error: spawn cargo ENOENT
+    at Process.ChildProcess._handle.onexit (internal/child_process.js:247:19)
+    at onErrorNT (internal/child_process.js:429:16)
+    at processTicksAndRejections (internal/process/task_queues.js:81:17)
+    at process.runNextTicks [as _tickCallback] (internal/process/task_queues.js:56:3)
+    at Function.Module.runMain (internal/modules/cjs/loader.js:880:11)
+    at internal/main/run_main_module.js:21:11
+[benchpress] FATAL: Fallback build failed. For more info, see https://github.com/benchpressjs/benchpressjs#manually-building-native-module
+npm ERR! code ELIFECYCLE
+npm ERR! errno 1
+npm ERR! benchpress-rs@0.1.0 postinstall: `node scripts/install`
+npm ERR! Exit status 1
+npm ERR! 
+npm ERR! Failed at the benchpress-rs@0.1.0 postinstall script.
+npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     /home/peter/.npm/_logs/2020-10-11T19_20_03_873Z-debug.log
+[benchpress] Native module install failed. Will use the fallback JS compiler.
+```
+
+If for some reason a pre-built binary is not available or will not function, building one manually on your system is possible:
+
+1. [Install the required dependencies for Neon](https://neon-bindings.com/docs/getting-started/).
+2. Re-run `npm install` to re-run the build script, which should build a native module at `rust/benchpress-rs/native/index.node` and copy it to `rust/benchpress-rs/index.node`.
+
+#### Build Flags and Env Variables
+
+Skip the build from source fallback, when a compatible native module is not found
+- Set env var `BENCHPRESS_SKIP_FALLBACK=true`
+
+Force a build from source, even if a compatible pre-built module is found (take precedence over `BENCHPRESS_SKIP_FALLBACK`)
+- `npm install --build-from-source`
+- Set env var `BENCHPRESS_FORCE_BUILD=true`
 
 ## API
 Benchpress uses an ahead of time (AOT) compilation model. It requires that you precompile templates into Javascript modules before using them.
