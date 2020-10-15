@@ -16,6 +16,12 @@ Format:
 - Small improvements
 -->
 
+## Version 2.0.8 (2020-10-14)
+
+### Fixes
+
+- Fix issue where native module install failure would cause install to fail completely
+
 ## Version 2.0.7 (2020-10-10)
 
 ### Fixes
