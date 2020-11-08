@@ -28,9 +28,18 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
+      - name: Install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+          profile: minimal
+
+      - name: Install wasm-pack
+        uses: jetli/wasm-pack-action@v0.3.0
+
       - name: NPM install
-        # Skip fallback to make sure it tests the pre-built modules
-        run: BENCHPRESS_SKIP_FALLBACK=true npm install
+        run: npm install
 
       - name: Node tests
         run: npm test

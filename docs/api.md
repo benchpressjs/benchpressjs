@@ -10,13 +10,13 @@
     -   [flush][6]
     -   [registerLoader][7]
         -   [Parameters][8]
--   [compileRender][9]
+-   [precompile][9]
     -   [Parameters][10]
--   [\_\_express][11]
+-   [compileRender][11]
     -   [Parameters][12]
--   [compileParse][13]
+-   [\_\_express][13]
     -   [Parameters][14]
--   [precompile][15]
+-   [compileParse][15]
     -   [Parameters][16]
 -   [render][17]
     -   [Parameters][18]
@@ -58,6 +58,22 @@ Register a loader function to fetch templates
 
 -   `loader` **[function][22]** 
 
+## precompile
+
+Precompile a benchpress template
+
+-   `precompiled(source): Promise<string>`
+-   `precompile(source, {}, callback) => callback(err, output)`
+-   `precompile({ source }, callback) => callback(err, output)`
+
+### Parameters
+
+-   `source` **[string][21]** Template source
+-   `options`  
+-   `callback` **[function][22]?** (err, output)
+
+Returns **[Promise][24]&lt;[string][21]>** output code
+
 ## compileRender
 
 Compile a template and render it
@@ -83,7 +99,7 @@ Provide functionality to act as an express engine
 
 ## compileParse
 
-Alias for [compileRender][9], but uses a callback
+Alias for [compileRender][11], but uses a callback
 
 ### Parameters
 
@@ -94,27 +110,8 @@ Alias for [compileRender][9], but uses a callback
 
 **Meta**
 
--   **deprecated**: Use [compileRender][9] instead
+-   **deprecated**: Use [compileRender][11] instead
 
-
-## precompile
-
-Precompile a benchpress template
-
--   `precompiled(source, options): Promise<string>`
--   `precompile(source, options, callback) => callback(err, output)`
--   `precompile({ source, ...options }, callback) => callback(err, output)`
-
-### Parameters
-
--   `source` **[string][21]** Template source
--   `options` **[Object][23]** 
-    -   `options.minify` **[boolean][25]** Output minified code (optional, default `false`)
-    -   `options.unsafe` **[boolean][25]** Disable safety checks, will throw on misshapen data (optional, default `false`)
-    -   `options.native` **[boolean][25]** Use the native Rust compiler if available (optional, default `true`)
--   `callback` **[function][22]?** (err, output)
-
-Returns **[Promise][24]&lt;[string][21]>** output code
 
 ## render
 
@@ -160,19 +157,19 @@ Alias for [render][17], but uses a callback
 
 [8]: #parameters-2
 
-[9]: #compilerender
+[9]: #precompile
 
 [10]: #parameters-3
 
-[11]: #__express
+[11]: #compilerender
 
 [12]: #parameters-4
 
-[13]: #compileparse
+[13]: #__express
 
 [14]: #parameters-5
 
-[15]: #precompile
+[15]: #compileparse
 
 [16]: #parameters-6
 
@@ -191,5 +188,3 @@ Alias for [render][17], but uses a callback
 [23]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
 [24]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise
-
-[25]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean

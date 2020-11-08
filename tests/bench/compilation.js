@@ -17,18 +17,12 @@ function prep(callback) {
     ),
     ([categories, topics], next) => {
       function bench(deferred) {
-        return benchpress.precompile(categories, { native: false })
-          .then(() => benchpress.precompile(topics, { native: false }))
+        return benchpress.precompile(categories)
+          .then(() => benchpress.precompile(topics))
           .then(() => deferred.resolve(), err => deferred.reject(err));
       }
 
-      function benchNative(deferred) {
-        return benchpress.precompile(categories, { native: true })
-          .then(() => benchpress.precompile(topics, { native: true }))
-          .then(() => deferred.resolve(), err => deferred.reject(err));
-      }
-
-      next(null, { bench, benchNative });
+      next(null, { bench });
     },
   ], callback);
 }

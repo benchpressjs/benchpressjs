@@ -9,7 +9,7 @@ tests
 .gitmodules
 .github
 *.log
-rust/**/target
+target
 tmp
 coverage
 .nyc_output
