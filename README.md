@@ -131,13 +131,13 @@ My blog URL is {website}. The URL for this library is {{package.url}}
 
 ### Conditionals
 ```html
-<!-- IF sayHello -->
+{{{ if sayHello }}}
   Hello world!
-<!-- END -->
+{{{ end }}}
 
-<!-- IF !somethingFalse -->
+{{{ if !somethingFalse }}}
   somethingFalse doesn't exist
-<!-- END -->
+{{{ end }}}
 ```
 Benchpress supports several syntaxes for conditionals in order to be backwards compatible with **templates.js**.
 `<!-- ENDIF abcd -->`, `<!-- END abcd -->`, `<!-- ENDIF !foobar -->`, and `<!-- END -->` are all equivalent tokens as far as Benchpress is concerned.
@@ -146,12 +146,12 @@ Benchpress supports several syntaxes for conditionals in order to be backwards c
 Repeat blocks of HTML. The two special keys `@first` and `@last` are available as booleans, and the `@index`, `@key`, and `@value` special keys are also available. Benchpress supports iterating over objects, in which case `@index` will be the current loop number and `@key` will be the key of the current item. For normal arrays, `@key == @index`.
 
 ```html
-<!-- BEGIN animals -->
+{{{ each animals }}}
   {animals.name} is from the species {animals.species}.
-  <!-- IF !animals.isHuman -->
+  {{{ if !animals.isHuman }}}
     - This could be a pet.
-  <!-- ENDIF !animals.isHuman -->
-<!-- END animals -->
+  {{{ end }}}
+{{{ end }}}
 
 prints out:
 
@@ -179,9 +179,9 @@ benchpress.registerHelper('print_is_human', function (data) {
 ```
 
 ```html
-<!-- BEGIN animals -->
-{function.print_is_human}
-<!-- END animals -->
+{{{ each animals }}}
+{print_is_human(@value)}
+{{{ end }}}
 
 prints out:
 

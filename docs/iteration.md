@@ -13,7 +13,7 @@ The new syntax is not transformed like this, you must use `{{{ each ../thing }}}
 
 ## Array Iteration
 
-An iteration block is started with `<!-- BEGIN arr -->` or `{{{ each arr }}}`. For each element in the array, the body of the block is output. 
+An iteration block is started with `{{{ each arr }}}` or `<!-- BEGIN arr -->` in legacy syntax. For each element in the array, the body of the block is output. 
 Interpolation, conditionals, etc can be used within the block and can reference the current element in different ways. There are several ways to reference the element's value or properties:
 
 - `@value` references the entire value of the current element
@@ -32,13 +32,13 @@ var arr = [
 ];
 ```
 ```html
-<!-- BEGIN arr -->
-{@index} = {@value}
-<!-- END -->
-
 {{{ each arr }}}
 {@index} = {@value}
 {{{ end }}}
+
+<!-- BEGIN arr -->
+{@index} = {@value}
+<!-- END -->
 ```
 
 Output
@@ -69,13 +69,13 @@ var people = [
 ];
 ```
 ```html
-<!-- BEGIN people -->
-{people.name} is {../age} years old.
-<!-- END -->
-
 {{{ each people }}}
 {people.name} is {../age} years old.
 {{{ end }}}
+
+<!-- BEGIN people -->
+{people.name} is {../age} years old.
+<!-- END -->
 ```
 
 Output
@@ -87,7 +87,7 @@ Josh Hawkins is 12 years old.
 
 ## Object Iteration
 
-An iteration block is started with `<!-- BEGIN obj -->` or `{{{ each obj }}}`. For each enumerable, own property of the object (the behavior of `Object.keys`), the body of the block is output. 
+An iteration block is started with `{{{ each obj }}}` or `<!-- BEGIN obj -->`. For each enumerable, own property of the object (the behavior of `Object.keys`), the body of the block is output. 
 Interpolation, conditionals, etc can be used within the block and can reference the current element in different ways. There are several ways to reference the element's value or properties:
 
 - `@value` references the entire value of the current element
@@ -104,13 +104,13 @@ var usernames = {
 };
 ```
 ```html
-<!-- BEGIN usernames -->
-#{@index}   {@key}: {@value}
-<!-- END -->
-
 {{{ each usernames }}}
 #{@index}   {@key}: {@value}
 {{{ end }}}
+
+<!-- BEGIN usernames -->
+#{@index}   {@key}: {@value}
+<!-- END -->
 ```
 
 Output
@@ -135,17 +135,17 @@ var admins = {
 };
 ```
 ```html
-<!-- BEGIN admins -->
-username: {@key}
-name: {admins.name}
-
-<!-- END -->
-
 {{{ each admins }}}
 username: {@key}
 name: {admins.name}
 
 {{{ end }}}
+
+<!-- BEGIN admins -->
+username: {@key}
+name: {admins.name}
+
+<!-- END -->
 ```
 
 Output

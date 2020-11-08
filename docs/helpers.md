@@ -24,7 +24,7 @@ Benchpress.registerHelper('join', (joiner, ...args) => args.join(joiner));
 ```
 
 ## Using a Helper
-A helper is called within the context of a template using one of two syntaxes: `function.helperName, ...args` or `helperName(...args)`. 
+A helper is called within the context of a template using one of two syntaxes: `helperName(...args)` or `function.helperName, ...args` in legacy syntax. 
 It can be used in conditional tests and with interpolation. 
 
 ```js
@@ -35,13 +35,13 @@ var data = {
 };
 ```
 ```html
-<!-- IF function.isEvenLegacy, ten -->
-    {function.caps, lorem}
-<!-- END -->
-
 {{{ if isEven(ten) }}}
     {caps(lorem)}
 {{{ end }}}
+
+<!-- IF function.isEvenLegacy, ten -->
+    {function.caps, lorem}
+<!-- END -->
 ```
 
 Output
