@@ -225,3 +225,5 @@ tmp/*
 .vscode
 .eslintcache
 yarn.lock
+target
+Cargo.lock

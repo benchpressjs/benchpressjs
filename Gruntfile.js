@@ -58,6 +58,10 @@ const config = {
       ],
     },
   },
+  shell: {
+    compiler: 'wasm-pack build --target nodejs --out-dir ../build/compiler compiler',
+    docs: 'npm run docs',
+  },
 };
 
 function benchmark() {
@@ -111,7 +115,7 @@ function wrap([shimFile, runtimeFile], next) {
   next(null, transpiled);
 }
 
-function build() {
+function client() {
   const done = this.async();
 
   async.waterfall([
@@ -137,11 +141,13 @@ module.exports = function Gruntfile(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-babel');
+  grunt.loadNpmTasks('grunt-shell');
 
   grunt.registerTask('benchmark', 'Run benchmarks', benchmark);
 
-  grunt.registerTask('build', 'Stripping and wrapping shim', build);
+  grunt.registerTask('client', 'Stripping and wrapping shim', client);
 
-  grunt.registerTask('default', ['babel', 'build', 'uglify', 'mochaTest']);
+  grunt.registerTask('build', ['babel', 'client', 'uglify', 'shell:compiler', 'shell:docs']);
+  grunt.registerTask('default', ['build', 'mochaTest']);
   grunt.registerTask('bench', ['default', 'benchmark']);
 };

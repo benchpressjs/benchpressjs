@@ -33,7 +33,6 @@ function benchmark(done) {
       .add('categories', cats.bench)
       .add('topic', top.bench)
       .add('compilation', comp.bench)
-      .add('native compilation', comp.benchNative)
       .on('cycle', (event) => {
         output.push(event.target.toString());
       })
