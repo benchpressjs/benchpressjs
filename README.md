@@ -14,9 +14,29 @@ Benchpress is available as an npm module:
 
     npm i benchpressjs
 
+### Common Issues with Native Module
+
 For native module acceleration on Windows, you must have the VS2015 Redistributable binaries installed:
 
 [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
+
+See this error? It happens because your Linux system lacks GCC 6 libraries.
+```text
+Error: /usr/lib/x86_64-linux-gnu/libstdc++.so.6: version `CXXABI_1.3.9' not found
+```
+
+On Ubuntu, this should work to install them:
+```sh
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo apt update && sudo apt install g++-6
+```
+
+See an error like this? It happens because your native module mismatches your Node version.
+```text
+Error: <path>/benchpressjs/rust/benchpress-rs/index.node: undefined symbol: _ZN2v816FunctionTemplate3NewEPNS_7IsolateEPFvRKNS_20FunctionCallbackInfoINS_5ValueEEEENS_5LocalIS4_EENSA_INS_9SignatureEEEiNS_19ConstructorBehaviorENS_14SideEffectTypeE
+```
+
+Run `npm rebuild benchpressjs` to reinstall the correct module for your version of Node.
 
 ### Manually Building Native Module
 The rust native module template compiler is approximately 30 times faster than the Javascript-based compiler. Binaries are pre-built for most of the latest versions of Node on both Linux and Windows (build matrix can be seen in the [latest build listed here](https://github.com/benchpressjs/benchpress-rs/actions?query=workflow%3A%22Build+and+publish+binaries+for+distribution+with+npm+package%22)). If a pre-built binary is unavailable, you'll see something similar to the following during an install:
