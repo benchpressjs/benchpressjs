@@ -16,6 +16,12 @@ Format:
 - Small improvements
 -->
 
+## Version 2.0.9 (2020-11-07)
+
+### Fixes
+
+- Improve warning message when pre-build module fails to load
+
 ## Version 2.0.8 (2020-10-14)
 
 ### Fixes
