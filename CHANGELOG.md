@@ -16,6 +16,19 @@ Format:
 - Small improvements
 -->
 
+## Version 2.1.0 (2020-11-08)
+
+### New
+
+- Switch to WebAssembly from a native module
+  Provides much wider support across platforms and a single build for all versions of Node
+
+### Fixes
+
+- Test Node 15 (latest current) instead of Node 13
+- Add console warnings for deprecated functions `.parse` and `.compileParse`
+- Change docs to emphasize new syntax
+
 ## Version 2.0.9 (2020-11-07)
 
 ### Fixes
