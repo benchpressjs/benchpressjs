@@ -1,5 +1,5 @@
 [workspace]
-members = ["compiler", "benchpress_sys"]
+members = ["compiler"]
 
 [profile.release]
 codegen-units = 1

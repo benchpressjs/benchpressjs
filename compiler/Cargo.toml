@@ -13,4 +13,14 @@ path = "bench.rs"
 [dependencies]
 # need to pin this version for Node 10 support
 wasm-bindgen = "=0.2.60"
-benchpress_sys = { path = "../benchpress_sys" }
+nom = "6.0.0"
+web-sys = { version = "0.3", features = ["console"] }
+lazy_static = "1.4.0"
+regex = "1.4.2"
+json = "0.12.4"
+console_error_panic_hook = "0.1.6"
+nom_locate = { git = "https://github.com/pitaj/nom_locate", branch = "easy-test", features = ["std", "easy-test"] }
+aho-corasick = "0.7.15"
+
+[dev-dependencies]
+pretty_assertions = "0.6.1"
