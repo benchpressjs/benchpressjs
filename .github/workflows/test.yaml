@@ -28,12 +28,39 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      - name: Install rust
+      - name: Install stable rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           default: true
           profile: minimal
+
+      - name: Install nightly rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          default: false
+          components: rustfmt, clippy
+          profile: minimal
+
+      - name: Check clippy
+        uses: actions-rs/clippy-check@v1
+        with:
+          toolchain: nightly
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check rustfmt
+        uses: actions-rs/cargo@v1
+        with:
+          toolchain: nightly
+          command: fmt
+          args: -- --check
+
+      - name: Rust test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --lib
 
       - name: Install wasm-pack
         uses: jetli/wasm-pack-action@v0.3.0

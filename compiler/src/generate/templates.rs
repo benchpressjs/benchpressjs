@@ -1,35 +1,22 @@
 // static keywords
-pub static CONTEXT: &str = "context";
-pub static HELPERS: &str = "helpers";
-pub static HELPER: &str = "helper";
-pub static ESCAPE: &str = "__escape";
-pub static GUARD: &str = "guard";
-pub static ITER: &str = "iter";
-pub static EACH: &str = "each";
-pub static KEY: &str = "key";
-pub static VALUE: &str = "value";
-pub static INDEX: &str = "index";
-pub static LENGTH: &str = "length";
-pub static COMPILED: &str = "compiled";
-pub static BLOCKS: &str = "compiled.blocks";
+pub const CONTEXT: &str = "context";
+pub const HELPERS: &str = "helpers";
+pub const HELPER: &str = "helper";
+pub const ESCAPE: &str = "__escape";
+pub const GUARD: &str = "guard";
+pub const KEY: &str = "key";
+pub const VALUE: &str = "value";
+pub const INDEX: &str = "index";
+pub const LENGTH: &str = "length";
+pub const BLOCKS: &str = "compiled.blocks";
+pub const FIRST: &str = "index === 0";
+pub const LAST: &str = "index === length - 1";
+pub const RUNTIME_PARAMS: &str = "helpers, context, guard, iter, helper";
 
 /// key with an indexed suffix
 /// for nested scoped
-pub fn key_i(i: u16) -> String {
+pub fn key_i(i: u32) -> String {
     format!("{}{}", KEY, i)
-}
-/// length with an indexed suffix
-/// for nested scoped
-pub fn length_i(i: u16) -> String {
-    format!("{}{}", LENGTH, i)
-}
-
-// static convenient keyword combinations
-lazy_static! {
-    pub static ref FIRST: String = format!("{} === 0", INDEX);
-    pub static ref LAST: String = format!("{} === {} - 1", INDEX, LENGTH);
-    pub static ref RUNTIME_PARAMS: String =
-        format!("{}, {}, {}, {}, {}", HELPERS, CONTEXT, GUARD, ITER, HELPER);
 }
 
 /// indent each line (except the first) by a given number of spaces
@@ -144,8 +131,8 @@ pub fn if_else(neg: bool, subject: &str, body: &str, alt: &str) -> String {
 }
 
 /// iter template
-pub fn iter(suffix: u16, subject: &str, body: &str, alt: &str) -> String {
-    let key = key_i(suffix);
+pub fn iter(depth: u32, subject: &str, body: &str, alt: &str) -> String {
+    let key = key_i(depth);
 
     format!(
         "iter({}, function each({}, {}, {}, {}) {{
@@ -171,7 +158,13 @@ pub fn concat(input: &[String]) -> String {
     input.join(" + \n")
 }
 
-use crate::parser::Expression;
+use crate::parse::{
+    expression::Expression,
+    path::{
+        Path,
+        PathPart,
+    },
+};
 
 /// escape path
 pub fn escape_path(input: &str) -> String {
@@ -187,35 +180,16 @@ pub fn escape_path(input: &str) -> String {
 }
 
 /// create guarded chained property access
-pub fn guard(input: Vec<String>) -> String {
+pub fn guard(input: Path) -> String {
     let mut exp = CONTEXT.to_string();
     let mut last = exp.clone();
 
     for part in input {
-        // handle indices like item[1]
-        let (part_fixed, index) = if part.ends_with(']') && part.len() > 3 {
-            let n: usize = part.len() - 2;
-            let index: Option<char> = match part.chars().nth(n) {
-                Some(ch) => {
-                    if ch.is_numeric() {
-                        Some(ch)
-                    } else {
-                        None
-                    }
-                }
-                None => None,
-            };
-
-            (part[..part.len() - 3].to_string(), index)
-        } else {
-            (part, None)
-        };
-
-        last = format!("{}['{}']", last, escape_path(&part_fixed));
+        last = format!("{}['{}']", last, escape_path(part.inner()));
         exp.push_str(" && ");
         exp.push_str(&last);
 
-        if let Some(n) = index {
+        if let PathPart::PartDepth(_, n) = part {
             last = format!("{}[key{}]", last, n);
             exp.push_str(" && ");
             exp.push_str(&last);
@@ -225,49 +199,81 @@ pub fn guard(input: Vec<String>) -> String {
     format!("{}({})", GUARD, exp)
 }
 
+use std::borrow::Cow;
+
+/// Unescape contents of string literal
+fn unescape(input: &str) -> String {
+    // remove first and last quote
+    let input = &input[1..(input.len() - 1)];
+    let mut output = String::new();
+
+    let mut chars = input.chars();
+    while let Some(c) = chars.next() {
+        output.push(if c == '\\' {
+            match chars.next() {
+                Some(c) => match c {
+                    'r' => '\r',
+                    'n' => '\n',
+                    't' => '\t',
+                    _ => c,
+                },
+                _ => c,
+            }
+        } else {
+            c
+        });
+    }
+
+    output
+}
+
 /// create JS code for a given expression
-pub fn expression(input: Expression) -> String {
+pub fn expression(input: Expression) -> Cow<str> {
     match input {
-        Expression::StringLiteral { value } => format!("\"{}\"", value),
-        Expression::PathExpression { path } => {
-            if let Some(part) = path.get(0).cloned() {
-                match part.as_str() {
-                    "@root" => CONTEXT.to_string(),
-                    "@key" => KEY.to_string(),
-                    "@index" => INDEX.to_string(),
-                    "@value" => format!("guard({})", VALUE),
-                    "@first" => FIRST.to_string(),
-                    "@last" => LAST.to_string(),
-                    _ => guard(path),
+        Expression::StringLiteral(value) => {
+            json::stringify(json::from(unescape(value.fragment()))).into()
+        }
+        Expression::Path(path) => {
+            if let Some(part) = path.get(0).map(PathPart::inner) {
+                match part {
+                    "@root" => CONTEXT.into(),
+                    "@key" => KEY.into(),
+                    "@index" => INDEX.into(),
+                    "@value" => format!("guard({})", VALUE).into(),
+                    "@first" => FIRST.into(),
+                    "@last" => LAST.into(),
+                    _ => guard(&path).into(),
                 }
             } else {
-                guard(path)
+                guard(&path).into()
             }
         }
-        Expression::HelperExpression { helper_name, args } => {
+        Expression::Helper { name, args, .. } | Expression::LegacyHelper { name, args, .. } => {
             let args_str = args
                 .into_iter()
                 .map(expression)
-                .collect::<Vec<String>>()
+                .collect::<Vec<Cow<str>>>()
                 .join(", ");
 
             format!(
                 "{}({}, {}, '{}', [{}])",
-                HELPER, CONTEXT, HELPERS, helper_name, args_str
+                HELPER, CONTEXT, HELPERS, name, args_str
             )
+            .into()
         }
-        Expression::NegativeExpression { expr } => format!("!{}", expression(*expr)),
+        Expression::Negative { expr, .. } => format!("!{}", expression(*expr)).into(),
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::parse::test::sp;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn key_length_i() {
         assert_eq!(key_i(3), "key3");
-        assert_eq!(length_i(3), "length3");
     }
 
     #[test]
@@ -389,67 +395,55 @@ mod tests {
     #[test]
     fn guard_test() {
         assert_eq!(
-            guard(
-                ["thing", "stuff"]
-                    .iter()
-                    .map(|&x| x.to_string())
-                    .collect::<Vec<String>>()
-            ),
+            guard(&[PathPart::Part(sp("thing")), PathPart::Part(sp("stuff"))]),
             "guard(context && context['thing'] && context['thing']['stuff'])"
         );
 
         assert_eq!(guard(
-            ["items[1]", "prop"].iter().map(|&x| x.to_string()).collect::<Vec<String>>()
-        ), "guard(context && context['items'] && context['items'][key1] && context['items'][key1]['prop'])".to_string());
+            &[PathPart::PartDepth(sp("items"), 1), PathPart::Part(sp("prop"))],
+        ), "guard(context && context['items'] && context['items'][key1] && context['items'][key1]['prop'])");
 
         assert_eq!(
-            guard(vec!["foo\\bar".to_string()]),
-            "guard(context && context['foo\\\\bar'])".to_string()
+            guard(&[PathPart::Part(sp("foo\\bar"))]),
+            "guard(context && context['foo\\\\bar'])"
         )
     }
 
     #[test]
     fn expression_test() {
         assert_eq!(
-            expression(Expression::StringLiteral {
-                value: "stuff\\n \\\"about\\\" things".to_string()
-            }),
+            expression(Expression::StringLiteral(sp(
+                "\"stuff\\n \\\"about\\\" things\""
+            ))),
             "\"stuff\\n \\\"about\\\" things\"".to_string()
         );
 
         assert_eq!(
-            expression(Expression::PathExpression {
-                path: vec!["thing".to_string()],
-            }),
-            "guard(context && context['thing'])".to_string()
+            expression(Expression::Path(vec![PathPart::Part(sp("thing"))])),
+            sp("guard(context && context['thing'])").to_string()
         );
 
         assert_eq!(
-            expression(Expression::PathExpression {
-                path: vec!["@root".to_string()],
-            }),
-            "context".to_string()
+            expression(Expression::Path(vec![PathPart::Part(sp("@root"))])),
+            sp("context").to_string()
         );
 
         assert_eq!(
-            expression(Expression::PathExpression {
-                path: vec!["@first".to_string()],
-            }),
-            "index === 0".to_string()
+            expression(Expression::Path(vec![PathPart::Part(sp("@first"))])),
+            sp("index === 0").to_string()
         );
 
         assert_eq!(
-            expression(Expression::PathExpression {
-                path: vec!["@last".to_string()],
-            }),
-            "index === length - 1".to_string()
+            expression(Expression::Path(vec![PathPart::Part(sp("@last"))])),
+            sp("index === length - 1").to_string()
         );
 
-        assert_eq!(expression(Expression::HelperExpression {
-            helper_name: "localeToHTML".to_string(),
+        assert_eq!(expression(Expression::Helper {
+            span: sp("localeToHTML(userLang, defaultLang)"),
+            name: sp("localeToHTML"),
             args: vec![
-                Expression::PathExpression { path: vec!["userLang".to_string()] },
-                Expression::PathExpression { path: vec!["defaultLang".to_string()] },
+                Expression::Path(vec![PathPart::Part(sp("userLang"))]),
+                Expression::Path(vec![PathPart::Part(sp("defaultLang"))]),
             ]
         }), "helper(context, helpers, 'localeToHTML', [guard(context && context['userLang']), guard(context && context['defaultLang'])])");
     }
