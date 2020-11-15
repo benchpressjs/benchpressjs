@@ -17,8 +17,8 @@ function prep(callback) {
     ),
     ([categories, topics], next) => {
       function bench(deferred) {
-        return benchpress.precompile(categories)
-          .then(() => benchpress.precompile(topics))
+        return benchpress.precompile(categories, { filename: 'tests/bench/categories.tpl' })
+          .then(() => benchpress.precompile(topics, { filename: 'tests/bench/topic.tpl' }))
           .then(() => deferred.resolve(), err => deferred.reject(err));
       }
 

@@ -13,11 +13,11 @@ const templatePath = path.join(__dirname, 'topic.tpl');
 function prep(callback) {
   async.waterfall([
     next => fs.readFile(templatePath, 'utf8', next),
-    (source, next) => benchpress.precompile({ source }, next),
+    (source, next) => benchpress.precompile({ source, filename: 'tests/bench/topic.tpl' }, next),
     (code, next) => {
       const template = evaluate(code);
       function bench(deferred) {
-        benchpress.parse('topic', data, () => deferred.resolve());
+        benchpress.render('topic', data).then(() => deferred.resolve());
       }
 
       next(null, { bench, template });

@@ -1,2 +1,10 @@
 [workspace]
 members = ["compiler", "benchpress_sys"]
+
+[profile.release]
+codegen-units = 1
+lto = "fat"
+
+[profile.bench]
+codegen-units = 1
+lto = "fat"

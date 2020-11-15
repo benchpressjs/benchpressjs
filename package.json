@@ -58,7 +58,8 @@
   },
   "nyc": {
     "exclude": [
-      "tests"
+      "tests",
+      "build/compiler"
     ]
   }
 }

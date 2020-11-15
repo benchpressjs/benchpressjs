@@ -4,7 +4,11 @@ version = "0.0.0"
 edition = "2018"
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "bench"
+path = "bench.rs"
 
 [dependencies]
 # need to pin this version for Node 10 support

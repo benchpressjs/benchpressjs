@@ -52,7 +52,7 @@ describe('templates', () => {
 
   keys.forEach((name) => {
     it(name, () =>
-      Benchpress.precompile(source[name], {})
+      Benchpress.precompile(source[name], { filename: `tests/templates/source/${name}.tpl` })
         .catch((err) => {
           logFailure({
             source: source[name],
