@@ -1,6 +1,6 @@
 # <img alt="benchpress" src="https://cdn.rawgit.com/benchpressjs/benchpressjs/master/benchpress.svg" />
 
-[![Build Status](https://travis-ci.org/benchpressjs/benchpressjs.png?branch=master)](https://travis-ci.org/benchpressjs/benchpressjs)
+![CI Status](https://github.com/benchpressjs/benchpressjs/workflows/Lint%20and%20test/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/benchpressjs/benchpressjs/badge.svg?branch=master)](https://coveralls.io/github/benchpressjs/benchpressjs?branch=master)
 [![Code Climate](https://codeclimate.com/github/benchpressjs/benchpressjs.png)](https://codeclimate.com/github/benchpressjs/benchpressjs)
 
