@@ -9,8 +9,8 @@ use crate::{
             PathPart,
         },
         tokens::Token,
-        SpanExt,
         Span,
+        SpanExt,
     },
 };
 use std::collections::HashSet;

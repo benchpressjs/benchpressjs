@@ -37,7 +37,10 @@ impl<'a> SpanExt for Span<'a> {
 
     fn get_column_padding(&self) -> String {
         let line = self.get_line();
-        let tabs = line[..self.get_column()].chars().filter(|&c| c == '\t').count();
+        let tabs = line[..(self.get_column() - 1)]
+            .chars()
+            .filter(|&c| c == '\t')
+            .count();
         let spaces = self.get_utf8_column() - tabs - 1;
 
         "\t".repeat(tabs) + &(" ".repeat(spaces))

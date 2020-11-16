@@ -7,8 +7,8 @@ use crate::{
         },
         path::PathPart,
         ws,
-        SpanExt,
         Span,
+        SpanExt,
     },
 };
 use nom::{
