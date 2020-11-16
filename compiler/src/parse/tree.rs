@@ -186,7 +186,16 @@ where
     let mixed_warning = |open_token: &str, open_span: Span, close: Token| {
         let (open_syntax, close_syntax, close_token, close_span) = match close {
             Token::LegacyElse { span, .. } => ("modern", "legacy", "ELSE", span),
-            Token::LegacyEnd { span, .. } => ("modern", "legacy", if span.contains("ENDIF") { "ENDIF" } else { "END" }, span),
+            Token::LegacyEnd { span, .. } => (
+                "modern",
+                "legacy",
+                if span.contains("ENDIF") {
+                    "ENDIF"
+                } else {
+                    "END"
+                },
+                span,
+            ),
             Token::Else { span, .. } => ("legacy", "modern", "else", span),
             Token::End { span, .. } => ("legacy", "modern", "end", span),
             _ => unreachable!(),
