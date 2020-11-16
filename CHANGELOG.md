@@ -16,6 +16,63 @@ Format:
 - Small improvements
 -->
 
+## Version 2.2.0 (2020-11-15)
+
+### New: Compiler Rewrite
+
+This release includes a rewrite of the compiler, using the parser combinator library [`nom`](https://github.com/geal/nom).
+
+This rewrite has drastically improved code quality and extensibility. As part of the rewrite, structures include information about source location, so warnings now display file (assuming file name was passed to `precompile`), line, and column.
+
+Also a performance win: the new compiler is about 4.4 times as fast.
+
+### Deprecations
+The following features are deprecated, to become errors in v3.0.0:
+
+#### Keyword outside an interpolation token
+You may see a warning like the following:
+```text
+[benchpress] warning: keyword outside an interpolation token is deprecated
+     --> tests/templates/source/loop-tokens-conditional.tpl:4:65
+      |
+    4 |     <!-- IF @value --> &rarr; <span class="label label-default">@value</span><!-- ENDIF @value -->
+      |                                                                 ^^^^^^ help: wrap this in curly braces: `{@value}`
+      | note: This will become an error in the v3.0.0
+```
+
+This is a legacy of backwards compatibility with templates.js, where this was supported for `@key`, `@value`, and `@index`.
+
+#### Mixing token types
+You may see a warning like the following:
+```text
+[benchpress] warning: mixing token types is deprecated
+     --> tests/templates/source/mixed-syntax.tpl:20:1
+      |
+   20 | {{{if rooms.length}}}
+      | ^^^^^^^^^^^^^^^^^^^^^ `if` started with modern syntax
+     ::: tests/templates/source/mixed-syntax.tpl:34:1
+      |
+   34 | <!-- ENDIF rooms.length -->
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^ but legacy syntax used for `ENDIF`
+      | note: Migrate all to modern syntax. This will become an error in v3.0.0
+```
+
+### New Warnings
+We added some new warnings to help you avoid common issues:
+
+#### Output bloat due to ambiguous inner BEGIN
+```text
+[benchpress] warning: output bloat due to ambiguous inner BEGIN
+     --> tests/templates/source/nested-loop.tpl:1:37
+      |
+    1 | <!-- BEGIN animals -->{animals.name}<!-- BEGIN hobbies -->{animals.hobbies.name}<!-- END hobbies --><!-- END animals -->
+      |                                     ^^^^^^^^^^^^^^^^^^^^^^ `hobbies` could refer to the top-level value `hobbies` or 
+the `.hobbies` property of the current element, so compiler must emit code for both cases
+      | note: Migrate to modern syntax to avoid the ambiguity. This will become an error in the future.
+```
+
+This exists to support backwards compatibility with templates.js, which supported this behavior. Switching to modern syntax will allow you to avoid this ambiguity, resulting in faster templates (and faster compiles).
+
 ## Version 2.1.0 (2020-11-08)
 
 ### New

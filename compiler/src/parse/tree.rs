@@ -185,8 +185,8 @@ where
 {
     let mixed_warning = |open_token: &str, open_span: Span, close: Token| {
         let (open_syntax, close_syntax, close_token, close_span) = match close {
-            Token::LegacyElse { span, .. } => ("modern", "legacy", "else", span),
-            Token::LegacyEnd { span, .. } => ("modern", "legacy", "end", span),
+            Token::LegacyElse { span, .. } => ("modern", "legacy", "ELSE", span),
+            Token::LegacyEnd { span, .. } => ("modern", "legacy", if span.contains("ENDIF") { "ENDIF" } else { "END" }, span),
             Token::Else { span, .. } => ("legacy", "modern", "else", span),
             Token::End { span, .. } => ("legacy", "modern", "end", span),
             _ => unreachable!(),
@@ -200,13 +200,13 @@ where
         warn!("      | {}{} `{}` started with {} syntax",
             " ".repeat(open_span.get_utf8_column() - 1), "^".repeat(open_span.len()),
             open_token, open_syntax);
-        warn!("     ::: {}:{}:{} ",
+        warn!("     ::: {}:{}:{}",
             open_span.extra.filename, close_span.location_line(), close_span.get_utf8_column());
         warn!("      |");
         warn!("{:>5} | {}", close_span.location_line(), close_span.get_line());
         warn!("      | {}{} but {} syntax used for `{}`",
             " ".repeat(close_span.get_utf8_column() - 1), "^".repeat(close_span.len()), close_syntax, close_token);
-        warn!("      | note: Migrate all to modern syntax. This will become an error in the future.\n");
+        warn!("      | note: Migrate all to modern syntax. This will become an error in v3.0.0\n");
     };
 
     while let Some(tok) = input.next() {

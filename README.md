@@ -18,13 +18,13 @@ The following is a quick rundown of the API. [See the full docs](docs/readme.md)
 
 Benchpress uses an ahead of time (AOT) compilation model. It requires that you precompile templates into Javascript modules before using them.
 
-### `.precompile(source): Promise<string>`
+### `.precompile(source, { filename }): Promise<string>`
 This method compiles a template source into Javascript code.
 
 ```js
 const benchpress = require('benchpressjs');
 const template = 'My favourite forum software is {forum}. This templating engine is written in {language}.';
-benchpress.precompile(template).then((precompiled) => {
+benchpress.precompile(template, { filename: "your-file.tpl" }).then((precompiled) => {
   // store it somewhere
 });
 
