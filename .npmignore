@@ -9,7 +9,7 @@ tests
 .gitmodules
 .github
 *.log
-target
+target/
 tmp
 coverage
 .nyc_output
@@ -17,3 +17,12 @@ coverage
 .travis.yml
 appveyor.yml
 Gruntfile.js
+Cargo.lock
+flamegraph.svg
+perf.data*
+compiler/
+lib/
+Cargo.toml
+rustfmt.toml
+yarn.lock
+benchpress.svg

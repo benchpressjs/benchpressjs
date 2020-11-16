@@ -16,6 +16,14 @@ Format:
 - Small improvements
 -->
 
+## Version 2.2.1 (2020-11-15)
+
+### Fixes
+
+- Warning padding now accounts correctly for tabs
+- Add _Extra Tokens_ to warnings under 2.2.0
+- Exclude more files from npm package
+
 ## Version 2.2.0 (2020-11-15)
 
 ### New: Compiler Rewrite
@@ -72,6 +80,27 @@ the `.hobbies` property of the current element, so compiler must emit code for b
 ```
 
 This exists to support backwards compatibility with templates.js, which supported this behavior. Switching to modern syntax will allow you to avoid this ambiguity, resulting in faster templates (and faster compiles).
+
+#### Extra Tokens
+This warning isn't actually new, just improved.
+```text
+[benchpress] warning: found extra tokens
+     --> tests/templates/source/extra-tokens.tpl:17:7 
+      |
+   17 | </div><!-- END container -->
+      |       ^^^^^^^^^^^^^^^^^^^^^^ help: remove the token or make it an unambiguous comment
+     --> tests/templates/source/extra-tokens.tpl:25:64 
+      |
+   25 |         <p class="list-group-item-text">{rooms.description}</p><!-- END description -->
+      |                                                                ^^^^^^^^^^^^^^^^^^^^^^^^ help: remove the token or make it an unambiguous comment
+     --> tests/templates/source/extra-tokens.tpl:32:66 
+      |
+   32 |     <p class="list-group-item-text">Click here to create one!</p><!-- END -->
+      |                                                                  ^^^^^^^^^^^^ help: remove the token or make it an unambiguous comment
+      = note: These tokens will be passed through as text, but this will become an error in the future.
+```
+
+Another legacy of backwards compatibility with templates.js, which would ignore these cases due to how it worked.
 
 ## Version 2.1.0 (2020-11-08)
 
