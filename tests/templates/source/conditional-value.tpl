@@ -1,3 +1,3 @@
 <!-- BEGIN someObject -->
-<!-- IF @value -->@value<!-- ENDIF @value -->
+			<!-- IF @value -->@value<!-- ENDIF @value -->
 <!-- END someObject -->

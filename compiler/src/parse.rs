@@ -19,10 +19,11 @@ pub struct FileInfo<'a> {
 }
 pub type Span<'a> = nom_locate::LocatedSpan<&'a str, FileInfo<'a>>;
 
-trait GetLine {
+trait SpanExt {
     fn get_line(&self) -> &str;
+    fn get_column_padding(&self) -> String;
 }
-impl<'a> GetLine for Span<'a> {
+impl<'a> SpanExt for Span<'a> {
     fn get_line(&self) -> &str {
         let full_source = self.extra.full_source;
         let offset = self.location_offset();
@@ -32,6 +33,14 @@ impl<'a> GetLine for Span<'a> {
             || full_source.slice(start..),
             |end| full_source.slice(start..(offset + end)),
         )
+    }
+
+    fn get_column_padding(&self) -> String {
+        let line = self.get_line();
+        let tabs = line[..self.get_column()].chars().filter(|&c| c == '\t').count();
+        let spaces = self.get_utf8_column() - tabs - 1;
+
+        "\t".repeat(tabs) + &(" ".repeat(spaces))
     }
 }
 

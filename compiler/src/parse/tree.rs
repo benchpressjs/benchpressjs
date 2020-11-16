@@ -9,7 +9,7 @@ use crate::{
             PathPart,
         },
         tokens::Token,
-        GetLine,
+        SpanExt,
         Span,
     },
 };
@@ -119,12 +119,12 @@ pub fn fix_extra_tokens(input: Vec<Token>) -> Vec<Token> {
             .map(|tok| {
                 if remove.contains(&tok) && diff > 0 {
                     let span = tok.span();
-                    warn!("     --> {}:{}:{} ",
+                    warn!("     --> {}:{}:{}",
                         span.extra.filename, span.location_line(), span.get_utf8_column());
                     warn!("      |");
                     warn!("{:>5} | {}", span.location_line(), span.get_line());
                     warn!("      | {}{} help: remove the token or make it an unambiguous comment",
-                        " ".repeat(span.get_utf8_column() - 1), "^".repeat(span.len()));
+                        span.get_column_padding(), "^".repeat(span.len()));
 
                     diff -= 1;
                     // replace removed instructions with their source Text
@@ -207,14 +207,14 @@ where
         warn!("      |");
         warn!("{:>5} | {}", open_span.location_line(), open_span.get_line());
         warn!("      | {}{} `{}` started with {} syntax",
-            " ".repeat(open_span.get_utf8_column() - 1), "^".repeat(open_span.len()),
+            open_span.get_column_padding(), "^".repeat(open_span.len()),
             open_token, open_syntax);
         warn!("     ::: {}:{}:{}",
             open_span.extra.filename, close_span.location_line(), close_span.get_utf8_column());
         warn!("      |");
         warn!("{:>5} | {}", close_span.location_line(), close_span.get_line());
         warn!("      | {}{} but {} syntax used for `{}`",
-            " ".repeat(close_span.get_utf8_column() - 1), "^".repeat(close_span.len()), close_syntax, close_token);
+            close_span.get_column_padding(), "^".repeat(close_span.len()), close_syntax, close_token);
         warn!("      | note: Migrate all to modern syntax. This will become an error in v3.0.0\n");
     };
 
@@ -396,7 +396,7 @@ where
                         warn!("{:>5} | {}",
                             span.location_line(), span.get_line());
                         warn!("      | {}{} `{subject}` could refer to the top-level value `{subject}` or the `.{subject}` property of the current element, so compiler must emit code for both cases",
-                            " ".repeat(span.get_utf8_column() - 1), "^".repeat(span.len()), subject = subject_raw);
+                            span.get_column_padding(), "^".repeat(span.len()), subject = subject_raw);
                         warn!("      | note: Migrate to modern syntax to avoid the ambiguity. This will become an error in the future.\n");
 
                         // Path is absolute, so create a branch for both `./subject` and `subject`

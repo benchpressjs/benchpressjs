@@ -7,7 +7,7 @@ use crate::{
         },
         path::PathPart,
         ws,
-        GetLine,
+        SpanExt,
         Span,
     },
 };
@@ -307,7 +307,7 @@ pub fn tokens(mut input: Span) -> IResult<Span, Vec<Token<'_>>> {
                 warn!("      |");
                 warn!("{:>5} | {}", span.location_line(), span.get_line());
                 warn!("      | {}{} help: wrap this in curly braces: `{{{}}}`",
-                    " ".repeat(span.get_utf8_column() - 1), "^".repeat(span.len()), span);
+                    span.get_column_padding(), "^".repeat(span.len()), span);
                 warn!("      | note: This will become an error in the v3.0.0\n");
 
                 // Add text before the token
