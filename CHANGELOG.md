@@ -16,6 +16,12 @@ Format:
 - Small improvements
 -->
 
+## Version 2.2.2 (2020-11-15)
+
+### Fixes
+
+- Fix tab calculation (column starts at 1)
+
 ## Version 2.2.1 (2020-11-15)
 
 ### Fixes
