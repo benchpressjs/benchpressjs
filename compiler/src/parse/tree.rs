@@ -117,14 +117,15 @@ pub fn fix_extra_tokens(input: Vec<Token>) -> Vec<Token> {
         let output: Vec<Token> = input
             .into_iter()
             .map(|tok| {
-                if remove.contains(&tok) && diff > 0 {
+                if diff > 0 && remove.contains(&tok) {
                     let span = tok.span();
+                    let (line, column, padding) = span.get_line_column_padding();
                     warn!("     --> {}:{}:{}",
-                        span.extra.filename, span.location_line(), span.get_utf8_column());
+                        span.extra.filename, span.location_line(), column);
                     warn!("      |");
-                    warn!("{:>5} | {}", span.location_line(), span.get_line());
+                    warn!("{:>5} | {}", span.location_line(), line);
                     warn!("      | {}{} help: remove the token or make it an unambiguous comment",
-                        span.get_column_padding(), "^".repeat(span.len()));
+                        padding, "^".repeat(span.len()));
 
                     diff -= 1;
                     // replace removed instructions with their source Text
@@ -201,20 +202,22 @@ where
             _ => unreachable!(),
         };
 
+        let (open_line, open_column, open_padding) = open_span.get_line_column_padding();
+        let (close_line, close_column, close_padding) = close_span.get_line_column_padding();
         warn!("[benchpress] warning: mixing token types is deprecated");
         warn!("     --> {}:{}:{}",
-            open_span.extra.filename, open_span.location_line(), open_span.get_utf8_column());
+            open_span.extra.filename, open_span.location_line(), open_column);
         warn!("      |");
-        warn!("{:>5} | {}", open_span.location_line(), open_span.get_line());
+        warn!("{:>5} | {}", open_span.location_line(), open_line);
         warn!("      | {}{} `{}` started with {} syntax",
-            open_span.get_column_padding(), "^".repeat(open_span.len()),
+            open_padding, "^".repeat(open_span.len()),
             open_token, open_syntax);
         warn!("     ::: {}:{}:{}",
-            open_span.extra.filename, close_span.location_line(), close_span.get_utf8_column());
+            open_span.extra.filename, close_span.location_line(), close_column);
         warn!("      |");
-        warn!("{:>5} | {}", close_span.location_line(), close_span.get_line());
+        warn!("{:>5} | {}", close_span.location_line(), close_line);
         warn!("      | {}{} but {} syntax used for `{}`",
-            close_span.get_column_padding(), "^".repeat(close_span.len()), close_syntax, close_token);
+            close_padding, "^".repeat(close_span.len()), close_syntax, close_token);
         warn!("      | note: Migrate all to modern syntax. This will become an error in v3.0.0\n");
     };
 
@@ -389,14 +392,15 @@ where
                             !s.inner().starts_with(&['.', '@'] as &[char])
                         }) =>
                     {
+                        let (line, column, padding) = span.get_line_column_padding();
                         warn!("[benchpress] warning: output bloat due to ambiguous inner BEGIN");
                         warn!("     --> {}:{}:{}",
-                            span.extra.filename, span.location_line(), span.get_utf8_column());
+                            span.extra.filename, span.location_line(), column);
                         warn!("      |");
                         warn!("{:>5} | {}",
-                            span.location_line(), span.get_line());
+                            span.location_line(), line);
                         warn!("      | {}{} `{subject}` could refer to the top-level value `{subject}` or the `.{subject}` property of the current element, so compiler must emit code for both cases",
-                            span.get_column_padding(), "^".repeat(span.len()), subject = subject_raw);
+                            padding, "^".repeat(span.len()), subject = subject_raw);
                         warn!("      | note: Migrate to modern syntax to avoid the ambiguity. This will become an error in the future.\n");
 
                         // Path is absolute, so create a branch for both `./subject` and `subject`

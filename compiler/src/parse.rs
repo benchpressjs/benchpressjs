@@ -21,7 +21,7 @@ pub type Span<'a> = nom_locate::LocatedSpan<&'a str, FileInfo<'a>>;
 
 trait SpanExt {
     fn get_line(&self) -> &str;
-    fn get_column_padding(&self) -> String;
+    fn get_line_column_padding(&self) -> (&str, usize, String);
 }
 impl<'a> SpanExt for Span<'a> {
     fn get_line(&self) -> &str {
@@ -35,15 +35,24 @@ impl<'a> SpanExt for Span<'a> {
         )
     }
 
-    fn get_column_padding(&self) -> String {
+    fn get_line_column_padding(&self) -> (&str, usize, String) {
         let line = self.get_line();
-        let tabs = line[..(self.get_column() - 1)]
-            .chars()
-            .filter(|&c| c == '\t')
-            .count();
-        let spaces = self.get_utf8_column() - tabs - 1;
 
-        "\t".repeat(tabs) + &(" ".repeat(spaces))
+        let mut column = 0;
+        let mut tabs = 0;
+        let mut spaces = 0;
+        for c in line[..(self.get_column() - 1)].chars() {
+            column += 1;
+
+            match c {
+                '\t' => {
+                    tabs += 1;
+                }
+                _ => spaces += 1,
+            }
+        }
+
+        (line, column, "\t".repeat(tabs) + &(" ".repeat(spaces)))
     }
 }
 

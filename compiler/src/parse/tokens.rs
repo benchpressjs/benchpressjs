@@ -301,13 +301,14 @@ pub fn tokens(mut input: Span) -> IResult<Span, Vec<Token<'_>>> {
                 let span = input.slice(start..end);
                 let (_, expr) = expression(span)?;
 
+                let (line, column, padding) = span.get_line_column_padding();
                 warn!("[benchpress] warning: keyword outside an interpolation token is deprecated");
                 warn!("     --> {}:{}:{}",
-                    span.extra.filename, span.location_line(), span.get_utf8_column());
+                    span.extra.filename, span.location_line(), column);
                 warn!("      |");
-                warn!("{:>5} | {}", span.location_line(), span.get_line());
+                warn!("{:>5} | {}", span.location_line(), line);
                 warn!("      | {}{} help: wrap this in curly braces: `{{{}}}`",
-                    span.get_column_padding(), "^".repeat(span.len()), span);
+                    padding, "^".repeat(span.len()), span);
                 warn!("      | note: This will become an error in the v3.0.0\n");
 
                 // Add text before the token
