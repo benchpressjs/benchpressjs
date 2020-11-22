@@ -30,7 +30,6 @@ pub enum Instruction<'a> {
     },
     Iter {
         depth: u32,
-        subject_raw: Span<'a>,
         subject: Expression<'a>,
         body: Vec<Instruction<'a>>,
         alt: Vec<Instruction<'a>>,
@@ -54,10 +53,12 @@ pub fn fix_extra_tokens(input: Vec<Token>) -> Vec<Token> {
 
         match elem {
             // for an Open, add the subject to the stack of expected subjects
-            Token::LegacyIf { subject_raw, .. }
-            | Token::LegacyBegin { subject_raw, .. }
-            | Token::If { subject_raw, .. }
-            | Token::Each { subject_raw, .. } => {
+            Token::LegacyIf { subject, .. }
+            | Token::LegacyBegin { subject, .. }
+            | Token::If { subject, .. }
+            | Token::Each { subject, .. } => {
+                let subject_raw = *subject.span().fragment();
+
                 expected_subjects.push(subject_raw);
                 starts_count += 1;
             }
@@ -147,7 +148,10 @@ pub fn fix_extra_tokens(input: Vec<Token>) -> Vec<Token> {
 fn resolve_expression_paths<'a, 'b>(base: Path<'a, 'b>, expr: Expression<'a>) -> Expression<'a> {
     match expr {
         s @ Expression::StringLiteral(_) => s,
-        Expression::Path(path) => Expression::Path(resolve(base, path)),
+        Expression::Path { span, path } => Expression::Path {
+            span,
+            path: resolve(base, path),
+        },
         Expression::Negative { span, expr } => Expression::Negative {
             span,
             expr: Box::new(resolve_expression_paths(base, *expr)),
@@ -266,13 +270,12 @@ where
             Token::Each {
                 span,
                 subject,
-                subject_raw,
             } => {
                 let mut body = vec![];
                 let mut alt = vec![];
 
                 let subject = resolve_expression_paths(base, subject);
-                let base: PathBuf = if let Expression::Path(base) = &subject {
+                let base: PathBuf = if let Expression::Path { path: base, .. } = &subject {
                     let mut base = base.clone();
                     if let Some(last) = base.last_mut() {
                         last.with_depth(depth)
@@ -302,7 +305,6 @@ where
 
                 Instruction::Iter {
                     depth,
-                    subject_raw,
                     subject,
                     body,
                     alt,
@@ -340,14 +342,13 @@ where
             Token::LegacyBegin {
                 span,
                 subject,
-                subject_raw,
             } => {
                 let normal = |input: &mut I, subject| {
                     let mut body = vec![];
                     let mut alt = vec![];
 
                     let subject = resolve_expression_paths(base, subject);
-                    let base: PathBuf = if let Expression::Path(base) = &subject {
+                    let base: PathBuf = if let Expression::Path { path: base, .. } = &subject {
                         let mut base = base.clone();
                         if let Some(last) = base.last_mut() {
                             last.with_depth(depth)
@@ -377,7 +378,6 @@ where
 
                     Ok(Instruction::Iter {
                         depth,
-                        subject_raw,
                         subject,
                         body,
                         alt,
@@ -386,7 +386,7 @@ where
 
                 // Handle legacy `<!-- BEGIN stuff -->` working for top-level `stuff` and implicitly `./stuff`
                 match &subject {
-                    Expression::Path(path)
+                    Expression::Path { path, span }
                         if depth > 0 && path.first().map_or(false, |s| {
                             // Not a relative path or keyword
                             !s.inner().starts_with(&['.', '@'] as &[char])
@@ -400,14 +400,14 @@ where
                         warn!("{:>5} | {}",
                             span.location_line(), line);
                         warn!("      | {}{} `{subject}` could refer to the top-level value `{subject}` or the `.{subject}` property of the current element, so compiler must emit code for both cases",
-                            padding, "^".repeat(span.len()), subject = subject_raw);
+                            padding, "^".repeat(span.len()), subject = subject.span());
                         warn!("      | note: Migrate to modern syntax to avoid the ambiguity. This will become an error in the future.\n");
 
                         // Path is absolute, so create a branch for both `./subject` and `subject`
                         let mut relative_path =
                             vec![PathPart::Part(Span::new_extra("./", span.extra))];
                         relative_path.extend_from_slice(path);
-                        let relative_subject = Expression::Path(relative_path);
+                        let relative_subject = Expression::Path { path: relative_path, span: *span };
 
                         Instruction::If {
                             subject: resolve_expression_paths(base, relative_subject.clone()),
@@ -452,8 +452,10 @@ mod test {
             vec![
                 Token::Each {
                     span: sp("{{{ each abc }}}"),
-                    subject_raw: sp("abc"),
-                    subject: Expression::Path(vec![PathPart::Part(sp("abc"))])
+                    subject: Expression::Path {
+                        span: sp("abc"),
+                        path: vec![PathPart::Part(sp("abc"))]
+                    }
                 },
                 Token::Text(sp(" for each thing ")),
                 Token::Text(sp("<!-- END foo -->")),
@@ -469,8 +471,10 @@ mod test {
         let mut input = vec![
             Token::Each {
                 span: sp("{{{ each abc }}}"),
-                subject_raw: sp("abc"),
-                subject: Expression::Path(vec![PathPart::Part(sp("abc"))]),
+                subject: Expression::Path {
+                    span: sp("abc"),
+                    path: vec![PathPart::Part(sp("abc"))],
+                },
             },
             Token::Text(sp(" for each thing ")),
             Token::End {
@@ -487,8 +491,10 @@ mod test {
             output,
             vec![Instruction::Iter {
                 depth: 0,
-                subject_raw: sp("abc"),
-                subject: Expression::Path(vec![PathPart::Part(sp("abc"))]),
+                subject: Expression::Path {
+                    span: sp("abc"),
+                    path: vec![PathPart::Part(sp("abc"))]
+                },
                 body: vec![Instruction::Text(sp(" for each thing ")),],
                 alt: vec![],
             }]
@@ -500,25 +506,29 @@ mod test {
         let mut input = vec![
             Token::Each {
                 span: sp("{{{ each abc }}}"),
-                subject_raw: sp("abc"),
-                subject: Expression::Path(vec![PathPart::Part(sp("abc"))]),
+                subject: Expression::Path {
+                    span: sp("abc"),
+                    path: vec![PathPart::Part(sp("abc"))],
+                },
             },
             Token::Text(sp(" before inner ")),
             Token::Each {
                 span: sp("{{{ each ./inner }}}"),
-                subject_raw: sp("./inner"),
-                subject: Expression::Path(vec![
-                    PathPart::Part(sp("./")),
-                    PathPart::Part(sp("inner")),
-                ]),
+                subject: Expression::Path {
+                    span: sp("./inner"),
+                    path: vec![PathPart::Part(sp("./")), PathPart::Part(sp("inner"))],
+                },
             },
             Token::InterpEscaped {
                 span: sp("{abc.inner.prop}"),
-                expr: Expression::Path(vec![
-                    PathPart::Part(sp("abc")),
-                    PathPart::Part(sp("inner")),
-                    PathPart::Part(sp("prop")),
-                ]),
+                expr: Expression::Path {
+                    span: sp("abc.inner.prop"),
+                    path: vec![
+                        PathPart::Part(sp("abc")),
+                        PathPart::Part(sp("inner")),
+                        PathPart::Part(sp("prop")),
+                    ],
+                },
             },
             Token::End {
                 span: sp("{{{ end }}}"),
@@ -538,22 +548,29 @@ mod test {
             output,
             vec![Instruction::Iter {
                 depth: 0,
-                subject_raw: sp("abc"),
-                subject: Expression::Path(vec![PathPart::Part(sp("abc"))]),
+                subject: Expression::Path {
+                    span: sp("abc"),
+                    path: vec![PathPart::Part(sp("abc"))]
+                },
                 body: vec![
                     Instruction::Text(sp(" before inner ")),
                     Instruction::Iter {
                         depth: 1,
-                        subject_raw: sp("./inner"),
-                        subject: Expression::Path(vec![
-                            PathPart::PartDepth(sp("abc"), 0),
-                            PathPart::Part(sp("inner"))
-                        ]),
-                        body: vec![Instruction::InterpEscaped(Expression::Path(vec![
-                            PathPart::PartDepth(sp("abc"), 0),
-                            PathPart::PartDepth(sp("inner"), 1),
-                            PathPart::Part(sp("prop"))
-                        ]))],
+                        subject: Expression::Path {
+                            span: sp("./inner"),
+                            path: vec![
+                                PathPart::PartDepth(sp("abc"), 0),
+                                PathPart::Part(sp("inner"))
+                            ]
+                        },
+                        body: vec![Instruction::InterpEscaped(Expression::Path {
+                            span: sp("abc.inner.prop"),
+                            path: vec![
+                                PathPart::PartDepth(sp("abc"), 0),
+                                PathPart::PartDepth(sp("inner"), 1),
+                                PathPart::Part(sp("prop"))
+                            ]
+                        })],
                         alt: vec![]
                     },
                     Instruction::Text(sp(" after inner ")),
@@ -568,22 +585,29 @@ mod test {
         let mut input = vec![
             Token::Each {
                 span: sp("{{{ each abc }}}"),
-                subject_raw: sp("abc"),
-                subject: Expression::Path(vec![PathPart::Part(sp("abc"))]),
+                subject: Expression::Path {
+                    span: sp("abc"),
+                    path: vec![PathPart::Part(sp("abc"))],
+                },
             },
             Token::Text(sp(" before inner ")),
             Token::LegacyBegin {
                 span: sp("<!-- BEGIN inner -->"),
-                subject_raw: sp("inner"),
-                subject: Expression::Path(vec![PathPart::Part(sp("inner"))]),
+                subject: Expression::Path {
+                    span: sp("inner"),
+                    path: vec![PathPart::Part(sp("inner"))],
+                },
             },
             Token::InterpEscaped {
                 span: sp("{abc.inner.prop}"),
-                expr: Expression::Path(vec![
-                    PathPart::Part(sp("abc")),
-                    PathPart::Part(sp("inner")),
-                    PathPart::Part(sp("prop")),
-                ]),
+                expr: Expression::Path {
+                    span: sp("abc.inner.prop"),
+                    path: vec![
+                        PathPart::Part(sp("abc")),
+                        PathPart::Part(sp("inner")),
+                        PathPart::Part(sp("prop")),
+                    ],
+                },
             },
             Token::LegacyEnd {
                 span: sp("<!-- END inner -->"),
@@ -604,38 +628,53 @@ mod test {
             output,
             vec![Instruction::Iter {
                 depth: 0,
-                subject_raw: sp("abc"),
-                subject: Expression::Path(vec![PathPart::Part(sp("abc"))]),
+                subject: Expression::Path {
+                    span: sp("abc"),
+                    path: vec![PathPart::Part(sp("abc"))]
+                },
                 body: vec![
                     Instruction::Text(sp(" before inner ")),
                     Instruction::If {
-                        subject: Expression::Path(vec![
-                            PathPart::PartDepth(sp("abc"), 0),
-                            PathPart::Part(sp("inner"))
-                        ]),
-                        body: vec![Instruction::Iter {
-                            depth: 1,
-                            subject_raw: sp("inner"),
-                            subject: Expression::Path(vec![
+                        subject: Expression::Path {
+                            span: sp("inner"),
+                            path: vec![
                                 PathPart::PartDepth(sp("abc"), 0),
                                 PathPart::Part(sp("inner"))
-                            ]),
-                            body: vec![Instruction::InterpEscaped(Expression::Path(vec![
-                                PathPart::PartDepth(sp("abc"), 0),
-                                PathPart::PartDepth(sp("inner"), 1),
-                                PathPart::Part(sp("prop"))
-                            ]))],
+                            ]
+                        },
+                        body: vec![Instruction::Iter {
+                            depth: 1,
+                            subject: Expression::Path {
+                                span: sp("inner"),
+                                path: vec![
+                                    PathPart::PartDepth(sp("abc"), 0),
+                                    PathPart::Part(sp("inner"))
+                                ]
+                            },
+                            body: vec![Instruction::InterpEscaped(Expression::Path {
+                                span: sp("abc.inner.prop"),
+                                path: vec![
+                                    PathPart::PartDepth(sp("abc"), 0),
+                                    PathPart::PartDepth(sp("inner"), 1),
+                                    PathPart::Part(sp("prop"))
+                                ]
+                            })],
                             alt: vec![]
                         }],
                         alt: vec![Instruction::Iter {
                             depth: 1,
-                            subject_raw: sp("inner"),
-                            subject: Expression::Path(vec![PathPart::Part(sp("inner"))]),
-                            body: vec![Instruction::InterpEscaped(Expression::Path(vec![
-                                PathPart::Part(sp("abc")),
-                                PathPart::Part(sp("inner")),
-                                PathPart::Part(sp("prop"))
-                            ]))],
+                            subject: Expression::Path {
+                                span: sp("inner"),
+                                path: vec![PathPart::Part(sp("inner"))]
+                            },
+                            body: vec![Instruction::InterpEscaped(Expression::Path {
+                                span: sp("abc.inner.prop"),
+                                path: vec![
+                                    PathPart::Part(sp("abc")),
+                                    PathPart::Part(sp("inner")),
+                                    PathPart::Part(sp("prop"))
+                                ]
+                            })],
                             alt: vec![],
                         }]
                     },

@@ -233,7 +233,7 @@ pub fn expression(input: Expression) -> Cow<str> {
         Expression::StringLiteral(value) => {
             json::stringify(json::from(unescape(value.fragment()))).into()
         }
-        Expression::Path(path) => {
+        Expression::Path { path, .. } => {
             if let Some(part) = path.get(0).map(PathPart::inner) {
                 match part {
                     "@root" => CONTEXT.into(),
@@ -419,22 +419,34 @@ mod tests {
         );
 
         assert_eq!(
-            expression(Expression::Path(vec![PathPart::Part(sp("thing"))])),
+            expression(Expression::Path {
+                span: sp("thing"),
+                path: vec![PathPart::Part(sp("thing"))]
+            }),
             sp("guard(context && context['thing'])").to_string()
         );
 
         assert_eq!(
-            expression(Expression::Path(vec![PathPart::Part(sp("@root"))])),
+            expression(Expression::Path {
+                span: sp("@root"),
+                path: vec![PathPart::Part(sp("@root"))]
+            }),
             sp("context").to_string()
         );
 
         assert_eq!(
-            expression(Expression::Path(vec![PathPart::Part(sp("@first"))])),
+            expression(Expression::Path {
+                span: sp("@first"),
+                path: vec![PathPart::Part(sp("@first"))]
+            }),
             sp("index === 0").to_string()
         );
 
         assert_eq!(
-            expression(Expression::Path(vec![PathPart::Part(sp("@last"))])),
+            expression(Expression::Path {
+                span: sp("@last"),
+                path: vec![PathPart::Part(sp("@last"))]
+            }),
             sp("index === length - 1").to_string()
         );
 
@@ -442,8 +454,8 @@ mod tests {
             span: sp("localeToHTML(userLang, defaultLang)"),
             name: sp("localeToHTML"),
             args: vec![
-                Expression::Path(vec![PathPart::Part(sp("userLang"))]),
-                Expression::Path(vec![PathPart::Part(sp("defaultLang"))]),
+                Expression::Path { span: sp("userLang"), path: vec![PathPart::Part(sp("userLang"))] },
+                Expression::Path { span: sp("defaultLang"), path: vec![PathPart::Part(sp("defaultLang"))] },
             ]
         }), "helper(context, helpers, 'localeToHTML', [guard(context && context['userLang']), guard(context && context['defaultLang'])])");
     }

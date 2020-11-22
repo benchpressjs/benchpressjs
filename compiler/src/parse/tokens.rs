@@ -48,13 +48,11 @@ pub enum Token<'a> {
     // `{{{ if condition }}}`
     If {
         span: Span<'a>,
-        subject_raw: Span<'a>,
         subject: Expression<'a>,
     },
     // `{{{ each arr }}}`
     Each {
         span: Span<'a>,
-        subject_raw: Span<'a>,
         subject: Expression<'a>,
     },
     // `{{{ else }}}`
@@ -68,13 +66,11 @@ pub enum Token<'a> {
     // `<!-- IF condition -->`
     LegacyIf {
         span: Span<'a>,
-        subject_raw: Span<'a>,
         subject: Expression<'a>,
     },
     // `<!-- BEGIN arr -->`
     LegacyBegin {
         span: Span<'a>,
-        subject_raw: Span<'a>,
         subject: Expression<'a>,
     },
     // `<!-- ELSE -->`
@@ -125,14 +121,10 @@ fn new_each(input: Span) -> IResult<Span, Token<'_>> {
     map(
         consumed(delimited(
             pair(tag("{{{"), ws(tag("each"))),
-            ws(consumed(expression)),
+            ws(expression),
             tag("}}}"),
         )),
-        |(span, (subject_raw, subject))| Token::Each {
-            span,
-            subject_raw,
-            subject,
-        },
+        |(span, subject)| Token::Each { span, subject },
     )(input)
 }
 
@@ -140,14 +132,10 @@ fn new_if(input: Span) -> IResult<Span, Token<'_>> {
     map(
         consumed(delimited(
             pair(tag("{{{"), ws(tag("if"))),
-            ws(consumed(expression)),
+            ws(expression),
             tag("}}}"),
         )),
-        |(span, (subject_raw, subject))| Token::If {
-            span,
-            subject_raw,
-            subject,
-        },
+        |(span, subject)| Token::If { span, subject },
     )(input)
 }
 
@@ -169,14 +157,10 @@ fn legacy_begin(input: Span) -> IResult<Span, Token<'_>> {
     map(
         consumed(delimited(
             pair(tag("<!--"), ws(tag("BEGIN"))),
-            ws(consumed(expression)),
+            ws(expression),
             tag("-->"),
         )),
-        |(span, (subject_raw, subject))| Token::LegacyBegin {
-            span,
-            subject_raw,
-            subject,
-        },
+        |(span, subject)| Token::LegacyBegin { span, subject },
     )(input)
 }
 
@@ -184,12 +168,11 @@ fn legacy_if(input: Span) -> IResult<Span, Token<'_>> {
     map(
         consumed(delimited(
             pair(tag("<!--"), ws(tag("IF"))),
-            ws(consumed(expression)),
+            ws(expression),
             tag("-->"),
         )),
-        |(span, (subject_raw, subject))| Token::LegacyIf {
+        |(span, subject)| Token::LegacyIf {
             span,
-            subject_raw,
             subject: {
                 // Handle legacy IF helpers being passed @root as implicit first argument
                 if let Expression::LegacyHelper {
@@ -200,10 +183,12 @@ fn legacy_if(input: Span) -> IResult<Span, Token<'_>> {
                 {
                     args.insert(
                         0,
-                        Expression::Path(vec![PathPart::Part(Span::new_extra(
-                            "@root",
-                            input.extra,
-                        ))]),
+                        Expression::Path {
+                            span: args
+                                .get(0)
+                                .map_or_else(|| span.slice(span.len()..), |x| x.span().slice(..0)),
+                            path: vec![PathPart::Part(Span::new_extra("@root", input.extra))],
+                        },
                     );
 
                     Expression::LegacyHelper { span, name, args }
@@ -233,9 +218,9 @@ fn legacy_end(input: Span) -> IResult<Span, Token<'_>> {
             ws(take_until("-->")),
             tag("-->"),
         )),
-        |(span, subject_raw)| Token::LegacyEnd {
+        |(span, subject)| Token::LegacyEnd {
             span,
-            subject_raw: trim_end(subject_raw),
+            subject_raw: trim_end(subject),
         },
     )(input)
 }
@@ -387,7 +372,10 @@ mod test {
                 sp(""),
                 Token::InterpEscaped {
                     span: sp("{prop}"),
-                    expr: Expression::Path(vec![PathPart::Part(sp("prop"))])
+                    expr: Expression::Path {
+                        span: sp("prop"),
+                        path: vec![PathPart::Part(sp("prop"))]
+                    }
                 }
             ))
         );
@@ -415,7 +403,10 @@ mod test {
                 sp(""),
                 Token::InterpRaw {
                     span: sp("{{prop}}"),
-                    expr: Expression::Path(vec![PathPart::Part(sp("prop"))])
+                    expr: Expression::Path {
+                        span: sp("prop"),
+                        path: vec![PathPart::Part(sp("prop"))]
+                    }
                 }
             ))
         );
@@ -443,8 +434,10 @@ mod test {
                 sp(""),
                 Token::If {
                     span: sp("{{{if abc}}}"),
-                    subject_raw: sp("abc"),
-                    subject: Expression::Path(vec![PathPart::Part(sp("abc"))])
+                    subject: Expression::Path {
+                        span: sp("abc"),
+                        path: vec![PathPart::Part(sp("abc"))]
+                    }
                 }
             ))
         );
@@ -454,7 +447,6 @@ mod test {
                 sp(""),
                 Token::If {
                     span: sp("{{{ if call() }}}"),
-                    subject_raw: sp("call()"),
                     subject: Expression::Helper {
                         span: sp("call()"),
                         name: sp("call"),
@@ -473,11 +465,10 @@ mod test {
                 sp(""),
                 Token::Each {
                     span: sp("{{{each abc.def}}}"),
-                    subject_raw: sp("abc.def"),
-                    subject: Expression::Path(vec![
-                        PathPart::Part(sp("abc")),
-                        PathPart::Part(sp("def"))
-                    ])
+                    subject: Expression::Path {
+                        span: sp("abc.def"),
+                        path: vec![PathPart::Part(sp("abc")), PathPart::Part(sp("def"))]
+                    }
                 }
             ))
         );
@@ -487,7 +478,6 @@ mod test {
                 sp(""),
                 Token::Each {
                     span: sp("{{{ each call() }}}"),
-                    subject_raw: sp("call()"),
                     subject: Expression::Helper {
                         span: sp("call()"),
                         name: sp("call"),
@@ -550,8 +540,10 @@ mod test {
                 sp(""),
                 Token::LegacyIf {
                     span: sp("<!--IF abc-->"),
-                    subject_raw: sp("abc"),
-                    subject: Expression::Path(vec![PathPart::Part(sp("abc"))])
+                    subject: Expression::Path {
+                        span: sp("abc"),
+                        path: vec![PathPart::Part(sp("abc"))]
+                    }
                 }
             ))
         );
@@ -561,7 +553,6 @@ mod test {
                 sp(""),
                 Token::LegacyIf {
                     span: sp("<!-- IF call() -->"),
-                    subject_raw: sp("call()"),
                     subject: Expression::Helper {
                         span: sp("call()"),
                         name: sp("call"),
@@ -576,14 +567,22 @@ mod test {
                 sp(""),
                 Token::LegacyIf {
                     span: sp("<!--IF function.bar, a, b -->"),
-                    subject_raw: sp("function.bar, a, b"),
                     subject: Expression::LegacyHelper {
                         span: sp("function.bar, a, b"),
                         name: sp("bar"),
                         args: vec![
-                            Expression::Path(vec![PathPart::Part(sp("@root"))]),
-                            Expression::Path(vec![PathPart::Part(sp("a"))]),
-                            Expression::Path(vec![PathPart::Part(sp("b"))]),
+                            Expression::Path {
+                                span: sp(""),
+                                path: vec![PathPart::Part(sp("@root"))]
+                            },
+                            Expression::Path {
+                                span: sp("a"),
+                                path: vec![PathPart::Part(sp("a"))]
+                            },
+                            Expression::Path {
+                                span: sp("b"),
+                                path: vec![PathPart::Part(sp("b"))]
+                            },
                         ]
                     }
                 }
@@ -599,11 +598,10 @@ mod test {
                 sp(""),
                 Token::LegacyBegin {
                     span: sp("<!--BEGIN abc.def-->"),
-                    subject_raw: sp("abc.def"),
-                    subject: Expression::Path(vec![
-                        PathPart::Part(sp("abc")),
-                        PathPart::Part(sp("def"))
-                    ])
+                    subject: Expression::Path {
+                        span: sp("abc.def"),
+                        path: vec![PathPart::Part(sp("abc")), PathPart::Part(sp("def"))]
+                    }
                 }
             ))
         );
@@ -613,7 +611,6 @@ mod test {
                 sp(""),
                 Token::LegacyBegin {
                     span: sp("<!-- BEGIN call() -->"),
-                    subject_raw: sp("call()"),
                     subject: Expression::Helper {
                         span: sp("call()"),
                         name: sp("call"),
@@ -702,8 +699,7 @@ mod test {
                     Token::Text(sp("before ")),
                     Token::If {
                         span: sp("{{{ if abc }}}"),
-                        subject_raw: sp("abc"),
-                        subject: Expression::Path(vec![PathPart::Part(sp("abc"))])
+                        subject: Expression::Path { span: sp("abc"), path: vec![PathPart::Part(sp("abc"))] }
                     },
                     Token::Text(sp(" we do one thing ")),
                     Token::Else { span: sp("{{{ else }}}") },
@@ -723,8 +719,10 @@ mod test {
                 vec![
                     Token::If {
                         span: sp("{{{ if abc }}}"),
-                        subject_raw: sp("abc"),
-                        subject: Expression::Path(vec![PathPart::Part(sp("abc"))])
+                        subject: Expression::Path {
+                            span: sp("abc"),
+                            path: vec![PathPart::Part(sp("abc"))]
+                        }
                     },
                     Token::Text(sp(" we do one thing ")),
                     Token::Else {
@@ -747,8 +745,10 @@ mod test {
                     Token::Text(sp("before ")),
                     Token::Each {
                         span: sp("{{{ each abc }}}"),
-                        subject_raw: sp("abc"),
-                        subject: Expression::Path(vec![PathPart::Part(sp("abc"))])
+                        subject: Expression::Path {
+                            span: sp("abc"),
+                            path: vec![PathPart::Part(sp("abc"))]
+                        }
                     },
                     Token::Text(sp(" for each thing ")),
                     Token::End {
@@ -765,8 +765,10 @@ mod test {
                 vec![
                     Token::Each {
                         span: sp("{{{ each abc }}}"),
-                        subject_raw: sp("abc"),
-                        subject: Expression::Path(vec![PathPart::Part(sp("abc"))])
+                        subject: Expression::Path {
+                            span: sp("abc"),
+                            path: vec![PathPart::Part(sp("abc"))]
+                        }
                     },
                     Token::Text(sp(" for each thing ")),
                     Token::End {

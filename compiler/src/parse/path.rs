@@ -7,17 +7,19 @@ pub enum PathPart<'a> {
 }
 
 impl<'a> PathPart<'a> {
-    pub fn inner(&self) -> &'a str {
+    pub fn span(&self) -> Span<'a> {
         match self {
-            PathPart::Part(s) => s.fragment(),
-            PathPart::PartDepth(s, _) => s.fragment(),
+            PathPart::Part(span) | PathPart::PartDepth(span, _) => *span,
         }
+    }
+
+    pub fn inner(&self) -> &'a str {
+        *self.span().fragment()
     }
 
     pub fn with_depth(&mut self, depth: u32) {
         *self = match *self {
-            PathPart::Part(s) => PathPart::PartDepth(s, depth),
-            PathPart::PartDepth(s, _) => PathPart::PartDepth(s, depth),
+            PathPart::Part(s) | PathPart::PartDepth(s, _) => PathPart::PartDepth(s, depth),
         }
     }
 }

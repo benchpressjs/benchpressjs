@@ -46,11 +46,12 @@ fn gen_body<'a, 'b>(
             // output a call to `iter` in JS
             Instruction::Iter {
                 depth,
-                subject_raw,
                 subject,
                 body,
                 alt,
             } => {
+                let subject_raw = *subject.span().fragment();
+
                 let block = templates::iter(
                     depth,
                     &templates::expression(subject),
@@ -59,10 +60,10 @@ fn gen_body<'a, 'b>(
                 );
 
                 // if top level, pull out into a block method
-                if top && !block_names.contains(subject_raw.fragment()) {
-                    let out = templates::block_call(&subject_raw);
-                    blocks.push(templates::block(&subject_raw, &block));
-                    block_names.insert(subject_raw.fragment());
+                if top && !block_names.contains(subject_raw) {
+                    let out = templates::block_call(subject_raw);
+                    blocks.push(templates::block(subject_raw, &block));
+                    block_names.insert(subject_raw);
 
                     out
                 } else {

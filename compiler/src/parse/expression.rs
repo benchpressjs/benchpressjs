@@ -42,7 +42,10 @@ pub enum Expression<'a> {
     // "this \"works\" as you'd expect"
     StringLiteral(Span<'a>),
     // a.b.c.d
-    Path(PathBuf<'a>),
+    Path {
+        span: Span<'a>,
+        path: PathBuf<'a>,
+    },
     // !expr
     Negative {
         span: Span<'a>,
@@ -60,6 +63,25 @@ pub enum Expression<'a> {
         name: Span<'a>,
         args: Vec<Expression<'a>>,
     },
+}
+
+impl<'a> Expression<'a> {
+    pub fn span(&self) -> Span<'a> {
+        match self {
+            Expression::StringLiteral(span)
+            | Expression::Path { span, .. }
+            | Expression::Negative { span, .. }
+            | Expression::Helper { span, .. }
+            | Expression::LegacyHelper { span, .. } => *span,
+        }
+    }
+
+    pub fn path_from_span(span: Span<'a>) -> Expression {
+        Expression::Path {
+            span,
+            path: vec![PathPart::Part(span)],
+        }
+    }
 }
 
 fn string_literal(input: Span) -> IResult<Span, Expression<'_>> {
@@ -96,16 +118,16 @@ fn path(input: Span) -> IResult<Span, Expression<'_>> {
                 tag("@first"),
                 tag("@last"),
             )),
-            |s: Span| Expression::Path(vec![PathPart::Part(s)]),
+            Expression::path_from_span,
         ),
         map(
-            pair(
+            consumed(pair(
                 many0(map(alt((tag("./"), tag("../"))), PathPart::Part)),
                 separated_list1(tag("."), map(identifier, PathPart::Part)),
-            ),
-            |(mut first, mut second)| {
+            )),
+            |(span, (mut first, mut second))| {
                 first.append(&mut second);
-                Expression::Path(first)
+                Expression::Path { span, path: first }
             },
         ),
     ))(input)
@@ -149,10 +171,10 @@ fn legacy_helper(input: Span) -> IResult<Span, Expression<'_>> {
             name,
             args: args.unwrap_or_else(|| {
                 // Handle legacy helpers without args being implicitly passed `@value`
-                vec![Expression::Path(vec![PathPart::Part(Span::new_extra(
-                    "@value",
-                    input.extra,
-                ))])]
+                vec![Expression::Path {
+                    span: span.slice(span.len()..),
+                    path: vec![PathPart::Part(Span::new_extra("@value", input.extra))],
+                }]
             }),
         },
     )(input)
@@ -194,11 +216,14 @@ mod test {
             path(sp("a.b.c, what")),
             Ok((
                 sp(", what"),
-                Expression::Path(vec![
-                    PathPart::Part(sp("a")),
-                    PathPart::Part(sp("b")),
-                    PathPart::Part(sp("c"))
-                ])
+                Expression::Path {
+                    span: sp("a.b.c"),
+                    path: vec![
+                        PathPart::Part(sp("a")),
+                        PathPart::Part(sp("b")),
+                        PathPart::Part(sp("c"))
+                    ]
+                }
             ))
         );
 
@@ -206,7 +231,10 @@ mod test {
             path(sp("@value.c")),
             Ok((
                 sp(".c"),
-                Expression::Path(vec![PathPart::Part(sp("@value"))])
+                Expression::Path {
+                    span: sp("@value"),
+                    path: vec![PathPart::Part(sp("@value"))]
+                }
             ))
         );
 
@@ -214,12 +242,15 @@ mod test {
             path(sp("./../abc.def")),
             Ok((
                 sp(""),
-                Expression::Path(vec![
-                    PathPart::Part(sp("./")),
-                    PathPart::Part(sp("../")),
-                    PathPart::Part(sp("abc")),
-                    PathPart::Part(sp("def"))
-                ])
+                Expression::Path {
+                    span: sp("./../abc.def"),
+                    path: vec![
+                        PathPart::Part(sp("./")),
+                        PathPart::Part(sp("../")),
+                        PathPart::Part(sp("abc")),
+                        PathPart::Part(sp("def"))
+                    ]
+                }
             ))
         );
     }
@@ -232,7 +263,10 @@ mod test {
                 sp(" "),
                 Expression::Negative {
                     span: sp("!a"),
-                    expr: Box::new(Expression::Path(vec![PathPart::Part(sp("a"))]))
+                    expr: Box::new(Expression::Path {
+                        span: sp("a"),
+                        path: vec![PathPart::Part(sp("a"))]
+                    })
                 }
             ))
         )
@@ -248,9 +282,18 @@ mod test {
                     span: sp("foo(bar, a.b , k)"),
                     name: sp("foo"),
                     args: vec![
-                        Expression::Path(vec![PathPart::Part(sp("bar"))]),
-                        Expression::Path(vec![PathPart::Part(sp("a")), PathPart::Part(sp("b"))]),
-                        Expression::Path(vec![PathPart::Part(sp("k"))])
+                        Expression::Path {
+                            span: sp("bar"),
+                            path: vec![PathPart::Part(sp("bar"))]
+                        },
+                        Expression::Path {
+                            span: sp("a.b"),
+                            path: vec![PathPart::Part(sp("a")), PathPart::Part(sp("b"))]
+                        },
+                        Expression::Path {
+                            span: sp("k"),
+                            path: vec![PathPart::Part(sp("k"))]
+                        }
                     ]
                 }
             ))
@@ -267,9 +310,18 @@ mod test {
                     span: sp("function.foo, bar, a.b, k"),
                     name: sp("foo"),
                     args: vec![
-                        Expression::Path(vec![PathPart::Part(sp("bar"))]),
-                        Expression::Path(vec![PathPart::Part(sp("a")), PathPart::Part(sp("b"))]),
-                        Expression::Path(vec![PathPart::Part(sp("k"))])
+                        Expression::Path {
+                            span: sp("bar"),
+                            path: vec![PathPart::Part(sp("bar"))]
+                        },
+                        Expression::Path {
+                            span: sp("a.b"),
+                            path: vec![PathPart::Part(sp("a")), PathPart::Part(sp("b"))]
+                        },
+                        Expression::Path {
+                            span: sp("k"),
+                            path: vec![PathPart::Part(sp("k"))]
+                        }
                     ]
                 }
             ))
@@ -282,7 +334,10 @@ mod test {
                 Expression::LegacyHelper {
                     span: sp("function.foo"),
                     name: sp("foo"),
-                    args: vec![Expression::Path(vec![PathPart::Part(sp("@value"))])]
+                    args: vec![Expression::Path {
+                        span: sp(""),
+                        path: vec![PathPart::Part(sp("@value"))]
+                    }]
                 }
             ))
         );
@@ -298,8 +353,14 @@ mod test {
                     span: sp("foo(bar, a.b, function.bar, \"boom\")"),
                     name: sp("foo"),
                     args: vec![
-                        Expression::Path(vec![PathPart::Part(sp("bar"))]),
-                        Expression::Path(vec![PathPart::Part(sp("a")), PathPart::Part(sp("b"))]),
+                        Expression::Path {
+                            span: sp("bar"),
+                            path: vec![PathPart::Part(sp("bar"))]
+                        },
+                        Expression::Path {
+                            span: sp("a.b"),
+                            path: vec![PathPart::Part(sp("a")), PathPart::Part(sp("b"))]
+                        },
                         Expression::LegacyHelper {
                             span: sp("function.bar, \"boom\""),
                             name: sp("bar"),
@@ -320,11 +381,14 @@ mod test {
                         span: sp("foo(bar, a.b)"),
                         name: sp("foo"),
                         args: vec![
-                            Expression::Path(vec![PathPart::Part(sp("bar"))]),
-                            Expression::Path(vec![
-                                PathPart::Part(sp("a")),
-                                PathPart::Part(sp("b"))
-                            ]),
+                            Expression::Path {
+                                span: sp("bar"),
+                                path: vec![PathPart::Part(sp("bar"))]
+                            },
+                            Expression::Path {
+                                span: sp("a.b"),
+                                path: vec![PathPart::Part(sp("a")), PathPart::Part(sp("b"))]
+                            },
                         ]
                     })
                 }
