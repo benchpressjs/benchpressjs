@@ -1,12 +1,12 @@
 use crate::parse::Span;
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
-pub enum PathPart<'a> {
-    Part(Span<'a>),
-    PartDepth(Span<'a>, u32),
+pub enum PathPart<S> {
+    Part(S),
+    PartDepth(S, u32),
 }
 
-impl<'a> PathPart<'a> {
+impl<'a> PathPart<Span<'a>> {
     pub fn span(&self) -> Span<'a> {
         match self {
             PathPart::Part(span) | PathPart::PartDepth(span, _) => *span,
@@ -24,10 +24,10 @@ impl<'a> PathPart<'a> {
     }
 }
 
-pub type PathBuf<'a> = Vec<PathPart<'a>>;
-pub type Path<'a, 'b> = &'b [PathPart<'a>];
+pub type PathBuf<S> = Vec<PathPart<S>>;
+pub type Path<'b, S> = &'b [PathPart<S>];
 
-pub fn resolve<'a, 'b>(base: Path<'a, 'b>, rel: PathBuf<'a>) -> PathBuf<'a> {
+pub fn resolve<'a, 'b>(base: Path<'b, Span<'a>>, rel: PathBuf<Span<'a>>) -> PathBuf<Span<'a>> {
     // ignore special paths
     if rel.len() == 1 && rel[0].inner().starts_with('@') {
         return rel.to_vec();
@@ -39,7 +39,7 @@ pub fn resolve<'a, 'b>(base: Path<'a, 'b>, rel: PathBuf<'a>) -> PathBuf<'a> {
         let mut base_end = base.len();
         let mut rel_start = 1;
         loop {
-            match rel.get(rel_start).map(PathPart::inner) {
+            match rel.get(rel_start).map(|p| p.inner()) {
                 Some("../") => {
                     if base_end > 0 {
                         base_end -= 1;
@@ -110,5 +110,19 @@ pub fn resolve<'a, 'b>(base: Path<'a, 'b>, rel: PathBuf<'a>) -> PathBuf<'a> {
     } else {
         // assume its an absolute path
         rel.to_vec()
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    impl<'a> PathPart<Span<'a>> {
+        pub fn span_to_str(self) -> PathPart<&'a str> {
+            match self {
+                PathPart::Part(span) => PathPart::Part(*span.fragment()),
+                PathPart::PartDepth(span, depth) => PathPart::PartDepth(*span.fragment(), depth),
+            }
+        }
     }
 }

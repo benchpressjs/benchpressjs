@@ -18,7 +18,8 @@ web-sys = { version = "0.3", features = ["console"] }
 lazy_static = "1.4.0"
 json = "0.12.4"
 console_error_panic_hook = "0.1.6"
-nom_locate = { git = "https://github.com/pitaj/nom_locate", branch = "easy-test", features = ["std", "easy-test"] }
+# need this rev for nom 6 and Hash support
+nom_locate = { git = "https://github.com/fflorent/nom_locate", rev = "1146a10c66c3c676fd78dac280641179c1395a07" }
 aho-corasick = "0.7.15"
 
 [dev-dependencies]

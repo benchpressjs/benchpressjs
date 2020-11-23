@@ -11,7 +11,6 @@ pub mod path;
 pub mod tokens;
 pub mod tree;
 
-#[cfg_attr(test, derive(Default))]
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub struct FileInfo<'a> {
     pub filename: &'a str,
@@ -71,7 +70,24 @@ where
 pub mod test {
     use super::*;
 
+    #[doc(hidden)]
+    #[macro_export]
+    macro_rules! _assert_eq_uspan {
+        ($left:expr, $right:expr) => {
+            ::pretty_assertions::assert_eq!(span_to_str($left), $right);
+        };
+    }
+
+    pub use _assert_eq_uspan as assert_eq_unspan;
+    pub use pretty_assertions::assert_eq;
+
     pub fn sp(s: &str) -> Span {
-        Span::new_test(s)
+        Span::new_extra(
+            s,
+            FileInfo {
+                filename: "<test>",
+                full_source: s,
+            },
+        )
     }
 }

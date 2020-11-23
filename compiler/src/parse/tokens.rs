@@ -32,60 +32,33 @@ use nom::{
 };
 
 #[derive(Debug, PartialEq, Eq, Clone, Hash)]
-pub enum Token<'a> {
+pub enum Token<S> {
     // Template text passed through
-    Text(Span<'a>),
+    Text(S),
     // `{obj.prop}`
-    InterpEscaped {
-        span: Span<'a>,
-        expr: Expression<'a>,
-    },
+    InterpEscaped { span: S, expr: Expression<S> },
     // `{{obj.prop}}`
-    InterpRaw {
-        span: Span<'a>,
-        expr: Expression<'a>,
-    },
+    InterpRaw { span: S, expr: Expression<S> },
     // `{{{ if condition }}}`
-    If {
-        span: Span<'a>,
-        subject: Expression<'a>,
-    },
+    If { span: S, subject: Expression<S> },
     // `{{{ each arr }}}`
-    Each {
-        span: Span<'a>,
-        subject: Expression<'a>,
-    },
+    Each { span: S, subject: Expression<S> },
     // `{{{ else }}}`
-    Else {
-        span: Span<'a>,
-    },
+    Else { span: S },
     // `{{{ end }}}`
-    End {
-        span: Span<'a>,
-    },
+    End { span: S },
     // `<!-- IF condition -->`
-    LegacyIf {
-        span: Span<'a>,
-        subject: Expression<'a>,
-    },
+    LegacyIf { span: S, subject: Expression<S> },
     // `<!-- BEGIN arr -->`
-    LegacyBegin {
-        span: Span<'a>,
-        subject: Expression<'a>,
-    },
+    LegacyBegin { span: S, subject: Expression<S> },
     // `<!-- ELSE -->`
-    LegacyElse {
-        span: Span<'a>,
-    },
+    LegacyElse { span: S },
     // `<!-- END -->` or `<!-- ENDIF -->` or
     // `<!-- END subject -->` or `<!-- ENDIF subject -->`
-    LegacyEnd {
-        span: Span<'a>,
-        subject_raw: Span<'a>,
-    },
+    LegacyEnd { span: S, subject_raw: S },
 }
 
-impl<'a> Token<'a> {
+impl<'a> Token<Span<'a>> {
     pub fn span(&self) -> Span<'a> {
         match self {
             Token::Text(span) => *span,
@@ -103,21 +76,21 @@ impl<'a> Token<'a> {
     }
 }
 
-fn interp_escaped(input: Span) -> IResult<Span, Token<'_>> {
+fn interp_escaped(input: Span) -> IResult<Span, Token<Span>> {
     map(
         consumed(delimited(tag("{"), ws(expression), tag("}"))),
         |(span, expr)| Token::InterpEscaped { span, expr },
     )(input)
 }
 
-fn interp_raw(input: Span) -> IResult<Span, Token<'_>> {
+fn interp_raw(input: Span) -> IResult<Span, Token<Span>> {
     map(
         consumed(delimited(tag("{{"), ws(expression), tag("}}"))),
         |(span, expr)| Token::InterpRaw { span, expr },
     )(input)
 }
 
-fn new_each(input: Span) -> IResult<Span, Token<'_>> {
+fn new_each(input: Span) -> IResult<Span, Token<Span>> {
     map(
         consumed(delimited(
             pair(tag("{{{"), ws(tag("each"))),
@@ -128,7 +101,7 @@ fn new_each(input: Span) -> IResult<Span, Token<'_>> {
     )(input)
 }
 
-fn new_if(input: Span) -> IResult<Span, Token<'_>> {
+fn new_if(input: Span) -> IResult<Span, Token<Span>> {
     map(
         consumed(delimited(
             pair(tag("{{{"), ws(tag("if"))),
@@ -139,21 +112,21 @@ fn new_if(input: Span) -> IResult<Span, Token<'_>> {
     )(input)
 }
 
-fn new_else(input: Span) -> IResult<Span, Token<'_>> {
+fn new_else(input: Span) -> IResult<Span, Token<Span>> {
     map(
         recognize(delimited(tag("{{{"), ws(tag("else")), tag("}}}"))),
         |span| Token::Else { span },
     )(input)
 }
 
-fn new_end(input: Span) -> IResult<Span, Token<'_>> {
+fn new_end(input: Span) -> IResult<Span, Token<Span>> {
     map(
         recognize(delimited(tag("{{{"), ws(tag("end")), tag("}}}"))),
         |span| Token::End { span },
     )(input)
 }
 
-fn legacy_begin(input: Span) -> IResult<Span, Token<'_>> {
+fn legacy_begin(input: Span) -> IResult<Span, Token<Span>> {
     map(
         consumed(delimited(
             pair(tag("<!--"), ws(tag("BEGIN"))),
@@ -164,7 +137,7 @@ fn legacy_begin(input: Span) -> IResult<Span, Token<'_>> {
     )(input)
 }
 
-fn legacy_if(input: Span) -> IResult<Span, Token<'_>> {
+fn legacy_if(input: Span) -> IResult<Span, Token<Span>> {
     map(
         consumed(delimited(
             pair(tag("<!--"), ws(tag("IF"))),
@@ -200,7 +173,7 @@ fn legacy_if(input: Span) -> IResult<Span, Token<'_>> {
     )(input)
 }
 
-fn legacy_else(input: Span) -> IResult<Span, Token<'_>> {
+fn legacy_else(input: Span) -> IResult<Span, Token<Span>> {
     map(
         recognize(delimited(tag("<!--"), ws(tag("ELSE")), tag("-->"))),
         |span| Token::LegacyElse { span },
@@ -211,7 +184,7 @@ fn trim_end(input: Span) -> Span {
     input.slice(..(input.trim_end().len()))
 }
 
-fn legacy_end(input: Span) -> IResult<Span, Token<'_>> {
+fn legacy_end(input: Span) -> IResult<Span, Token<Span>> {
     map(
         consumed(delimited(
             pair(tag("<!--"), ws(alt((tag("ENDIF"), tag("END"))))),
@@ -225,7 +198,7 @@ fn legacy_end(input: Span) -> IResult<Span, Token<'_>> {
     )(input)
 }
 
-fn token(input: Span) -> IResult<Span, Token<'_>> {
+fn token(input: Span) -> IResult<Span, Token<Span>> {
     alt((
         interp_escaped,
         interp_raw,
@@ -254,7 +227,7 @@ lazy_static::lazy_static! {
 }
 
 #[rustfmt::skip::macros(warn)]
-pub fn tokens(mut input: Span) -> IResult<Span, Vec<Token<'_>>> {
+pub fn tokens(mut input: Span) -> IResult<Span, Vec<Token<Span>>> {
     let mut tokens = vec![];
     let mut index = 0;
 
@@ -360,34 +333,95 @@ mod test {
     use super::*;
     use crate::parse::{
         path::PathPart,
-        test::sp,
+        test::{
+            assert_eq_unspan,
+            sp,
+        },
     };
-    use pretty_assertions::assert_eq;
+
+    impl<'a> Token<Span<'a>> {
+        pub fn span_to_str(self) -> Token<&'a str> {
+            match self {
+                Token::Text(span) => Token::Text(*span.fragment()),
+                Token::InterpEscaped { span, expr } => Token::InterpEscaped {
+                    span: *span.fragment(),
+                    expr: expr.span_to_str(),
+                },
+                Token::InterpRaw { span, expr } => Token::InterpRaw {
+                    span: *span.fragment(),
+                    expr: expr.span_to_str(),
+                },
+                Token::If { span, subject } => Token::If {
+                    span: *span.fragment(),
+                    subject: subject.span_to_str(),
+                },
+                Token::Each { span, subject } => Token::Each {
+                    span: *span.fragment(),
+                    subject: subject.span_to_str(),
+                },
+                Token::Else { span } => Token::Else {
+                    span: *span.fragment(),
+                },
+                Token::End { span } => Token::End {
+                    span: *span.fragment(),
+                },
+                Token::LegacyIf { span, subject } => Token::LegacyIf {
+                    span: *span.fragment(),
+                    subject: subject.span_to_str(),
+                },
+                Token::LegacyBegin { span, subject } => Token::LegacyBegin {
+                    span: *span.fragment(),
+                    subject: subject.span_to_str(),
+                },
+                Token::LegacyElse { span } => Token::LegacyElse {
+                    span: *span.fragment(),
+                },
+                Token::LegacyEnd { span, subject_raw } => Token::LegacyEnd {
+                    span: *span.fragment(),
+                    subject_raw: *subject_raw.fragment(),
+                },
+            }
+        }
+    }
+
+    fn span_to_str<'a>(
+        res: IResult<Span<'a>, Token<Span<'a>>>,
+    ) -> IResult<&'a str, Token<&'a str>> {
+        match res {
+            Ok((rest, tok)) => Ok((*rest.fragment(), tok.span_to_str())),
+            Err(err) => Err(
+                err.map(|nom::error::Error { input, code }| nom::error::Error {
+                    input: *input.fragment(),
+                    code,
+                }),
+            ),
+        }
+    }
 
     #[test]
     fn test_interp_escaped() {
-        assert_eq!(
+        assert_eq_unspan!(
             interp_escaped(sp("{prop}")),
             Ok((
-                sp(""),
+                "",
                 Token::InterpEscaped {
-                    span: sp("{prop}"),
+                    span: "{prop}",
                     expr: Expression::Path {
-                        span: sp("prop"),
-                        path: vec![PathPart::Part(sp("prop"))]
+                        span: "prop",
+                        path: vec![PathPart::Part("prop")]
                     }
                 }
             ))
         );
-        assert_eq!(
+        assert_eq_unspan!(
             interp_escaped(sp("{ call() } stuff")),
             Ok((
-                sp(" stuff"),
+                " stuff",
                 Token::InterpEscaped {
-                    span: sp("{ call() }"),
+                    span: "{ call() }",
                     expr: Expression::Helper {
-                        span: sp("call()"),
-                        name: sp("call"),
+                        span: "call()",
+                        name: "call",
                         args: vec![]
                     }
                 }
@@ -397,28 +431,28 @@ mod test {
 
     #[test]
     fn test_interp_raw() {
-        assert_eq!(
+        assert_eq_unspan!(
             interp_raw(sp("{{prop}}")),
             Ok((
-                sp(""),
+                "",
                 Token::InterpRaw {
-                    span: sp("{{prop}}"),
+                    span: "{{prop}}",
                     expr: Expression::Path {
-                        span: sp("prop"),
-                        path: vec![PathPart::Part(sp("prop"))]
+                        span: "prop",
+                        path: vec![PathPart::Part("prop")]
                     }
                 }
             ))
         );
-        assert_eq!(
+        assert_eq_unspan!(
             interp_raw(sp("{{ call() }} stuff")),
             Ok((
-                sp(" stuff"),
+                " stuff",
                 Token::InterpRaw {
-                    span: sp("{{ call() }}"),
+                    span: "{{ call() }}",
                     expr: Expression::Helper {
-                        span: sp("call()"),
-                        name: sp("call"),
+                        span: "call()",
+                        name: "call",
                         args: vec![]
                     }
                 }
@@ -428,28 +462,28 @@ mod test {
 
     #[test]
     fn test_new_if() {
-        assert_eq!(
+        assert_eq_unspan!(
             new_if(sp("{{{if abc}}}")),
             Ok((
-                sp(""),
+                "",
                 Token::If {
-                    span: sp("{{{if abc}}}"),
+                    span: "{{{if abc}}}",
                     subject: Expression::Path {
-                        span: sp("abc"),
-                        path: vec![PathPart::Part(sp("abc"))]
+                        span: "abc",
+                        path: vec![PathPart::Part("abc")]
                     }
                 }
             ))
         );
-        assert_eq!(
+        assert_eq_unspan!(
             new_if(sp("{{{ if call() }}}")),
             Ok((
-                sp(""),
+                "",
                 Token::If {
-                    span: sp("{{{ if call() }}}"),
+                    span: "{{{ if call() }}}",
                     subject: Expression::Helper {
-                        span: sp("call()"),
-                        name: sp("call"),
+                        span: "call()",
+                        name: "call",
                         args: vec![]
                     }
                 }
@@ -459,28 +493,28 @@ mod test {
 
     #[test]
     fn test_new_each() {
-        assert_eq!(
+        assert_eq_unspan!(
             new_each(sp("{{{each abc.def}}}")),
             Ok((
-                sp(""),
+                "",
                 Token::Each {
-                    span: sp("{{{each abc.def}}}"),
+                    span: "{{{each abc.def}}}",
                     subject: Expression::Path {
-                        span: sp("abc.def"),
-                        path: vec![PathPart::Part(sp("abc")), PathPart::Part(sp("def"))]
+                        span: "abc.def",
+                        path: vec![PathPart::Part("abc"), PathPart::Part("def")]
                     }
                 }
             ))
         );
-        assert_eq!(
+        assert_eq_unspan!(
             new_each(sp("{{{ each call() }}}")),
             Ok((
-                sp(""),
+                "",
                 Token::Each {
-                    span: sp("{{{ each call() }}}"),
+                    span: "{{{ each call() }}}",
                     subject: Expression::Helper {
-                        span: sp("call()"),
-                        name: sp("call"),
+                        span: "call()",
+                        name: "call",
                         args: vec![]
                     }
                 }
@@ -490,21 +524,16 @@ mod test {
 
     #[test]
     fn test_new_else() {
-        assert_eq!(
+        assert_eq_unspan!(
             new_else(sp("{{{else}}}")),
-            Ok((
-                sp(""),
-                Token::Else {
-                    span: sp("{{{else}}}")
-                }
-            ))
+            Ok(("", Token::Else { span: "{{{else}}}" }))
         );
-        assert_eq!(
+        assert_eq_unspan!(
             new_else(sp("{{{ else }}}")),
             Ok((
-                sp(""),
+                "",
                 Token::Else {
-                    span: sp("{{{ else }}}")
+                    span: "{{{ else }}}"
                 }
             ))
         );
@@ -512,21 +541,16 @@ mod test {
 
     #[test]
     fn test_new_end() {
-        assert_eq!(
+        assert_eq_unspan!(
             new_end(sp("{{{end}}}")),
-            Ok((
-                sp(""),
-                Token::End {
-                    span: sp("{{{end}}}")
-                }
-            ))
+            Ok(("", Token::End { span: "{{{end}}}" }))
         );
-        assert_eq!(
+        assert_eq_unspan!(
             new_end(sp("{{{ end }}}")),
             Ok((
-                sp(""),
+                "",
                 Token::End {
-                    span: sp("{{{ end }}}")
+                    span: "{{{ end }}}"
                 }
             ))
         );
@@ -534,54 +558,54 @@ mod test {
 
     #[test]
     fn test_legacy_if() {
-        assert_eq!(
+        assert_eq_unspan!(
             legacy_if(sp("<!--IF abc-->")),
             Ok((
-                sp(""),
+                "",
                 Token::LegacyIf {
-                    span: sp("<!--IF abc-->"),
+                    span: "<!--IF abc-->",
                     subject: Expression::Path {
-                        span: sp("abc"),
-                        path: vec![PathPart::Part(sp("abc"))]
+                        span: "abc",
+                        path: vec![PathPart::Part("abc")]
                     }
                 }
             ))
         );
-        assert_eq!(
+        assert_eq_unspan!(
             legacy_if(sp("<!-- IF call() -->")),
             Ok((
-                sp(""),
+                "",
                 Token::LegacyIf {
-                    span: sp("<!-- IF call() -->"),
+                    span: "<!-- IF call() -->",
                     subject: Expression::Helper {
-                        span: sp("call()"),
-                        name: sp("call"),
+                        span: "call()",
+                        name: "call",
                         args: vec![]
                     }
                 }
             ))
         );
-        assert_eq!(
+        assert_eq_unspan!(
             legacy_if(sp("<!--IF function.bar, a, b -->")),
             Ok((
-                sp(""),
+                "",
                 Token::LegacyIf {
-                    span: sp("<!--IF function.bar, a, b -->"),
+                    span: "<!--IF function.bar, a, b -->",
                     subject: Expression::LegacyHelper {
-                        span: sp("function.bar, a, b"),
-                        name: sp("bar"),
+                        span: "function.bar, a, b",
+                        name: "bar",
                         args: vec![
                             Expression::Path {
-                                span: sp(""),
-                                path: vec![PathPart::Part(sp("@root"))]
+                                span: "",
+                                path: vec![PathPart::Part("@root")]
                             },
                             Expression::Path {
-                                span: sp("a"),
-                                path: vec![PathPart::Part(sp("a"))]
+                                span: "a",
+                                path: vec![PathPart::Part("a")]
                             },
                             Expression::Path {
-                                span: sp("b"),
-                                path: vec![PathPart::Part(sp("b"))]
+                                span: "b",
+                                path: vec![PathPart::Part("b")]
                             },
                         ]
                     }
@@ -592,28 +616,28 @@ mod test {
 
     #[test]
     fn test_legacy_begin() {
-        assert_eq!(
+        assert_eq_unspan!(
             legacy_begin(sp("<!--BEGIN abc.def-->")),
             Ok((
-                sp(""),
+                "",
                 Token::LegacyBegin {
-                    span: sp("<!--BEGIN abc.def-->"),
+                    span: "<!--BEGIN abc.def-->",
                     subject: Expression::Path {
-                        span: sp("abc.def"),
-                        path: vec![PathPart::Part(sp("abc")), PathPart::Part(sp("def"))]
+                        span: "abc.def",
+                        path: vec![PathPart::Part("abc"), PathPart::Part("def")]
                     }
                 }
             ))
         );
-        assert_eq!(
+        assert_eq_unspan!(
             legacy_begin(sp("<!-- BEGIN call() -->")),
             Ok((
-                sp(""),
+                "",
                 Token::LegacyBegin {
-                    span: sp("<!-- BEGIN call() -->"),
+                    span: "<!-- BEGIN call() -->",
                     subject: Expression::Helper {
-                        span: sp("call()"),
-                        name: sp("call"),
+                        span: "call()",
+                        name: "call",
                         args: vec![]
                     }
                 }
@@ -623,21 +647,21 @@ mod test {
 
     #[test]
     fn test_legacy_else() {
-        assert_eq!(
+        assert_eq_unspan!(
             legacy_else(sp("<!--ELSE-->")),
             Ok((
-                sp(""),
+                "",
                 Token::LegacyElse {
-                    span: sp("<!--ELSE-->")
+                    span: "<!--ELSE-->"
                 }
             ))
         );
-        assert_eq!(
+        assert_eq_unspan!(
             legacy_else(sp("<!-- ELSE -->")),
             Ok((
-                sp(""),
+                "",
                 Token::LegacyElse {
-                    span: sp("<!-- ELSE -->")
+                    span: "<!-- ELSE -->"
                 }
             ))
         );
@@ -645,43 +669,43 @@ mod test {
 
     #[test]
     fn test_legacy_end() {
-        assert_eq!(
+        assert_eq_unspan!(
             legacy_end(sp("<!--END-->")),
             Ok((
-                sp(""),
+                "",
                 Token::LegacyEnd {
-                    span: sp("<!--END-->"),
-                    subject_raw: sp("")
+                    span: "<!--END-->",
+                    subject_raw: ""
                 }
             ))
         );
-        assert_eq!(
+        assert_eq_unspan!(
             legacy_end(sp("<!--END abc.def-->")),
             Ok((
-                sp(""),
+                "",
                 Token::LegacyEnd {
-                    span: sp("<!--END abc.def-->"),
-                    subject_raw: sp("abc.def")
+                    span: "<!--END abc.def-->",
+                    subject_raw: "abc.def"
                 }
             ))
         );
-        assert_eq!(
+        assert_eq_unspan!(
             legacy_end(sp("<!-- END -->")),
             Ok((
-                sp(""),
+                "",
                 Token::LegacyEnd {
-                    span: sp("<!-- END -->"),
-                    subject_raw: sp("")
+                    span: "<!-- END -->",
+                    subject_raw: ""
                 }
             ))
         );
-        assert_eq!(
+        assert_eq_unspan!(
             legacy_end(sp("<!-- ENDIF call() -->")),
             Ok((
-                sp(""),
+                "",
                 Token::LegacyEnd {
-                    span: sp("<!-- ENDIF call() -->"),
-                    subject_raw: sp("call()")
+                    span: "<!-- ENDIF call() -->",
+                    subject_raw: "call()"
                 }
             ))
         );
@@ -689,124 +713,135 @@ mod test {
 
     #[test]
     fn test_tokens() {
-        assert_eq!(
+        fn span_to_str<'a>(
+            res: IResult<Span<'a>, Vec<Token<Span<'a>>>>,
+        ) -> IResult<&'a str, Vec<Token<&'a str>>> {
+            match res {
+                Ok((rest, tok)) => Ok((
+                    *rest.fragment(),
+                    tok.into_iter().map(|t| t.span_to_str()).collect(),
+                )),
+                Err(err) => Err(
+                    err.map(|nom::error::Error { input, code }| nom::error::Error {
+                        input: *input.fragment(),
+                        code,
+                    }),
+                ),
+            }
+        }
+
+        assert_eq_unspan!(
             tokens(
                 sp("before {{{ if abc }}} we do one thing {{{ else }}} we do another {{{ end }}} other stuff")
             ),
             Ok((
-                sp(""),
+                "",
                 vec![
-                    Token::Text(sp("before ")),
+                    Token::Text("before "),
                     Token::If {
-                        span: sp("{{{ if abc }}}"),
-                        subject: Expression::Path { span: sp("abc"), path: vec![PathPart::Part(sp("abc"))] }
+                        span: "{{{ if abc }}}",
+                        subject: Expression::Path { span: "abc", path: vec![PathPart::Part("abc")] }
                     },
-                    Token::Text(sp(" we do one thing ")),
-                    Token::Else { span: sp("{{{ else }}}") },
-                    Token::Text(sp(" we do another ")),
-                    Token::End { span: sp("{{{ end }}}") },
-                    Token::Text(sp(" other stuff")),
+                    Token::Text(" we do one thing "),
+                    Token::Else { span: "{{{ else }}}" },
+                    Token::Text(" we do another "),
+                    Token::End { span: "{{{ end }}}" },
+                    Token::Text(" other stuff"),
                 ]
             ))
         );
 
-        assert_eq!(
+        assert_eq_unspan!(
             tokens(sp(
                 "{{{ if abc }}} we do one thing {{{ else }}} we do another {{{ end }}} other stuff"
             )),
             Ok((
-                sp(""),
+                "",
                 vec![
                     Token::If {
-                        span: sp("{{{ if abc }}}"),
+                        span: "{{{ if abc }}}",
                         subject: Expression::Path {
-                            span: sp("abc"),
-                            path: vec![PathPart::Part(sp("abc"))]
+                            span: "abc",
+                            path: vec![PathPart::Part("abc")]
                         }
                     },
-                    Token::Text(sp(" we do one thing ")),
+                    Token::Text(" we do one thing "),
                     Token::Else {
-                        span: sp("{{{ else }}}")
+                        span: "{{{ else }}}"
                     },
-                    Token::Text(sp(" we do another ")),
+                    Token::Text(" we do another "),
                     Token::End {
-                        span: sp("{{{ end }}}")
+                        span: "{{{ end }}}"
                     },
-                    Token::Text(sp(" other stuff")),
+                    Token::Text(" other stuff"),
                 ]
             ))
         );
 
-        assert_eq!(
+        assert_eq_unspan!(
             tokens(sp("before {{{ each abc }}} for each thing {{{ end }}}")),
             Ok((
-                sp(""),
+                "",
                 vec![
-                    Token::Text(sp("before ")),
+                    Token::Text("before "),
                     Token::Each {
-                        span: sp("{{{ each abc }}}"),
+                        span: "{{{ each abc }}}",
                         subject: Expression::Path {
-                            span: sp("abc"),
-                            path: vec![PathPart::Part(sp("abc"))]
+                            span: "abc",
+                            path: vec![PathPart::Part("abc")]
                         }
                     },
-                    Token::Text(sp(" for each thing ")),
+                    Token::Text(" for each thing "),
                     Token::End {
-                        span: sp("{{{ end }}}")
+                        span: "{{{ end }}}"
                     },
                 ]
             ))
         );
 
-        assert_eq!(
+        assert_eq_unspan!(
             tokens(sp("{{{ each abc }}} for each thing {{{ end }}}")),
             Ok((
-                sp(""),
+                "",
                 vec![
                     Token::Each {
-                        span: sp("{{{ each abc }}}"),
+                        span: "{{{ each abc }}}",
                         subject: Expression::Path {
-                            span: sp("abc"),
-                            path: vec![PathPart::Part(sp("abc"))]
+                            span: "abc",
+                            path: vec![PathPart::Part("abc")]
                         }
                     },
-                    Token::Text(sp(" for each thing ")),
+                    Token::Text(" for each thing "),
                     Token::End {
-                        span: sp("{{{ end }}}")
+                        span: "{{{ end }}}"
                     },
                 ]
             ))
         );
 
-        assert_eq!(
+        assert_eq_unspan!(
             tokens(sp("{{{ each /abc }}} for each thing {{{ end }}}")),
             Ok((
-                sp(""),
+                "",
                 vec![
-                    Token::Text(sp("{{{ each /abc }}} for each thing ")),
+                    Token::Text("{{{ each /abc }}} for each thing "),
                     Token::End {
-                        span: sp("{{{ end }}}")
+                        span: "{{{ end }}}"
                     },
                 ]
             ))
         );
 
         let program = "before \\{{{ each abc }}} for each thing \\{{{ end }}}";
-        let source = Span::new_extra(
-            program,
-            crate::parse::FileInfo {
-                filename: "",
-                full_source: program,
-            },
-        );
-        assert_eq!(
+        let source = sp(program);
+        assert_eq_unspan!(
             tokens(source),
             Ok((
-                sp(""),
+                "",
                 vec![
-                    Token::Text(sp("before ")),
-                    Token::Text(sp("{{{ each abc }}} for each thing ")),
-                    Token::Text(sp("{{{ end }}}")),
+                    Token::Text("before "),
+                    Token::Text("{{{ each abc }}} for each thing "),
+                    Token::Text("{{{ end }}}"),
                 ]
             ))
         );

@@ -16,23 +16,23 @@ use crate::{
 use std::collections::HashSet;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub enum Instruction<'a> {
+pub enum Instruction<S> {
     // Template text passed through
-    Text(Span<'a>),
+    Text(S),
     // `{obj.prop}`
-    InterpEscaped(Expression<'a>),
+    InterpEscaped(Expression<S>),
     // `{{obj.prop}}`
-    InterpRaw(Expression<'a>),
+    InterpRaw(Expression<S>),
     If {
-        subject: Expression<'a>,
-        body: Vec<Instruction<'a>>,
-        alt: Vec<Instruction<'a>>,
+        subject: Expression<S>,
+        body: Vec<Instruction<S>>,
+        alt: Vec<Instruction<S>>,
     },
     Iter {
         depth: u32,
-        subject: Expression<'a>,
-        body: Vec<Instruction<'a>>,
-        alt: Vec<Instruction<'a>>,
+        subject: Expression<S>,
+        body: Vec<Instruction<S>>,
+        alt: Vec<Instruction<S>>,
     },
 }
 
@@ -40,8 +40,8 @@ pub enum Instruction<'a> {
 /// try to match them to Ifs or Iters
 /// and remove the extra ones
 #[rustfmt::skip::macros(warn)]
-pub fn fix_extra_tokens(input: Vec<Token>) -> Vec<Token> {
-    let mut remove: HashSet<Token> = HashSet::new();
+pub fn fix_extra_tokens<'a>(input: Vec<Token<Span<'a>>>) -> Vec<Token<Span<'a>>> {
+    let mut remove: HashSet<Token<Span<'a>>> = HashSet::new();
     let mut expected_subjects: Vec<&str> = Vec::new();
 
     let mut starts_count: u16 = 0;
@@ -115,7 +115,7 @@ pub fn fix_extra_tokens(input: Vec<Token>) -> Vec<Token> {
 
         warn!("[benchpress] warning: found extra tokens");
 
-        let output: Vec<Token> = input
+        let output: Vec<Token<Span>> = input
             .into_iter()
             .map(|tok| {
                 if diff > 0 && remove.contains(&tok) {
@@ -145,7 +145,10 @@ pub fn fix_extra_tokens(input: Vec<Token>) -> Vec<Token> {
     }
 }
 
-fn resolve_expression_paths<'a, 'b>(base: Path<'a, 'b>, expr: Expression<'a>) -> Expression<'a> {
+fn resolve_expression_paths<'a, 'b>(
+    base: Path<'b, Span<'a>>,
+    expr: Expression<Span<'a>>,
+) -> Expression<Span<'a>> {
     match expr {
         s @ Expression::StringLiteral(_) => s,
         Expression::Path { span, path } => Expression::Path {
@@ -181,14 +184,14 @@ pub struct TreeError;
 #[rustfmt::skip::macros(warn)]
 pub fn tree<'a, 'b, I>(
     depth: u32,
-    base: Path<'a, 'b>,
+    base: Path<'b, Span<'a>>,
     input: &mut I,
-    output: &mut Vec<Instruction<'a>>,
-) -> Result<Option<Token<'a>>, TreeError>
+    output: &mut Vec<Instruction<Span<'a>>>,
+) -> Result<Option<Token<Span<'a>>>, TreeError>
 where
-    I: Iterator<Item = Token<'a>> + Clone,
+    I: Iterator<Item = Token<Span<'a>>> + Clone,
 {
-    let mixed_warning = |open_token: &str, open_span: Span, close: Token| {
+    let mixed_warning = |open_token: &str, open_span: Span, close: Token<Span>| {
         let (open_syntax, close_syntax, close_token, close_span) = match close {
             Token::LegacyElse { span, .. } => ("modern", "legacy", "ELSE", span),
             Token::LegacyEnd { span, .. } => (
@@ -275,7 +278,7 @@ where
                 let mut alt = vec![];
 
                 let subject = resolve_expression_paths(base, subject);
-                let base: PathBuf = if let Expression::Path { path: base, .. } = &subject {
+                let base: PathBuf<Span> = if let Expression::Path { path: base, .. } = &subject {
                     let mut base = base.clone();
                     if let Some(last) = base.last_mut() {
                         last.with_depth(depth)
@@ -348,7 +351,7 @@ where
                     let mut alt = vec![];
 
                     let subject = resolve_expression_paths(base, subject);
-                    let base: PathBuf = if let Expression::Path { path: base, .. } = &subject {
+                    let base: PathBuf<Span> = if let Expression::Path { path: base, .. } = &subject {
                         let mut base = base.clone();
                         if let Some(last) = base.last_mut() {
                             last.with_depth(depth)
@@ -430,40 +433,69 @@ mod test {
     use super::*;
     use crate::parse::{
         path::PathPart,
-        test::sp,
-        FileInfo,
+        test::{
+            assert_eq_unspan,
+            sp,
+        },
     };
-    use pretty_assertions::assert_eq;
+
+    impl<'a> Instruction<Span<'a>> {
+        pub fn span_to_str(self) -> Instruction<&'a str> {
+            match self {
+                Instruction::Text(span) => Instruction::Text(*span.fragment()),
+                Instruction::InterpEscaped(expr) => Instruction::InterpEscaped(expr.span_to_str()),
+                Instruction::InterpRaw(expr) => Instruction::InterpRaw(expr.span_to_str()),
+                Instruction::If { subject, body, alt } => Instruction::If {
+                    subject: subject.span_to_str(),
+                    body: body.into_iter().map(|i| i.span_to_str()).collect(),
+                    alt: alt.into_iter().map(|i| i.span_to_str()).collect(),
+                },
+                Instruction::Iter {
+                    depth,
+                    subject,
+                    body,
+                    alt,
+                } => Instruction::Iter {
+                    depth,
+                    subject: subject.span_to_str(),
+                    body: body.into_iter().map(|i| i.span_to_str()).collect(),
+                    alt: alt.into_iter().map(|i| i.span_to_str()).collect(),
+                },
+            }
+        }
+    }
 
     #[test]
     fn test_fix_extra_tokens() {
+        fn span_to_str<'a>(tokens: Vec<Token<Span<'a>>>) -> Vec<Token<&'a str>> {
+            tokens.into_iter().map(|t| t.span_to_str()).collect()
+        }
+
         let program = "{{{ each abc }}} for each thing <!-- END foo -->{{{ end }}}";
-        let source = Span::new_extra(
-            program,
-            FileInfo {
-                filename: "",
-                full_source: program,
-            },
-        );
+        let source = sp(program);
         let (_, tokens) = crate::parse::tokens::tokens(source).unwrap();
 
-        assert_eq!(
+        assert_eq_unspan!(
             fix_extra_tokens(tokens),
             vec![
                 Token::Each {
-                    span: sp("{{{ each abc }}}"),
+                    span: "{{{ each abc }}}",
                     subject: Expression::Path {
-                        span: sp("abc"),
-                        path: vec![PathPart::Part(sp("abc"))]
+                        span: "abc",
+                        path: vec![PathPart::Part("abc")]
                     }
                 },
-                Token::Text(sp(" for each thing ")),
-                Token::Text(sp("<!-- END foo -->")),
+                Token::Text(" for each thing "),
+                Token::Text("<!-- END foo -->"),
                 Token::End {
-                    span: sp("{{{ end }}}")
+                    span: "{{{ end }}}"
                 },
             ]
         );
+    }
+
+    fn span_to_str<'a>(tree: Vec<Instruction<Span<'a>>>) -> Vec<Instruction<&'a str>> {
+        tree.into_iter().map(|i| i.span_to_str()).collect()
     }
 
     #[test]
@@ -487,15 +519,15 @@ mod test {
 
         assert!(tree(0, &[], &mut input, &mut output).is_ok());
 
-        assert_eq!(
+        assert_eq_unspan!(
             output,
             vec![Instruction::Iter {
                 depth: 0,
                 subject: Expression::Path {
-                    span: sp("abc"),
-                    path: vec![PathPart::Part(sp("abc"))]
+                    span: "abc",
+                    path: vec![PathPart::Part("abc")]
                 },
-                body: vec![Instruction::Text(sp(" for each thing ")),],
+                body: vec![Instruction::Text(" for each thing "),],
                 alt: vec![],
             }]
         );
@@ -544,36 +576,33 @@ mod test {
 
         assert!(tree(0, &[], &mut input, &mut output).is_ok());
 
-        assert_eq!(
+        assert_eq_unspan!(
             output,
             vec![Instruction::Iter {
                 depth: 0,
                 subject: Expression::Path {
-                    span: sp("abc"),
-                    path: vec![PathPart::Part(sp("abc"))]
+                    span: "abc",
+                    path: vec![PathPart::Part("abc")]
                 },
                 body: vec![
-                    Instruction::Text(sp(" before inner ")),
+                    Instruction::Text(" before inner "),
                     Instruction::Iter {
                         depth: 1,
                         subject: Expression::Path {
-                            span: sp("./inner"),
-                            path: vec![
-                                PathPart::PartDepth(sp("abc"), 0),
-                                PathPart::Part(sp("inner"))
-                            ]
+                            span: "./inner",
+                            path: vec![PathPart::PartDepth("abc", 0), PathPart::Part("inner")]
                         },
                         body: vec![Instruction::InterpEscaped(Expression::Path {
-                            span: sp("abc.inner.prop"),
+                            span: "abc.inner.prop",
                             path: vec![
-                                PathPart::PartDepth(sp("abc"), 0),
-                                PathPart::PartDepth(sp("inner"), 1),
-                                PathPart::Part(sp("prop"))
+                                PathPart::PartDepth("abc", 0),
+                                PathPart::PartDepth("inner", 1),
+                                PathPart::Part("prop")
                             ]
                         })],
                         alt: vec![]
                     },
-                    Instruction::Text(sp(" after inner ")),
+                    Instruction::Text(" after inner "),
                 ],
                 alt: vec![],
             }]
@@ -624,39 +653,33 @@ mod test {
 
         assert!(tree(0, &[], &mut input, &mut output).is_ok());
 
-        assert_eq!(
+        assert_eq_unspan!(
             output,
             vec![Instruction::Iter {
                 depth: 0,
                 subject: Expression::Path {
-                    span: sp("abc"),
-                    path: vec![PathPart::Part(sp("abc"))]
+                    span: "abc",
+                    path: vec![PathPart::Part("abc")]
                 },
                 body: vec![
-                    Instruction::Text(sp(" before inner ")),
+                    Instruction::Text(" before inner "),
                     Instruction::If {
                         subject: Expression::Path {
-                            span: sp("inner"),
-                            path: vec![
-                                PathPart::PartDepth(sp("abc"), 0),
-                                PathPart::Part(sp("inner"))
-                            ]
+                            span: "inner",
+                            path: vec![PathPart::PartDepth("abc", 0), PathPart::Part("inner")]
                         },
                         body: vec![Instruction::Iter {
                             depth: 1,
                             subject: Expression::Path {
-                                span: sp("inner"),
-                                path: vec![
-                                    PathPart::PartDepth(sp("abc"), 0),
-                                    PathPart::Part(sp("inner"))
-                                ]
+                                span: "inner",
+                                path: vec![PathPart::PartDepth("abc", 0), PathPart::Part("inner")]
                             },
                             body: vec![Instruction::InterpEscaped(Expression::Path {
-                                span: sp("abc.inner.prop"),
+                                span: "abc.inner.prop",
                                 path: vec![
-                                    PathPart::PartDepth(sp("abc"), 0),
-                                    PathPart::PartDepth(sp("inner"), 1),
-                                    PathPart::Part(sp("prop"))
+                                    PathPart::PartDepth("abc", 0),
+                                    PathPart::PartDepth("inner", 1),
+                                    PathPart::Part("prop")
                                 ]
                             })],
                             alt: vec![]
@@ -664,21 +687,21 @@ mod test {
                         alt: vec![Instruction::Iter {
                             depth: 1,
                             subject: Expression::Path {
-                                span: sp("inner"),
-                                path: vec![PathPart::Part(sp("inner"))]
+                                span: "inner",
+                                path: vec![PathPart::Part("inner")]
                             },
                             body: vec![Instruction::InterpEscaped(Expression::Path {
-                                span: sp("abc.inner.prop"),
+                                span: "abc.inner.prop",
                                 path: vec![
-                                    PathPart::Part(sp("abc")),
-                                    PathPart::Part(sp("inner")),
-                                    PathPart::Part(sp("prop"))
+                                    PathPart::Part("abc"),
+                                    PathPart::Part("inner"),
+                                    PathPart::Part("prop")
                                 ]
                             })],
                             alt: vec![],
                         }]
                     },
-                    Instruction::Text(sp(" after inner ")),
+                    Instruction::Text(" after inner "),
                 ],
                 alt: vec![],
             }]

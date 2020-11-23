@@ -164,6 +164,7 @@ use crate::parse::{
         Path,
         PathPart,
     },
+    Span,
 };
 
 /// escape path
@@ -180,7 +181,7 @@ pub fn escape_path(input: &str) -> String {
 }
 
 /// create guarded chained property access
-pub fn guard(input: Path) -> String {
+pub fn guard(input: Path<Span>) -> String {
     let mut exp = CONTEXT.to_string();
     let mut last = exp.clone();
 
@@ -228,13 +229,13 @@ fn unescape(input: &str) -> String {
 }
 
 /// create JS code for a given expression
-pub fn expression(input: Expression) -> Cow<str> {
+pub fn expression(input: Expression<Span>) -> Cow<str> {
     match input {
         Expression::StringLiteral(value) => {
             json::stringify(json::from(unescape(value.fragment()))).into()
         }
         Expression::Path { path, .. } => {
-            if let Some(part) = path.get(0).map(PathPart::inner) {
+            if let Some(part) = path.get(0).map(|p| p.inner()) {
                 match part {
                     "@root" => CONTEXT.into(),
                     "@key" => KEY.into(),

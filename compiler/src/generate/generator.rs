@@ -3,6 +3,7 @@ use crate::{
     parse::{
         expression::Expression,
         tree::Instruction,
+        Span,
     },
 };
 
@@ -11,7 +12,7 @@ use std::collections::HashSet;
 /// generate code for a body
 /// recursively applied to If and Iter children
 fn gen_body<'a, 'b>(
-    entry: Vec<Instruction<'a>>,
+    entry: Vec<Instruction<Span<'a>>>,
     top: bool,
     mut block_names: &'b mut HashSet<&'a str>,
 ) -> (String, Vec<String>) {
@@ -84,7 +85,7 @@ fn gen_body<'a, 'b>(
 }
 
 /// generate code from parser output
-pub fn generate(input: Vec<Instruction>) -> String {
+pub fn generate(input: Vec<Instruction<Span>>) -> String {
     let (body, blocks) = gen_body(input, true, &mut HashSet::new());
 
     templates::wrapper(&body, &blocks)

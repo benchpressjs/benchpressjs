@@ -38,34 +38,34 @@ use nom::{
 };
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
-pub enum Expression<'a> {
+pub enum Expression<S> {
     // "this \"works\" as you'd expect"
-    StringLiteral(Span<'a>),
+    StringLiteral(S),
     // a.b.c.d
     Path {
-        span: Span<'a>,
-        path: PathBuf<'a>,
+        span: S,
+        path: PathBuf<S>,
     },
     // !expr
     Negative {
-        span: Span<'a>,
-        expr: Box<Expression<'a>>,
+        span: S,
+        expr: Box<Expression<S>>,
     },
     // name(arg0, arg1, arg2, ...)
     Helper {
-        span: Span<'a>,
-        name: Span<'a>,
-        args: Vec<Expression<'a>>,
+        span: S,
+        name: S,
+        args: Vec<Expression<S>>,
     },
     // function.name, arg0, arg1, arg2, ...
     LegacyHelper {
-        span: Span<'a>,
-        name: Span<'a>,
-        args: Vec<Expression<'a>>,
+        span: S,
+        name: S,
+        args: Vec<Expression<S>>,
     },
 }
 
-impl<'a> Expression<'a> {
+impl<'a> Expression<Span<'a>> {
     pub fn span(&self) -> Span<'a> {
         match self {
             Expression::StringLiteral(span)
@@ -76,7 +76,7 @@ impl<'a> Expression<'a> {
         }
     }
 
-    pub fn path_from_span(span: Span<'a>) -> Expression {
+    pub fn path_from_span(span: Span<'a>) -> Self {
         Expression::Path {
             span,
             path: vec![PathPart::Part(span)],
@@ -84,7 +84,7 @@ impl<'a> Expression<'a> {
     }
 }
 
-fn string_literal(input: Span) -> IResult<Span, Expression<'_>> {
+fn string_literal(input: Span) -> IResult<Span, Expression<Span>> {
     map(
         recognize(delimited(
             tag("\""),
@@ -107,7 +107,7 @@ fn identifier(input: Span) -> IResult<Span, Span> {
     }
 }
 
-fn path(input: Span) -> IResult<Span, Expression<'_>> {
+fn path(input: Span) -> IResult<Span, Expression<Span>> {
     alt((
         map(
             alt((
@@ -133,7 +133,7 @@ fn path(input: Span) -> IResult<Span, Expression<'_>> {
     ))(input)
 }
 
-fn negative(input: Span) -> IResult<Span, Expression<'_>> {
+fn negative(input: Span) -> IResult<Span, Expression<Span>> {
     map(
         consumed(preceded(ws(tag("!")), expression)),
         |(span, expr)| Expression::Negative {
@@ -143,7 +143,7 @@ fn negative(input: Span) -> IResult<Span, Expression<'_>> {
     )(input)
 }
 
-fn helper(input: Span) -> IResult<Span, Expression<'_>> {
+fn helper(input: Span) -> IResult<Span, Expression<Span>> {
     map(
         consumed(pair(
             identifier,
@@ -157,7 +157,7 @@ fn helper(input: Span) -> IResult<Span, Expression<'_>> {
     )(input)
 }
 
-fn legacy_helper(input: Span) -> IResult<Span, Expression<'_>> {
+fn legacy_helper(input: Span) -> IResult<Span, Expression<Span>> {
     map(
         consumed(pair(
             preceded(tag("function."), identifier),
@@ -180,7 +180,7 @@ fn legacy_helper(input: Span) -> IResult<Span, Expression<'_>> {
     )(input)
 }
 
-pub fn expression(input: Span) -> IResult<Span, Expression<'_>> {
+pub fn expression(input: Span) -> IResult<Span, Expression<Span>> {
     // This order is important
     alt((negative, legacy_helper, helper, string_literal, path))(input)
 }
@@ -188,67 +188,110 @@ pub fn expression(input: Span) -> IResult<Span, Expression<'_>> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::parse::test::sp;
-    use pretty_assertions::assert_eq;
+    use crate::parse::test::{
+        assert_eq,
+        assert_eq_unspan,
+        sp,
+    };
 
     #[test]
     fn test_string_literal() {
-        let src = Span::new_extra(r#""help" "#, Default::default());
+        let src = sp(r#""help" "#);
         assert_eq!(
             string_literal(src),
             Ok((src.slice(6..), Expression::StringLiteral(src.slice(..6))))
         );
-        let src = Span::new_extra(r#""he said \"no!\"" "#, Default::default());
+        let src = sp(r#""he said \"no!\"" "#);
         assert_eq!(
             string_literal(src),
             Ok((src.slice(17..), Expression::StringLiteral(src.slice(..17))))
         );
-        let src = Span::new_extra("\"\\\\ \\ \"", Default::default());
+        let src = sp("\"\\\\ \\ \"");
         assert_eq!(
             string_literal(src),
             Ok((src.slice(7..), Expression::StringLiteral(src.slice(..7))))
         );
     }
 
+    impl<'a> Expression<Span<'a>> {
+        pub fn span_to_str(self) -> Expression<&'a str> {
+            match self {
+                Expression::StringLiteral(span) => Expression::StringLiteral(*span.fragment()),
+                Expression::Path { span, path } => Expression::Path {
+                    span: *span.fragment(),
+                    path: path.into_iter().map(|p| p.span_to_str()).collect(),
+                },
+                Expression::Negative { span, expr } => Expression::Negative {
+                    span: *span.fragment(),
+                    expr: Box::new(expr.span_to_str()),
+                },
+                Expression::Helper { span, name, args } => Expression::Helper {
+                    span: *span.fragment(),
+                    name: *name.fragment(),
+                    args: args.into_iter().map(|a| a.span_to_str()).collect(),
+                },
+                Expression::LegacyHelper { span, name, args } => Expression::LegacyHelper {
+                    span: *span.fragment(),
+                    name: *name.fragment(),
+                    args: args.into_iter().map(|a| a.span_to_str()).collect(),
+                },
+            }
+        }
+    }
+
+    fn span_to_str<'a>(
+        res: IResult<Span<'a>, Expression<Span<'a>>>,
+    ) -> IResult<&'a str, Expression<&'a str>> {
+        match res {
+            Ok((rest, expr)) => Ok((*rest.fragment(), expr.span_to_str())),
+            Err(err) => Err(
+                err.map(|nom::error::Error { input, code }| nom::error::Error {
+                    input: *input.fragment(),
+                    code,
+                }),
+            ),
+        }
+    }
+
     #[test]
     fn test_path() {
-        assert_eq!(
+        assert_eq_unspan!(
             path(sp("a.b.c, what")),
             Ok((
-                sp(", what"),
+                ", what",
                 Expression::Path {
-                    span: sp("a.b.c"),
+                    span: "a.b.c",
                     path: vec![
-                        PathPart::Part(sp("a")),
-                        PathPart::Part(sp("b")),
-                        PathPart::Part(sp("c"))
+                        PathPart::Part("a"),
+                        PathPart::Part("b"),
+                        PathPart::Part("c")
                     ]
                 }
             ))
         );
 
-        assert_eq!(
+        assert_eq_unspan!(
             path(sp("@value.c")),
             Ok((
-                sp(".c"),
+                ".c",
                 Expression::Path {
-                    span: sp("@value"),
-                    path: vec![PathPart::Part(sp("@value"))]
+                    span: "@value",
+                    path: vec![PathPart::Part("@value")]
                 }
             ))
         );
 
-        assert_eq!(
+        assert_eq_unspan!(
             path(sp("./../abc.def")),
             Ok((
-                sp(""),
+                "",
                 Expression::Path {
-                    span: sp("./../abc.def"),
+                    span: "./../abc.def",
                     path: vec![
-                        PathPart::Part(sp("./")),
-                        PathPart::Part(sp("../")),
-                        PathPart::Part(sp("abc")),
-                        PathPart::Part(sp("def"))
+                        PathPart::Part("./"),
+                        PathPart::Part("../"),
+                        PathPart::Part("abc"),
+                        PathPart::Part("def")
                     ]
                 }
             ))
@@ -257,15 +300,15 @@ mod test {
 
     #[test]
     fn test_negative() {
-        assert_eq!(
+        assert_eq_unspan!(
             negative(sp("!a ")),
             Ok((
-                sp(" "),
+                " ",
                 Expression::Negative {
-                    span: sp("!a"),
+                    span: "!a",
                     expr: Box::new(Expression::Path {
-                        span: sp("a"),
-                        path: vec![PathPart::Part(sp("a"))]
+                        span: "a",
+                        path: vec![PathPart::Part("a")]
                     })
                 }
             ))
@@ -274,25 +317,25 @@ mod test {
 
     #[test]
     fn test_helper() {
-        assert_eq!(
+        assert_eq_unspan!(
             helper(sp("foo(bar, a.b , k) ")),
             Ok((
-                sp(" "),
+                " ",
                 Expression::Helper {
-                    span: sp("foo(bar, a.b , k)"),
-                    name: sp("foo"),
+                    span: "foo(bar, a.b , k)",
+                    name: "foo",
                     args: vec![
                         Expression::Path {
-                            span: sp("bar"),
-                            path: vec![PathPart::Part(sp("bar"))]
+                            span: "bar",
+                            path: vec![PathPart::Part("bar")]
                         },
                         Expression::Path {
-                            span: sp("a.b"),
-                            path: vec![PathPart::Part(sp("a")), PathPart::Part(sp("b"))]
+                            span: "a.b",
+                            path: vec![PathPart::Part("a"), PathPart::Part("b")]
                         },
                         Expression::Path {
-                            span: sp("k"),
-                            path: vec![PathPart::Part(sp("k"))]
+                            span: "k",
+                            path: vec![PathPart::Part("k")]
                         }
                     ]
                 }
@@ -302,41 +345,41 @@ mod test {
 
     #[test]
     fn test_legacy_helper() {
-        assert_eq!(
+        assert_eq_unspan!(
             legacy_helper(sp("function.foo, bar, a.b, k hf s sgfd")),
             Ok((
-                sp(" hf s sgfd"),
+                " hf s sgfd",
                 Expression::LegacyHelper {
-                    span: sp("function.foo, bar, a.b, k"),
-                    name: sp("foo"),
+                    span: "function.foo, bar, a.b, k",
+                    name: "foo",
                     args: vec![
                         Expression::Path {
-                            span: sp("bar"),
-                            path: vec![PathPart::Part(sp("bar"))]
+                            span: "bar",
+                            path: vec![PathPart::Part("bar")]
                         },
                         Expression::Path {
-                            span: sp("a.b"),
-                            path: vec![PathPart::Part(sp("a")), PathPart::Part(sp("b"))]
+                            span: "a.b",
+                            path: vec![PathPart::Part("a"), PathPart::Part("b")]
                         },
                         Expression::Path {
-                            span: sp("k"),
-                            path: vec![PathPart::Part(sp("k"))]
+                            span: "k",
+                            path: vec![PathPart::Part("k")]
                         }
                     ]
                 }
             ))
         );
 
-        assert_eq!(
+        assert_eq_unspan!(
             legacy_helper(sp("function.foo")),
             Ok((
-                sp(""),
+                "",
                 Expression::LegacyHelper {
-                    span: sp("function.foo"),
-                    name: sp("foo"),
+                    span: "function.foo",
+                    name: "foo",
                     args: vec![Expression::Path {
-                        span: sp(""),
-                        path: vec![PathPart::Part(sp("@value"))]
+                        span: "",
+                        path: vec![PathPart::Part("@value")]
                     }]
                 }
             ))
@@ -345,49 +388,49 @@ mod test {
 
     #[test]
     fn test_expression() {
-        assert_eq!(
+        assert_eq_unspan!(
             expression(sp("foo(bar, a.b, function.bar, \"boom\")")),
             Ok((
-                sp(""),
+                "",
                 Expression::Helper {
-                    span: sp("foo(bar, a.b, function.bar, \"boom\")"),
-                    name: sp("foo"),
+                    span: "foo(bar, a.b, function.bar, \"boom\")",
+                    name: "foo",
                     args: vec![
                         Expression::Path {
-                            span: sp("bar"),
-                            path: vec![PathPart::Part(sp("bar"))]
+                            span: "bar",
+                            path: vec![PathPart::Part("bar")]
                         },
                         Expression::Path {
-                            span: sp("a.b"),
-                            path: vec![PathPart::Part(sp("a")), PathPart::Part(sp("b"))]
+                            span: "a.b",
+                            path: vec![PathPart::Part("a"), PathPart::Part("b")]
                         },
                         Expression::LegacyHelper {
-                            span: sp("function.bar, \"boom\""),
-                            name: sp("bar"),
-                            args: vec![Expression::StringLiteral(sp("\"boom\""))]
+                            span: "function.bar, \"boom\"",
+                            name: "bar",
+                            args: vec![Expression::StringLiteral("\"boom\"")]
                         }
                     ]
                 }
             ))
         );
 
-        assert_eq!(
+        assert_eq_unspan!(
             expression(sp("!foo(bar, a.b)")),
             Ok((
-                sp(""),
+                "",
                 Expression::Negative {
-                    span: sp("!foo(bar, a.b)"),
+                    span: "!foo(bar, a.b)",
                     expr: Box::new(Expression::Helper {
-                        span: sp("foo(bar, a.b)"),
-                        name: sp("foo"),
+                        span: "foo(bar, a.b)",
+                        name: "foo",
                         args: vec![
                             Expression::Path {
-                                span: sp("bar"),
-                                path: vec![PathPart::Part(sp("bar"))]
+                                span: "bar",
+                                path: vec![PathPart::Part("bar")]
                             },
                             Expression::Path {
-                                span: sp("a.b"),
-                                path: vec![PathPart::Part(sp("a")), PathPart::Part(sp("b"))]
+                                span: "a.b",
+                                path: vec![PathPart::Part("a"), PathPart::Part("b")]
                             },
                         ]
                     })
