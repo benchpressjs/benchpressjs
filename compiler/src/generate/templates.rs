@@ -6,11 +6,14 @@ pub const ESCAPE: &str = "__escape";
 pub const GUARD: &str = "guard";
 pub const KEY: &str = "key";
 pub const VALUE: &str = "value";
+pub const GUARD_VALUE: &str = "guard(value)";
 pub const INDEX: &str = "index";
 pub const LENGTH: &str = "length";
 pub const BLOCKS: &str = "compiled.blocks";
 pub const FIRST: &str = "index === 0";
 pub const LAST: &str = "index === length - 1";
+pub const TRUE: &str = "true";
+pub const FALSE: &str = "false";
 pub const RUNTIME_PARAMS: &str = "helpers, context, guard, iter, helper";
 
 /// key with an indexed suffix
@@ -159,7 +162,10 @@ pub fn concat(input: &[String]) -> String {
 }
 
 use crate::parse::{
-    expression::Expression,
+    expression::{
+        Expression,
+        Keyword,
+    },
     path::{
         Path,
         PathPart,
@@ -234,21 +240,17 @@ pub fn expression(input: Expression<Span>) -> Cow<str> {
         Expression::StringLiteral(value) => {
             json::stringify(json::from(unescape(value.fragment()))).into()
         }
-        Expression::Path { path, .. } => {
-            if let Some(part) = path.get(0).map(|p| p.inner()) {
-                match part {
-                    "@root" => CONTEXT.into(),
-                    "@key" => KEY.into(),
-                    "@index" => INDEX.into(),
-                    "@value" => format!("guard({})", VALUE).into(),
-                    "@first" => FIRST.into(),
-                    "@last" => LAST.into(),
-                    _ => guard(&path).into(),
-                }
-            } else {
-                guard(&path).into()
-            }
-        }
+        Expression::Keyword { keyword, .. } => match keyword {
+            Keyword::Root => CONTEXT.into(),
+            Keyword::Key => KEY.into(),
+            Keyword::Index => INDEX.into(),
+            Keyword::Value => GUARD_VALUE.into(),
+            Keyword::First => FIRST.into(),
+            Keyword::Last => LAST.into(),
+            Keyword::True => TRUE.into(),
+            Keyword::False => FALSE.into(),
+        },
+        Expression::Path { path, .. } => guard(&path).into(),
         Expression::Helper { name, args, .. } | Expression::LegacyHelper { name, args, .. } => {
             let args_str = args
                 .into_iter()
@@ -389,7 +391,6 @@ mod tests {
   return 'if ' + 
     'none';
 })"
-            .to_string()
         )
     }
 
@@ -416,7 +417,7 @@ mod tests {
             expression(Expression::StringLiteral(sp(
                 "\"stuff\\n \\\"about\\\" things\""
             ))),
-            "\"stuff\\n \\\"about\\\" things\"".to_string()
+            "\"stuff\\n \\\"about\\\" things\""
         );
 
         assert_eq!(
@@ -424,31 +425,31 @@ mod tests {
                 span: sp("thing"),
                 path: vec![PathPart::Part(sp("thing"))]
             }),
-            sp("guard(context && context['thing'])").to_string()
+            "guard(context && context['thing'])"
         );
 
         assert_eq!(
-            expression(Expression::Path {
+            expression(Expression::Keyword {
                 span: sp("@root"),
-                path: vec![PathPart::Part(sp("@root"))]
+                keyword: Keyword::Root
             }),
-            sp("context").to_string()
+            "context"
         );
 
         assert_eq!(
-            expression(Expression::Path {
+            expression(Expression::Keyword {
                 span: sp("@first"),
-                path: vec![PathPart::Part(sp("@first"))]
+                keyword: Keyword::First
             }),
-            sp("index === 0").to_string()
+            "index === 0"
         );
 
         assert_eq!(
-            expression(Expression::Path {
+            expression(Expression::Keyword {
                 span: sp("@last"),
-                path: vec![PathPart::Part(sp("@last"))]
+                keyword: Keyword::Last
             }),
-            sp("index === length - 1").to_string()
+            "index === length - 1"
         );
 
         assert_eq!(expression(Expression::Helper {

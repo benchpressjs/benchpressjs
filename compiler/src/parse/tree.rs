@@ -151,6 +151,7 @@ fn resolve_expression_paths<'a, 'b>(
 ) -> Expression<Span<'a>> {
     match expr {
         s @ Expression::StringLiteral(_) => s,
+        k @ Expression::Keyword { .. } => k,
         Expression::Path { span, path } => Expression::Path {
             span,
             path: resolve(base, path),

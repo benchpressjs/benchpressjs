@@ -20,6 +20,7 @@ use nom::{
         map,
         opt,
         recognize,
+        value,
     },
     multi::{
         many0,
@@ -38,9 +39,34 @@ use nom::{
 };
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
+pub enum Keyword {
+    // @root
+    Root,
+    // @key
+    Key,
+    // @index
+    Index,
+    // @value
+    Value,
+    // @first
+    First,
+    // @last
+    Last,
+    // @true
+    True,
+    // @false
+    False,
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub enum Expression<S> {
     // "this \"works\" as you'd expect"
     StringLiteral(S),
+    // @value, @first, etc
+    Keyword {
+        span: S,
+        keyword: Keyword,
+    },
     // a.b.c.d
     Path {
         span: S,
@@ -69,17 +95,11 @@ impl<'a> Expression<Span<'a>> {
     pub fn span(&self) -> Span<'a> {
         match self {
             Expression::StringLiteral(span)
+            | Expression::Keyword { span, .. }
             | Expression::Path { span, .. }
             | Expression::Negative { span, .. }
             | Expression::Helper { span, .. }
             | Expression::LegacyHelper { span, .. } => *span,
-        }
-    }
-
-    pub fn path_from_span(span: Span<'a>) -> Self {
-        Expression::Path {
-            span,
-            path: vec![PathPart::Part(span)],
         }
     }
 }
@@ -92,6 +112,22 @@ fn string_literal(input: Span) -> IResult<Span, Expression<Span>> {
             tag("\""),
         )),
         Expression::StringLiteral,
+    )(input)
+}
+
+fn keyword(input: Span) -> IResult<Span, Expression<Span>> {
+    map(
+        consumed(alt((
+            value(Keyword::Root, tag("@root")),
+            value(Keyword::Key, tag("@key")),
+            value(Keyword::Index, tag("@index")),
+            value(Keyword::Value, tag("@value")),
+            value(Keyword::First, tag("@first")),
+            value(Keyword::Last, tag("@last")),
+            value(Keyword::True, tag("@true")),
+            value(Keyword::False, tag("@false")),
+        ))),
+        |(span, keyword)| Expression::Keyword { span, keyword },
     )(input)
 }
 
@@ -108,29 +144,16 @@ fn identifier(input: Span) -> IResult<Span, Span> {
 }
 
 fn path(input: Span) -> IResult<Span, Expression<Span>> {
-    alt((
-        map(
-            alt((
-                tag("@root"),
-                tag("@key"),
-                tag("@index"),
-                tag("@value"),
-                tag("@first"),
-                tag("@last"),
-            )),
-            Expression::path_from_span,
-        ),
-        map(
-            consumed(pair(
-                many0(map(alt((tag("./"), tag("../"))), PathPart::Part)),
-                separated_list1(tag("."), map(identifier, PathPart::Part)),
-            )),
-            |(span, (mut first, mut second))| {
-                first.append(&mut second);
-                Expression::Path { span, path: first }
-            },
-        ),
-    ))(input)
+    map(
+        consumed(pair(
+            many0(map(alt((tag("./"), tag("../"))), PathPart::Part)),
+            separated_list1(tag("."), map(identifier, PathPart::Part)),
+        )),
+        |(span, (mut first, mut second))| {
+            first.append(&mut second);
+            Expression::Path { span, path: first }
+        },
+    )(input)
 }
 
 fn negative(input: Span) -> IResult<Span, Expression<Span>> {
@@ -171,9 +194,9 @@ fn legacy_helper(input: Span) -> IResult<Span, Expression<Span>> {
             name,
             args: args.unwrap_or_else(|| {
                 // Handle legacy helpers without args being implicitly passed `@value`
-                vec![Expression::Path {
+                vec![Expression::Keyword {
                     span: span.slice(span.len()..),
-                    path: vec![PathPart::Part(Span::new_extra("@value", input.extra))],
+                    keyword: Keyword::Value,
                 }]
             }),
         },
@@ -182,7 +205,14 @@ fn legacy_helper(input: Span) -> IResult<Span, Expression<Span>> {
 
 pub fn expression(input: Span) -> IResult<Span, Expression<Span>> {
     // This order is important
-    alt((negative, legacy_helper, helper, string_literal, path))(input)
+    alt((
+        negative,
+        legacy_helper,
+        helper,
+        string_literal,
+        keyword,
+        path,
+    ))(input)
 }
 
 #[cfg(test)]
@@ -217,6 +247,10 @@ mod test {
         pub fn span_to_str(self) -> Expression<&'a str> {
             match self {
                 Expression::StringLiteral(span) => Expression::StringLiteral(*span.fragment()),
+                Expression::Keyword { span, keyword } => Expression::Keyword {
+                    span: *span.fragment(),
+                    keyword,
+                },
                 Expression::Path { span, path } => Expression::Path {
                     span: *span.fragment(),
                     path: path.into_iter().map(|p| p.span_to_str()).collect(),
@@ -271,17 +305,6 @@ mod test {
         );
 
         assert_eq_unspan!(
-            path(sp("@value.c")),
-            Ok((
-                ".c",
-                Expression::Path {
-                    span: "@value",
-                    path: vec![PathPart::Part("@value")]
-                }
-            ))
-        );
-
-        assert_eq_unspan!(
             path(sp("./../abc.def")),
             Ok((
                 "",
@@ -293,6 +316,20 @@ mod test {
                         PathPart::Part("abc"),
                         PathPart::Part("def")
                     ]
+                }
+            ))
+        );
+    }
+
+    #[test]
+    fn test_keyword() {
+        assert_eq_unspan!(
+            keyword(sp("@value.c")),
+            Ok((
+                ".c",
+                Expression::Keyword {
+                    span: "@value",
+                    keyword: Keyword::Value
                 }
             ))
         );
@@ -377,9 +414,9 @@ mod test {
                 Expression::LegacyHelper {
                     span: "function.foo",
                     name: "foo",
-                    args: vec![Expression::Path {
+                    args: vec![Expression::Keyword {
                         span: "",
-                        path: vec![PathPart::Part("@value")]
+                        keyword: Keyword::Value
                     }]
                 }
             ))

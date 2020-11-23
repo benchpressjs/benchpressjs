@@ -28,6 +28,10 @@ Benchpress does not have numeric literals, or a special syntax for indexing into
 #### Special Keywords
 The following special keywords can be used in place of a path:
 
+- `@true` - `boolean`  
+  The boolean value `true`.
+- `@false` - `boolean`  
+  The boolean value `false`.
 - `@root` - `any`  
   The object passed to `parse`. The top-level context object.
 - `@value` - `any`  
@@ -47,4 +51,4 @@ Paths behave in some unfortunately odd ways in Benchpress in order to maintain m
 
 - `../` equals `./` at the start of the path. You must use `../../` or `./../` to go "up one level".
 - `abc.def` can either mean the `def` property of the `abc` object or the `def` property of each element within the `abc` array or object. It behaves the second way if within an iteration block.
-- There's a lot of magic that is done to make paths backwards-compatible with templates.js behavior, since it worked with incomplete paths. Essentially, the algorithm has to pattern match through the full path, looking for an overlap of the given path within it. The gritty details are [in the implementation](../lib/compiler/paths.js).
+- There's a lot of magic that is done to make paths backwards-compatible with templates.js behavior, since it worked with incomplete paths. Essentially, the algorithm has to pattern match through the full path, looking for an overlap of the given path within it. The gritty details are [in the implementation](../compiler/src/parse/path.rs).

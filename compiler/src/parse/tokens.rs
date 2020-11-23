@@ -4,8 +4,8 @@ use crate::{
         expression::{
             expression,
             Expression,
+            Keyword,
         },
-        path::PathPart,
         ws,
         Span,
         SpanExt,
@@ -156,11 +156,11 @@ fn legacy_if(input: Span) -> IResult<Span, Token<Span>> {
                 {
                     args.insert(
                         0,
-                        Expression::Path {
+                        Expression::Keyword {
                             span: args
                                 .get(0)
                                 .map_or_else(|| span.slice(span.len()..), |x| x.span().slice(..0)),
-                            path: vec![PathPart::Part(Span::new_extra("@root", input.extra))],
+                            keyword: Keyword::Root,
                         },
                     );
 
@@ -595,9 +595,9 @@ mod test {
                         span: "function.bar, a, b",
                         name: "bar",
                         args: vec![
-                            Expression::Path {
+                            Expression::Keyword {
                                 span: "",
-                                path: vec![PathPart::Part("@root")]
+                                keyword: Keyword::Root,
                             },
                             Expression::Path {
                                 span: "a",
