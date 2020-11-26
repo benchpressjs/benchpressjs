@@ -102,6 +102,18 @@ pub enum Expression<S> {
         lhs: Box<Expression<S>>,
         rhs: Box<Expression<S>>,
     },
+    // a.b && cond
+    And {
+        span: S,
+        lhs: Box<Expression<S>>,
+        rhs: Box<Expression<S>>,
+    },
+    // yes || something.else
+    Or {
+        span: S,
+        lhs: Box<Expression<S>>,
+        rhs: Box<Expression<S>>,
+    },
 }
 
 impl<'a> Expression<Span<'a>> {
@@ -114,7 +126,9 @@ impl<'a> Expression<Span<'a>> {
             | Expression::Helper { span, .. }
             | Expression::LegacyHelper { span, .. }
             | Expression::Equ { span, .. }
-            | Expression::Neq { span, .. } => *span,
+            | Expression::Neq { span, .. }
+            | Expression::And { span, .. }
+            | Expression::Or { span, .. } => *span,
         }
     }
 }
@@ -256,6 +270,16 @@ pub fn expression(input: Span) -> IResult<Span, Expression<Span>> {
             lhs: Box::new(lhs),
             rhs: Box::new(rhs),
         }),
+        binary("&&", |span, lhs, rhs| Expression::And {
+            span,
+            lhs: Box::new(lhs),
+            rhs: Box::new(rhs),
+        }),
+        binary("||", |span, lhs, rhs| Expression::Or {
+            span,
+            lhs: Box::new(lhs),
+            rhs: Box::new(rhs),
+        }),
     ))(input)
 }
 
@@ -319,6 +343,16 @@ mod test {
                     rhs: Box::new(rhs.span_to_str()),
                 },
                 Expression::Neq { span, lhs, rhs } => Expression::Neq {
+                    span: *span.fragment(),
+                    lhs: Box::new(lhs.span_to_str()),
+                    rhs: Box::new(rhs.span_to_str()),
+                },
+                Expression::And { span, lhs, rhs } => Expression::And {
+                    span: *span.fragment(),
+                    lhs: Box::new(lhs.span_to_str()),
+                    rhs: Box::new(rhs.span_to_str()),
+                },
+                Expression::Or { span, lhs, rhs } => Expression::Or {
                     span: *span.fragment(),
                     lhs: Box::new(lhs.span_to_str()),
                     rhs: Box::new(rhs.span_to_str()),

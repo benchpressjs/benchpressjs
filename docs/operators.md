@@ -7,6 +7,8 @@ Data
   count: 0,
   name: "Jack",
   password: "Jack",
+  last_name: null,
+  is_human: true,
 }
 ```
 
@@ -55,4 +57,56 @@ Hello, visitor!
 Output
 ```html
 Hello, visitor!
+```
+
+## And
+
+To check that two values are both true, you can use the `&&` operator. Wrapping the whole `left && right` piece in parenthesis in mandatory.
+
+```html
+{{{ if ((name == "Jack") && yes) }}}
+That's an affirmative, Jack!
+{{{ end }}}
+```
+
+Output
+```html
+That's an affirmative, Jack!
+```
+
+You can also use this operator to map to a different value if one is truthy:
+
+```html
+Hello, {(is_human && "fellow human")} {name}. How was your day?
+```
+
+Output
+```html
+Hello, fellow human Jack. How was your day?
+```
+
+## Or
+
+To check that one or both values are true, you can use the `||` operator. Wrapping the whole `left || right` piece in parenthesis in mandatory.
+
+```html
+{{{ if (!count || !yes) }}}
+Dang, nothing here!
+{{{ end }}}
+```
+
+Output
+```html
+Dang, nothing here!
+```
+
+You can also use this operator to provide a default value if the left one is falsy:
+
+```html
+Hello, {name} {(last_name || "the Fantastic")}!
+```
+
+Output
+```html
+Hello, Jack the Fantastic!
 ```

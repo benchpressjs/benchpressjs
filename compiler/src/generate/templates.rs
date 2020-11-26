@@ -271,6 +271,12 @@ pub fn expression(input: Expression<Span>) -> Cow<str> {
         Expression::Neq { lhs, rhs, .. } => {
             format!("({} != {})", expression(*lhs), expression(*rhs)).into()
         }
+        Expression::And { lhs, rhs, .. } => {
+            format!("({} && {})", expression(*lhs), expression(*rhs)).into()
+        }
+        Expression::Or { lhs, rhs, .. } => {
+            format!("({} || {})", expression(*lhs), expression(*rhs)).into()
+        }
     }
 }
 
