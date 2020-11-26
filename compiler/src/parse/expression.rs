@@ -33,6 +33,7 @@ use nom::{
         delimited,
         pair,
         preceded,
+        tuple,
     },
     IResult,
     Slice,
@@ -89,6 +90,18 @@ pub enum Expression<S> {
         name: S,
         args: Vec<Expression<S>>,
     },
+    // a.b == "foo"
+    Equ {
+        span: S,
+        lhs: Box<Expression<S>>,
+        rhs: Box<Expression<S>>,
+    },
+    // a.b != "bar"
+    Neq {
+        span: S,
+        lhs: Box<Expression<S>>,
+        rhs: Box<Expression<S>>,
+    },
 }
 
 impl<'a> Expression<Span<'a>> {
@@ -99,7 +112,9 @@ impl<'a> Expression<Span<'a>> {
             | Expression::Path { span, .. }
             | Expression::Negative { span, .. }
             | Expression::Helper { span, .. }
-            | Expression::LegacyHelper { span, .. } => *span,
+            | Expression::LegacyHelper { span, .. }
+            | Expression::Equ { span, .. }
+            | Expression::Neq { span, .. } => *span,
         }
     }
 }
@@ -203,6 +218,25 @@ fn legacy_helper(input: Span) -> IResult<Span, Expression<Span>> {
     )(input)
 }
 
+fn binary<'a, F: 'a>(
+    op: &'static str,
+    f: F,
+) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, Expression<Span<'a>>>
+where
+    F: Fn(Span<'a>, Expression<Span<'a>>, Expression<Span<'a>>) -> Expression<Span<'a>>,
+{
+    map(
+        consumed(tuple((
+            tag("("),
+            ws(expression),
+            tag(op),
+            ws(expression),
+            tag(")"),
+        ))),
+        move |(span, (_, lhs, _, rhs, _))| f(span, lhs, rhs),
+    )
+}
+
 pub fn expression(input: Span) -> IResult<Span, Expression<Span>> {
     // This order is important
     alt((
@@ -212,6 +246,16 @@ pub fn expression(input: Span) -> IResult<Span, Expression<Span>> {
         string_literal,
         keyword,
         path,
+        binary("==", |span, lhs, rhs| Expression::Equ {
+            span,
+            lhs: Box::new(lhs),
+            rhs: Box::new(rhs),
+        }),
+        binary("!=", |span, lhs, rhs| Expression::Neq {
+            span,
+            lhs: Box::new(lhs),
+            rhs: Box::new(rhs),
+        }),
     ))(input)
 }
 
@@ -268,6 +312,16 @@ mod test {
                     span: *span.fragment(),
                     name: *name.fragment(),
                     args: args.into_iter().map(|a| a.span_to_str()).collect(),
+                },
+                Expression::Equ { span, lhs, rhs } => Expression::Equ {
+                    span: *span.fragment(),
+                    lhs: Box::new(lhs.span_to_str()),
+                    rhs: Box::new(rhs.span_to_str()),
+                },
+                Expression::Neq { span, lhs, rhs } => Expression::Neq {
+                    span: *span.fragment(),
+                    lhs: Box::new(lhs.span_to_str()),
+                    rhs: Box::new(rhs.span_to_str()),
                 },
             }
         }
@@ -350,6 +404,52 @@ mod test {
                 }
             ))
         )
+    }
+
+    #[test]
+    fn test_binary() {
+        assert_eq_unspan!(
+            expression(sp("(@value == a.b)")),
+            Ok((
+                "",
+                Expression::Equ {
+                    span: "(@value == a.b)",
+                    lhs: Box::new(Expression::Keyword {
+                        span: "@value",
+                        keyword: Keyword::Value
+                    }),
+                    rhs: Box::new(Expression::Path {
+                        span: "a.b",
+                        path: vec![PathPart::Part("a"), PathPart::Part("b")]
+                    })
+                }
+            ))
+        );
+
+        assert_eq_unspan!(
+            expression(sp("((@value == a.b) != @true)")),
+            Ok((
+                "",
+                Expression::Neq {
+                    span: "((@value == a.b) != @true)",
+                    lhs: Box::new(Expression::Equ {
+                        span: "(@value == a.b)",
+                        lhs: Box::new(Expression::Keyword {
+                            span: "@value",
+                            keyword: Keyword::Value
+                        }),
+                        rhs: Box::new(Expression::Path {
+                            span: "a.b",
+                            path: vec![PathPart::Part("a"), PathPart::Part("b")]
+                        })
+                    }),
+                    rhs: Box::new(Expression::Keyword {
+                        span: "@true",
+                        keyword: Keyword::True
+                    })
+                }
+            ))
+        );
     }
 
     #[test]

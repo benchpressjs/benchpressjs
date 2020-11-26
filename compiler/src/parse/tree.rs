@@ -176,6 +176,16 @@ fn resolve_expression_paths<'a, 'b>(
                 .map(|x| resolve_expression_paths(base, x))
                 .collect(),
         },
+        Expression::Equ { span, lhs, rhs } => Expression::Equ {
+            span,
+            lhs: Box::new(resolve_expression_paths(base, *lhs)),
+            rhs: Box::new(resolve_expression_paths(base, *rhs)),
+        },
+        Expression::Neq { span, lhs, rhs } => Expression::Neq {
+            span,
+            lhs: Box::new(resolve_expression_paths(base, *lhs)),
+            rhs: Box::new(resolve_expression_paths(base, *rhs)),
+        },
     }
 }
 
