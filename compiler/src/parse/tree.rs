@@ -186,6 +186,16 @@ fn resolve_expression_paths<'a, 'b>(
             lhs: Box::new(resolve_expression_paths(base, *lhs)),
             rhs: Box::new(resolve_expression_paths(base, *rhs)),
         },
+        Expression::And { span, lhs, rhs } => Expression::And {
+            span,
+            lhs: Box::new(resolve_expression_paths(base, *lhs)),
+            rhs: Box::new(resolve_expression_paths(base, *rhs)),
+        },
+        Expression::Or { span, lhs, rhs } => Expression::Or {
+            span,
+            lhs: Box::new(resolve_expression_paths(base, *lhs)),
+            rhs: Box::new(resolve_expression_paths(base, *rhs)),
+        },
     }
 }
 

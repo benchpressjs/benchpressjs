@@ -12,3 +12,14 @@ Please try a different one.
 Hello, visitor!
 {{{ end }}}
 
+{{{ if ((name == "Jack") && yes) }}}
+That's an affirmative, Bob!
+{{{ end }}}
+
+Hello, {(is_human && "fellow human")} {name}. How was your day?
+
+{{{ if (!count || !yes) }}}
+Dang, nothing here!
+{{{ end }}}
+
+Hello, {name} {(last_name || "the Fantastic")}!

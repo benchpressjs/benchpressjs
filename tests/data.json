@@ -57,6 +57,9 @@
   "count": 0,
   "name": "Jack",
   "password": "Jack",
+  "last_name": null,
+  "is_human": true,
+
   "emptyarray": [],
   "thisIsNull": null,
   "myObject1": {
