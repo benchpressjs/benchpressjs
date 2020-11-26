@@ -265,6 +265,12 @@ pub fn expression(input: Expression<Span>) -> Cow<str> {
             .into()
         }
         Expression::Negative { expr, .. } => format!("!{}", expression(*expr)).into(),
+        Expression::Equ { lhs, rhs, .. } => {
+            format!("({} == {})", expression(*lhs), expression(*rhs)).into()
+        }
+        Expression::Neq { lhs, rhs, .. } => {
+            format!("({} != {})", expression(*lhs), expression(*rhs)).into()
+        }
     }
 }
 

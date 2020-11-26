@@ -52,6 +52,11 @@
     }
   },
 
+  ".5": "from operator examples",
+  "yes": true,
+  "count": 0,
+  "name": "Jack",
+  "password": "Jack",
   "emptyarray": [],
   "thisIsNull": null,
   "myObject1": {

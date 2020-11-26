@@ -11,7 +11,9 @@
 - [Iteration](iteration.md)  
   `{{{ each people }}}{../name} is {../age} years old.{{{ end }}}`
 - [Helpers](helpers.md)  
-  `Average: {divide(total, count)`
+  `Average: {divide(total, count)}`
+- [Operators](operators.md)  
+  `Not Bob? {(name != "Bob")}`
 
 ### Paths
 A path is a fundamental unit in Benchpress. Any description of where a certain value exists in the data is a path. For instance, in interpolation like `Hello, {world}.`, `world` is a path to the global `world` property. 
