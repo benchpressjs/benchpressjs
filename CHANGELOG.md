@@ -16,6 +16,14 @@ Format:
 - Small improvements
 -->
 
+## Version 2.3.0 (2020-11-26)
+
+### New
+
+- Added `@true` and `@false` boolean keywords
+- Added `==` and `!=` operators for comparison
+- Added `&&` and `||` operators for short-circuiting boolean operations
+
 ## Version 2.2.2 (2020-11-15)
 
 ### Fixes
