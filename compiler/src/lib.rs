@@ -65,31 +65,33 @@ pub fn compile(source: &str, filename: &str) -> String {
             full_source: &source,
         },
     );
-    let (rest, tokens) = parse::tokens::tokens(program).unwrap_or_else(|e| {
-        console::error!("Failed at parse::tokens::tokens, {:?}", e);
-        (
-            parse::Span::new_extra(
-                "",
-                parse::FileInfo {
-                    filename,
-                    full_source: &source,
-                },
-            ),
-            vec![],
-        )
-    });
-    if rest.len() > 0 {
-        console::error!("There was some source text left over, {:?}", rest);
-    }
+    let tokens = match nom::combinator::all_consuming(parse::tokens::tokens)(program) {
+        Ok((_, tokens)) => tokens,
+        Err(e) => {
+            console::error!("[benchpress] internal error: {:?}", e);
+            console::error!("     --> {}", filename);
+            console::error!("      | note: This is not an issue with your template, please report this issue on the benchpress Github page.\n");
+
+            return String::new();
+        }
+    };
     let fixed = parse::tree::fix_extra_tokens(tokens);
     let mut iter = fixed.into_iter();
     let mut tree = vec![];
-    let rest = parse::tree::tree(0, &[], &mut iter, &mut tree).unwrap_or_else(|e| {
-        console::error!("Failed at parse::tree::tree, {:?}", e);
-        None
-    });
-    if let Some(rest) = rest {
-        console::error!("There was a token left over, {:?}", rest);
+    match parse::tree::tree(0, &[], &mut iter, &mut tree) {
+        Ok(None) => {}
+        Ok(Some(rest)) => {
+            console::error!("[benchpress] internal error: LeftOver({:?})", rest);
+            console::error!("     --> {}", filename);
+            console::error!("      | note: This is not an issue with your template, please report this issue on the benchpress Github page.\n");
+        }
+        Err(e) => {
+            console::error!("[benchpress] internal error: {:?}", e);
+            console::error!("     --> {}", filename);
+            console::error!("      | note: This is not an issue with your template, please report this issue on the benchpress Github page.\n");
+
+            return String::new();
+        }
     }
     generate::generator::generate(tree)
 }

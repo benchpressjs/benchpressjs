@@ -249,6 +249,19 @@ where
         warn!("      | note: Migrate all to modern syntax. This will become an error in v3.0.0\n");
     };
 
+    let missing_warning = |open_span: Span, closer: &str| {
+        let (open_line, open_column, open_padding) = open_span.get_line_column_padding();
+        warn!("[benchpress] warning: block not terminated");
+        warn!("     --> {}:{}:{}",
+            open_span.extra.filename, open_span.location_line(), open_column);
+        warn!("      |");
+        warn!("{:>5} | {}", open_span.location_line(), open_line);
+        warn!("      | {}{} block started here, but was not terminated before EOF",
+            open_padding, "^".repeat(open_span.len()));
+        warn!("      | note: Add an `{}` to terminate the block. This will become an error in v3.0.0\n",
+            closer);
+    };
+
     while let Some(tok) = input.next() {
         output.push(match tok {
             // convert a text token to a text instruction
@@ -276,11 +289,13 @@ where
                         match tree(depth, base, input, &mut alt)? {
                             Some(Token::End { .. }) => {}
                             Some(end @ Token::LegacyEnd { .. }) => mixed_warning("if", span, end),
+                            None => missing_warning(span, "{{{ end }}}"),
                             _ => return Err(TreeError),
                         }
                     }
                     Some(Token::End { .. }) => {}
                     Some(end @ Token::LegacyEnd { .. }) => mixed_warning("if", span, end),
+                    None => missing_warning(span, "{{{ end }}}"),
                     _ => return Err(TreeError),
                 }
 
@@ -319,11 +334,13 @@ where
                         match tree(depth, &base, input, &mut alt)? {
                             Some(Token::End { .. }) => {}
                             Some(end @ Token::LegacyEnd { .. }) => mixed_warning("each", span, end),
+                            None => missing_warning(span, "{{{ end }}}"),
                             _ => return Err(TreeError),
                         }
                     }
                     Some(Token::End { .. }) => {}
                     Some(end @ Token::LegacyEnd { .. }) => mixed_warning("each", span, end),
+                    None => missing_warning(span, "{{{ end }}}"),
                     _ => return Err(TreeError),
                 }
 
@@ -348,11 +365,13 @@ where
                         match tree(depth, base, input, &mut alt)? {
                             Some(Token::LegacyEnd { .. }) => {}
                             Some(end @ Token::End { .. }) => mixed_warning("IF", span, end),
+                            None => missing_warning(span, "<!-- END -->"),
                             _ => return Err(TreeError),
                         }
                     }
                     Some(Token::LegacyEnd { .. }) => {}
                     Some(end @ Token::End { .. }) => mixed_warning("IF", span, end),
+                    None => missing_warning(span, "<!-- END -->"),
                     _ => return Err(TreeError),
                 }
 
@@ -392,11 +411,13 @@ where
                             match tree(depth, &base, input, &mut alt)? {
                                 Some(Token::LegacyEnd { .. }) => {}
                                 Some(end @ Token::End { .. }) => mixed_warning("BEGIN", span, end),
+                                None => missing_warning(span, "<!-- END -->"),
                                 _ => return Err(TreeError),
                             }
                         }
                         Some(Token::LegacyEnd { .. }) => {}
                         Some(end @ Token::End { .. }) => mixed_warning("BEGIN", span, end),
+                        None => missing_warning(span, "<!-- END -->"),
                         _ => return Err(TreeError),
                     }
 
