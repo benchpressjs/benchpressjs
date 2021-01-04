@@ -62,15 +62,11 @@ pub fn fix_extra_tokens<'a>(input: Vec<Token<Span<'a>>>) -> Vec<Token<Span<'a>>>
                 expected_subjects.push(subject_raw);
                 starts_count += 1;
             }
-            Token::LegacyEnd { .. } | Token::End { .. } => {
+            Token::LegacyEnd { subject_raw, .. } | Token::End { subject_raw, .. } => {
                 ends_count += 1;
 
                 if let Some(expected_subject) = expected_subjects.pop() {
-                    let bad_match = if let Token::LegacyEnd { subject_raw, .. } = elem {
-                        !expected_subject.starts_with(subject_raw.fragment())
-                    } else {
-                        false
-                    };
+                    let bad_match = !expected_subject.starts_with(subject_raw.fragment());
 
                     if bad_match {
                         // doesn't start with what we expect, so remove it
@@ -87,7 +83,8 @@ pub fn fix_extra_tokens<'a>(input: Vec<Token<Span<'a>>>) -> Vec<Token<Span<'a>>>
                                 | Token::Each { .. } => {
                                     break;
                                 }
-                                Token::LegacyEnd { subject_raw, .. } => {
+                                Token::LegacyEnd { subject_raw, .. }
+                                | Token::End { subject_raw, .. } => {
                                     if subject_raw.fragment() == &expected_subject {
                                         // found one ahead, so remove the current one
                                         remove.insert(elem.clone());
@@ -530,7 +527,8 @@ mod test {
                 Token::Text(" for each thing "),
                 Token::Text("<!-- END foo -->"),
                 Token::End {
-                    span: "{{{ end }}}"
+                    span: "{{{ end }}}",
+                    subject_raw: ""
                 },
             ]
         );
@@ -553,6 +551,7 @@ mod test {
             Token::Text(sp(" for each thing ")),
             Token::End {
                 span: sp("{{{ end }}}"),
+                subject_raw: sp(""),
             },
         ]
         .into_iter();
@@ -606,10 +605,12 @@ mod test {
             },
             Token::End {
                 span: sp("{{{ end }}}"),
+                subject_raw: sp(""),
             },
             Token::Text(sp(" after inner ")),
             Token::End {
                 span: sp("{{{ end }}}"),
+                subject_raw: sp(""),
             },
         ]
         .into_iter();
@@ -687,6 +688,7 @@ mod test {
             Token::Text(sp(" after inner ")),
             Token::End {
                 span: sp("{{{ end }}}"),
+                subject_raw: sp(""),
             },
         ]
         .into_iter();

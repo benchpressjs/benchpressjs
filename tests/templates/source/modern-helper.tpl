@@ -1,6 +1,6 @@
 {{{ each animals }}}
 {canspeak(@value)}
-{{{ end }}}
+{{{ end animals }}}
 
 {caps("I hate you!")}
 {join(" ", "a", "b", "c")}

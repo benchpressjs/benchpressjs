@@ -46,7 +46,7 @@ pub enum Token<S> {
     // `{{{ else }}}`
     Else { span: S },
     // `{{{ end }}}`
-    End { span: S },
+    End { span: S, subject_raw: S },
     // `<!-- IF condition -->`
     LegacyIf { span: S, subject: Expression<S> },
     // `<!-- BEGIN arr -->`
@@ -119,10 +119,21 @@ fn new_else(input: Span) -> IResult<Span, Token<Span>> {
     )(input)
 }
 
+fn trim_end(input: Span) -> Span {
+    input.slice(..(input.trim_end().len()))
+}
+
 fn new_end(input: Span) -> IResult<Span, Token<Span>> {
     map(
-        recognize(delimited(tag("{{{"), ws(tag("end")), tag("}}}"))),
-        |span| Token::End { span },
+        consumed(delimited(
+            pair(tag("{{{"), ws(tag("end"))),
+            ws(take_until("}")),
+            tag("}}}"),
+        )),
+        |(span, subject)| Token::End {
+            span,
+            subject_raw: trim_end(subject),
+        },
     )(input)
 }
 
@@ -178,10 +189,6 @@ fn legacy_else(input: Span) -> IResult<Span, Token<Span>> {
         recognize(delimited(tag("<!--"), ws(tag("ELSE")), tag("-->"))),
         |span| Token::LegacyElse { span },
     )(input)
-}
-
-fn trim_end(input: Span) -> Span {
-    input.slice(..(input.trim_end().len()))
 }
 
 fn legacy_end(input: Span) -> IResult<Span, Token<Span>> {
@@ -362,8 +369,9 @@ mod test {
                 Token::Else { span } => Token::Else {
                     span: *span.fragment(),
                 },
-                Token::End { span } => Token::End {
+                Token::End { span, subject_raw } => Token::End {
                     span: *span.fragment(),
+                    subject_raw: *subject_raw.fragment(),
                 },
                 Token::LegacyIf { span, subject } => Token::LegacyIf {
                     span: *span.fragment(),
@@ -543,14 +551,21 @@ mod test {
     fn test_new_end() {
         assert_eq_unspan!(
             new_end(sp("{{{end}}}")),
-            Ok(("", Token::End { span: "{{{end}}}" }))
+            Ok((
+                "",
+                Token::End {
+                    span: "{{{end}}}",
+                    subject_raw: ""
+                }
+            ))
         );
         assert_eq_unspan!(
             new_end(sp("{{{ end }}}")),
             Ok((
                 "",
                 Token::End {
-                    span: "{{{ end }}}"
+                    span: "{{{ end }}}",
+                    subject_raw: ""
                 }
             ))
         );
@@ -745,7 +760,10 @@ mod test {
                     Token::Text(" we do one thing "),
                     Token::Else { span: "{{{ else }}}" },
                     Token::Text(" we do another "),
-                    Token::End { span: "{{{ end }}}" },
+                    Token::End {
+                        span: "{{{ end }}}",
+                        subject_raw: ""
+                    },
                     Token::Text(" other stuff"),
                 ]
             ))
@@ -771,7 +789,8 @@ mod test {
                     },
                     Token::Text(" we do another "),
                     Token::End {
-                        span: "{{{ end }}}"
+                        span: "{{{ end }}}",
+                        subject_raw: ""
                     },
                     Token::Text(" other stuff"),
                 ]
@@ -793,7 +812,8 @@ mod test {
                     },
                     Token::Text(" for each thing "),
                     Token::End {
-                        span: "{{{ end }}}"
+                        span: "{{{ end }}}",
+                        subject_raw: ""
                     },
                 ]
             ))
@@ -813,7 +833,8 @@ mod test {
                     },
                     Token::Text(" for each thing "),
                     Token::End {
-                        span: "{{{ end }}}"
+                        span: "{{{ end }}}",
+                        subject_raw: ""
                     },
                 ]
             ))
@@ -826,7 +847,8 @@ mod test {
                 vec![
                     Token::Text("{{{ each /abc }}} for each thing "),
                     Token::End {
-                        span: "{{{ end }}}"
+                        span: "{{{ end }}}",
+                        subject_raw: ""
                     },
                 ]
             ))
