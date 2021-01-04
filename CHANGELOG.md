@@ -16,6 +16,17 @@ Format:
 - Small improvements
 -->
 
+## Version 2.4.0 (2021-01-04)
+
+### Fixes
+
+- Better error handling
+- Fix TreeError when blocks were unterminated [#98](https://github.com/benchpressjs/benchpressjs/issues/98)
+
+### New
+
+- Allow a subject hint in new end syntax: `{{{ end thing }}}`
+
 ## Version 2.3.0 (2020-11-26)
 
 ### New
