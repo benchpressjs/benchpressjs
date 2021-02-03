@@ -25,12 +25,12 @@ This method compiles a template source into Javascript code.
 const fs = require('fs').promises;
 const path = require('path');
 const benchpress = require('benchpressjs');
-const viewsDir = path.join(__dirname, 'views');
+const viewsDir = '/path/to/compiled/templates';
 
 (async () => {
   const template = 'My favourite forum software is {forum}. This templating engine is written in {language}.';
   const precompiled = await benchpress.precompile(template.toString(), { filename: `${tpl}.tpl` });
-  await fsPromises.writeFile(path.join(viewsDir, `${tpl}.js`), precompiled);
+  await fsPromises.writeFile(path.join(viewsDir, `${tpl}.jst`), precompiled);
 })();
 ```
 
