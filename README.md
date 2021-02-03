@@ -22,13 +22,21 @@ Benchpress uses an ahead of time (AOT) compilation model. It requires that you p
 This method compiles a template source into Javascript code.
 
 ```js
+const fs = require('fs').promises;
+const path = require('path');
 const benchpress = require('benchpressjs');
-const template = 'My favourite forum software is {forum}. This templating engine is written in {language}.';
-benchpress.precompile(template, { filename: "your-file.tpl" }).then((precompiled) => {
-  // store it somewhere
-});
+const viewsDir = path.join(__dirname, 'views');
 
-// precompiled output
+(async () => {
+  const template = 'My favourite forum software is {forum}. This templating engine is written in {language}.';
+  const precompiled = await benchpress.precompile(template.toString(), { filename: `${tpl}.tpl` });
+  await fsPromises.writeFile(path.join(viewsDir, `${tpl}.js`), precompiled);
+})();
+```
+
+An example of the precompiled output:
+
+``` js
 (function (factory) {
   if (typeof module === 'object' && module.exports) {
     module.exports = factory();
@@ -67,7 +75,7 @@ app.render('myview', data, function(err, html) {
   console.log(html);
 });
 
-app.get('/myroute', function(res, req, next) {
+app.get('/myroute', function(req, res, next) {
   res.render('myview', data);
 });
 ```
