@@ -122,8 +122,8 @@ pub fn fix_extra_tokens<'a>(input: Vec<Token<Span<'a>>>) -> Vec<Token<Span<'a>>>
                         span.extra.filename, span.location_line(), column);
                     warn!("      |");
                     warn!("{:>5} | {}", span.location_line(), line);
-                    warn!("      | {}{} help: remove the token or make it an unambiguous comment",
-                        padding, "^".repeat(span.len()));
+                    warn!("      | {}{} help: remove the token, make it an unambiguous comment, or escape it like `\\{}`",
+                        padding, "^".repeat(span.len()), span);
 
                     diff -= 1;
                     // replace removed instructions with their source Text
@@ -506,7 +506,7 @@ mod test {
 
     #[test]
     fn test_fix_extra_tokens() {
-        fn span_to_str<'a>(tokens: Vec<Token<Span<'a>>>) -> Vec<Token<&'a str>> {
+        fn span_to_str(tokens: Vec<Token<Span>>) -> Vec<Token<&str>> {
             tokens.into_iter().map(|t| t.span_to_str()).collect()
         }
 
@@ -534,7 +534,7 @@ mod test {
         );
     }
 
-    fn span_to_str<'a>(tree: Vec<Instruction<Span<'a>>>) -> Vec<Instruction<&'a str>> {
+    fn span_to_str(tree: Vec<Instruction<Span>>) -> Vec<Instruction<&str>> {
         tree.into_iter().map(|i| i.span_to_str()).collect()
     }
 

@@ -162,7 +162,7 @@ fn keyword(input: Span) -> IResult<Span, Expression<Span>> {
 
 fn identifier(input: Span) -> IResult<Span, Span> {
     let (rest, res): (Span, Span) =
-        recognize(many1_count(alt((alphanumeric1, is_a("_-:@")))))(input)?;
+        recognize(many1_count(alt((alphanumeric1, is_a("_-:@/")))))(input)?;
     // exclude `-->` from being recognized as part of an expression path
     if res.ends_with("--") && rest.starts_with('>') {
         let split = res.len() - 2;

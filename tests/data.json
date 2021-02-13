@@ -298,6 +298,7 @@
   "relative_path": "",
   "configJSON": "{}",
   "template": {
+    "account/watched": true,
     "name": "header"
   },
   "userJSON": "{}"
