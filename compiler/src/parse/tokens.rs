@@ -28,6 +28,7 @@ use nom::{
         pair,
     },
     IResult,
+    Offset,
     Slice,
 };
 
@@ -221,7 +222,8 @@ fn token(input: Span) -> IResult<Span, Token<Span>> {
 }
 
 static PATTERNS: &[&str] = &[
-    "\\{{{", "\\{{", "\\{", "\\<!--", "{", "<!--", "@key", "@value", "@index",
+    // 0        1       2      3        4      5    6      7       8        9        10
+    "\\{{{", "\\{{", "\\{", "\\<!--", "{{{", "{{", "{", "<!--", "@key", "@value", "@index",
 ];
 
 use aho_corasick::{
@@ -242,8 +244,91 @@ pub fn tokens(mut input: Span) -> IResult<Span, Vec<Token<Span>>> {
         // skip to the next `{` or `<!--`
         if let Some(i) = TOKEN_START.find(input.slice(index..).fragment()) {
             // If this is an opener, step to it
-            if matches!(i.pattern(), 4..=5) {
+            if matches!(i.pattern(), 4..=7) {
                 index += i.start();
+
+                match token(input.slice(index..)) {
+                    // Not a match, step to the next character
+                    Err(nom::Err::Error(consumed)) => {
+                        let syntax_warning = |closer: &str| {
+                            let (line, column, padding) = consumed.input.get_line_column_padding();
+
+                            // restrict search to end of line
+                            let consumed_line_end =
+                                line.len() - line.offset(consumed.input.fragment());
+                            let consumed_line = consumed.input.slice(..consumed_line_end);
+
+                            let span = consumed_line.find(closer).map_or_else(
+                                || consumed_line,
+                                |end| consumed_line.slice(..(end + closer.len())),
+                            );
+
+                            warn!("[benchpress] warning: probable template syntax error");
+                            warn!("     --> {}:{}:{}",
+                                span.extra.filename, span.location_line(), column);
+                            warn!("      |");
+                            warn!("{:>5} | {}", span.location_line(), line);
+                            warn!("      | {}{} this looks like a template token, but a parse error caused it to be passed through as text",
+                                padding, "^".repeat(span.len()));
+                            warn!("      | help: if this is supposed to be literal text, escape it like `\\{}`", span);
+                            warn!("      | note: This will become an error in the future.\n");
+                        };
+
+                        // {{{ => }}}
+                        // {{ => }}
+                        // { => }
+                        // <!-- => -->
+                        match i.pattern() {
+                            4 => syntax_warning("}}}"),
+                            5 => syntax_warning("}}"),
+                            7 => {
+                                // try to make sure this looks like a template token
+                                // <!-- IF, <!-- ELSE, <!-- ENDIF, <!-- BEGIN, <!-- END
+                                let slice = consumed.input.slice(4..).trim_start();
+                                let alike = slice
+                                    .strip_prefix("IF")
+                                    .or_else(|| slice.strip_prefix("ELSE"))
+                                    .or_else(|| slice.strip_prefix("ENDIF"))
+                                    .or_else(|| slice.strip_prefix("BEGIN"))
+                                    .map_or(false, |rest| {
+                                        rest.starts_with(|c: char| c.is_whitespace())
+                                    });
+                                if alike {
+                                    syntax_warning("-->")
+                                }
+                            }
+                            _ => (),
+                        };
+
+                        while {
+                            // do-while
+                            index += i.end() - i.start();
+                            !input.is_char_boundary(index)
+                        } {}
+                    }
+                    Ok((rest, tok)) => {
+                        // Token returned what it was sent, this shouldn't happen
+                        if rest == input {
+                            return Err(nom::Err::Error(nom::error::Error::from_error_kind(
+                                rest,
+                                nom::error::ErrorKind::SeparatedList,
+                            )));
+                        }
+
+                        // Add text before the token
+                        if index > 0 {
+                            tokens.push(Token::Text(input.slice(..index)));
+                        }
+                        // Add token
+                        tokens.push(tok);
+
+                        // Advance to after the token
+                        input = rest;
+                        index = 0;
+                    }
+                    // Pass through other errors
+                    Err(e) => return Err(e),
+                }
             // If this is an escaped opener, skip it
             } else if matches!(i.pattern(), 0..=3) {
                 let start = index + i.start();
@@ -257,10 +342,9 @@ pub fn tokens(mut input: Span) -> IResult<Span, Vec<Token<Span>>> {
                 input = input.slice((start + 1)..);
                 // Step to after the escaped sequence
                 index = length - 1;
-                continue;
             // If this is `@key`, `@value`, `@index`
             } else {
-                // if matches!(i.pattern(), 6..=8)
+                // if matches!(i.pattern(), 8..=10)
                 let start = index + i.start();
                 let end = index + i.end();
                 let span = input.slice(start..end);
@@ -274,7 +358,7 @@ pub fn tokens(mut input: Span) -> IResult<Span, Vec<Token<Span>>> {
                 warn!("{:>5} | {}", span.location_line(), line);
                 warn!("      | {}{} help: wrap this in curly braces: `{{{}}}`",
                     padding, "^".repeat(span.len()), span);
-                warn!("      | note: This will become an error in the v3.0.0\n");
+                warn!("      | note: This will become an error in v3.0.0\n");
 
                 // Add text before the token
                 if start > 0 {
@@ -286,45 +370,11 @@ pub fn tokens(mut input: Span) -> IResult<Span, Vec<Token<Span>>> {
                 // Advance to after the token
                 input = input.slice(end..);
                 index = 0;
-                continue;
             }
         } else {
             // no tokens found, break out
             index = input.len();
             break;
-        }
-
-        match token(input.slice(index..)) {
-            // Not a match, step to the next character
-            Err(nom::Err::Error(_)) => {
-                // do-while
-                while {
-                    index += 1;
-                    !input.is_char_boundary(index)
-                } {}
-            }
-            Ok((rest, tok)) => {
-                // Token returned what it was sent, this shouldn't happen
-                if rest == input {
-                    return Err(nom::Err::Error(nom::error::Error::from_error_kind(
-                        rest,
-                        nom::error::ErrorKind::SeparatedList,
-                    )));
-                }
-
-                // Add text before the token
-                if index > 0 {
-                    tokens.push(Token::Text(input.slice(..index)));
-                }
-                // Add token
-                tokens.push(tok);
-
-                // Advance to after the token
-                input = rest;
-                index = 0;
-            }
-            // Pass through other errors
-            Err(e) => return Err(e),
         }
     }
 
@@ -841,11 +891,11 @@ mod test {
         );
 
         assert_eq_unspan!(
-            tokens(sp("{{{ each /abc }}} for each thing {{{ end }}}")),
+            tokens(sp("{{{ each *abc }}} for each thing {{{ end }}}")),
             Ok((
                 "",
                 vec![
-                    Token::Text("{{{ each /abc }}} for each thing "),
+                    Token::Text("{{{ each *abc }}} for each thing "),
                     Token::End {
                         span: "{{{ end }}}",
                         subject_raw: ""
