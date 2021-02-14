@@ -16,6 +16,13 @@ Format:
 - Small improvements
 -->
 
+## Version 2.4.1 (2021-02-13)
+
+### Fixes
+
+- Allow `/` in paths [#102](https://github.com/benchpressjs/benchpressjs/issues/102)
+- Add a warning for probable template token syntax errors
+
 ## Version 2.4.0 (2021-01-04)
 
 ### Fixes
