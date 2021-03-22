@@ -26,7 +26,7 @@ const fs = require('fs').promises;
 const benchpress = require('benchpressjs');
 
 const template = await fs.readFile('path/to/source/templates/favorite.tpl', 'utf8');
-const compiled = benchpress.precompile(template, { filename: 'favorite.tpl' });
+const compiled = await benchpress.precompile(template, { filename: 'favorite.tpl' });
 await fs.writeFile('path/to/compiled/templates/favorite.jst', compiled);
 ```
 
