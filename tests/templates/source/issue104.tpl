@@ -1,0 +1,1 @@
+{stringEmpty.length}

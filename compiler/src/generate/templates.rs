@@ -187,23 +187,32 @@ pub fn escape_path(input: &str) -> String {
 }
 
 /// create guarded chained property access
+///
+/// convert `foo.bar.str.length` to
+/// (context != null && context.foo != null && context.foo.bar != null && context.foo.bar.str != null) ? context.foo.bar.str.length : null
 pub fn guard(input: Path<Span>) -> String {
-    let mut exp = CONTEXT.to_string();
-    let mut last = exp.clone();
+    let except_last = &input[..(input.len() - 1)];
+    let last = &input[input.len() - 1];
 
-    for part in input {
-        last = format!("{}['{}']", last, escape_path(part.inner()));
-        exp.push_str(" && ");
-        exp.push_str(&last);
+    let mut exp = CONTEXT.to_string(); // a != null && a['b'] != null
+    let mut joined_path = CONTEXT.to_string(); // a['b']
+
+    for part in except_last {
+        joined_path = format!("{}['{}']", joined_path, escape_path(part.inner()));
+        exp.push_str(" != null && ");
+        exp.push_str(&joined_path);
 
         if let PathPart::PartDepth(_, n) = part {
-            last = format!("{}[key{}]", last, n);
-            exp.push_str(" && ");
-            exp.push_str(&last);
+            joined_path = format!("{}[key{}]", joined_path, n);
+            exp.push_str(" != null && ");
+            exp.push_str(&joined_path);
         }
     }
 
-    format!("{}({})", GUARD, exp)
+    joined_path = format!("{}['{}']", joined_path, escape_path(last.inner()));
+    exp.push_str(" != null");
+
+    format!("{}(({}) ? {} : null)", GUARD, exp, joined_path)
 }
 
 use std::borrow::Cow;
@@ -410,16 +419,16 @@ mod tests {
     fn guard_test() {
         assert_eq!(
             guard(&[PathPart::Part(sp("thing")), PathPart::Part(sp("stuff"))]),
-            "guard(context && context['thing'] && context['thing']['stuff'])"
+            "guard((context != null && context['thing'] != null) ? context['thing']['stuff'] : null)"
         );
 
         assert_eq!(guard(
             &[PathPart::PartDepth(sp("items"), 1), PathPart::Part(sp("prop"))],
-        ), "guard(context && context['items'] && context['items'][key1] && context['items'][key1]['prop'])");
+        ), "guard((context != null && context['items'] != null && context['items'][key1] != null) ? context['items'][key1]['prop'] : null)");
 
         assert_eq!(
             guard(&[PathPart::Part(sp("foo\\bar"))]),
-            "guard(context && context['foo\\\\bar'])"
+            "guard((context != null) ? context['foo\\\\bar'] : null)"
         )
     }
 
@@ -437,7 +446,7 @@ mod tests {
                 span: sp("thing"),
                 path: vec![PathPart::Part(sp("thing"))]
             }),
-            "guard(context && context['thing'])"
+            "guard((context != null) ? context['thing'] : null)"
         );
 
         assert_eq!(
@@ -471,6 +480,6 @@ mod tests {
                 Expression::Path { span: sp("userLang"), path: vec![PathPart::Part(sp("userLang"))] },
                 Expression::Path { span: sp("defaultLang"), path: vec![PathPart::Part(sp("defaultLang"))] },
             ]
-        }), "helper(context, helpers, 'localeToHTML', [guard(context && context['userLang']), guard(context && context['defaultLang'])])");
+        }), "helper(context, helpers, 'localeToHTML', [guard((context != null) ? context['userLang'] : null), guard((context != null) ? context['defaultLang'] : null)])");
     }
 }
