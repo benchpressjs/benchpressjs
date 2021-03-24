@@ -15,12 +15,10 @@ aho-corasick = "0.7.15"
 console_error_panic_hook = "0.1.6"
 json = "0.12.4"
 lazy_static = "1.4.0"
-nom = "6.1.0"
+nom = "6.1.2"
 nom_locate = "3.0.0"
-wasm-bindgen = "0.2.70"
-web-sys = { version = "0.3.47", features = ["console"] }
-# not a direct dependency, workaround for https://github.com/myrrlyn/funty/issues/3
-funty = "=1.1.0"
+wasm-bindgen = "0.2.72"
+web-sys = { version = "0.3.49", features = ["console"] }
 
 [dev-dependencies]
-pretty_assertions = "0.6.1"
+pretty_assertions = "0.7.1"
