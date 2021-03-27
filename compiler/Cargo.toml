@@ -13,6 +13,7 @@ path = "bench.rs"
 [dependencies]
 aho-corasick = "0.7.15"
 console_error_panic_hook = "0.1.6"
+itertools = "0.10.0"
 json = "0.12.4"
 lazy_static = "1.4.0"
 nom = "6.1.2"

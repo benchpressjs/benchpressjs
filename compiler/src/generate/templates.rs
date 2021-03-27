@@ -1,3 +1,5 @@
+use itertools::Itertools;
+
 // static keywords
 pub const CONTEXT: &str = "context";
 pub const HELPERS: &str = "helpers";
@@ -191,28 +193,28 @@ pub fn escape_path(input: &str) -> String {
 /// convert `foo.bar.str.length` to
 /// (context != null && context.foo != null && context.foo.bar != null && context.foo.bar.str != null) ? context.foo.bar.str.length : null
 pub fn guard(input: Path<Span>) -> String {
-    let except_last = &input[..(input.len() - 1)];
-    let last = &input[input.len() - 1];
+    let mut paths: Vec<String> = vec![CONTEXT.to_string()];
 
-    let mut exp = CONTEXT.to_string(); // a != null && a['b'] != null
-    let mut joined_path = CONTEXT.to_string(); // a['b']
-
-    for part in except_last {
-        joined_path = format!("{}['{}']", joined_path, escape_path(part.inner()));
-        exp.push_str(" != null && ");
-        exp.push_str(&joined_path);
+    for part in input {
+        let prev = paths.last().unwrap();
+        let joined_path = format!("{}['{}']", prev, escape_path(part.inner()));
+        paths.push(joined_path);
 
         if let PathPart::PartDepth(_, n) = part {
-            joined_path = format!("{}[key{}]", joined_path, n);
-            exp.push_str(" != null && ");
-            exp.push_str(&joined_path);
+            let prev = paths.last().unwrap();
+            let joined_path = format!("{}[key{}]", prev, n);
+            paths.push(joined_path);
         }
     }
 
-    joined_path = format!("{}['{}']", joined_path, escape_path(last.inner()));
-    exp.push_str(" != null");
+    let last = paths.len() - 1;
+    let exp = paths[..last]
+        .iter()
+        .map(|path| format!("{} != null", path))
+        .join(" && ");
+    let whole_path = &paths[last];
 
-    format!("{}(({}) ? {} : null)", GUARD, exp, joined_path)
+    format!("{}(({}) ? {} : null)", GUARD, exp, whole_path)
 }
 
 use std::borrow::Cow;
