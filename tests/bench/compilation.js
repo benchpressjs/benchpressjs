@@ -3,7 +3,7 @@
 const path = require('path');
 const fs = require('fs');
 
-const benchpress = require('../../build/lib/benchpress');
+const benchpress = require('../../lib/benchpress');
 
 async function prep() {
   const [categories, topics] = Promise.all(

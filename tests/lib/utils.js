@@ -5,7 +5,7 @@ const path = require('path');
 const mkdirp = require('mkdirp');
 const assert = require('assert');
 
-const benchpress = require('../../build/lib/benchpress');
+const benchpress = require('../../lib/benchpress');
 
 let cache = null;
 function prepare() {

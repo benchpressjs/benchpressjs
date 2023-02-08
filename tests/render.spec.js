@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const Benchpress = require('../build/lib/benchpress');
+const Benchpress = require('../lib/benchpress');
 const { equalsIgnoreWhitespace } = require('./lib/utils');
 const mainData = require('./data.json');
 

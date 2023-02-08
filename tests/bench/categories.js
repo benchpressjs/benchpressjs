@@ -3,8 +3,8 @@
 const path = require('path');
 const fs = require('fs');
 
-const benchpress = require('../../build/lib/benchpress');
-const evaluate = require('../../build/lib/evaluate');
+const benchpress = require('../../lib/benchpress');
+const evaluate = require('../../lib/evaluate');
 const data = require('./categories.json');
 
 const templatePath = path.join(__dirname, 'categories.tpl');

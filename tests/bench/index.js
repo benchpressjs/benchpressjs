@@ -2,7 +2,7 @@
 
 const Benchmark = require('benchmark');
 
-const benchpress = require('../../build/lib/benchpress');
+const benchpress = require('../../lib/benchpress');
 const categories = require('./categories');
 const topic = require('./topic');
 const compilation = require('./compilation');

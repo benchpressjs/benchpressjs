@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const { prepare, equalsIgnoreWhitespace } = require('./lib/utils');
-const Benchpress = require('../build/lib/benchpress');
+const Benchpress = require('../lib/benchpress');
 const mainData = require('./data.json');
 
 const logDir = path.join(__dirname, 'logs');

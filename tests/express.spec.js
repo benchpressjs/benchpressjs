@@ -5,7 +5,7 @@ const fs = require('fs').promises;
 const express = require('express');
 const assert = require('assert');
 
-const Benchpress = require('../build/lib/benchpress');
+const Benchpress = require('../lib/benchpress');
 const { compileTemplate, equalsIgnoreWhitespace } = require('./lib/utils');
 const data = require('./data.json');
 

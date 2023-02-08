@@ -3,7 +3,7 @@
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
-const Benchpress = require('../build/lib/benchpress');
+const Benchpress = require('../lib/benchpress');
 
 const tplPath = path.join(__dirname, './templates/source/conditional-with-else-inside-loop.tpl');
 const template = fs.readFileSync(tplPath).toString();

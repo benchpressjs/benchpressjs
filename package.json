@@ -12,7 +12,7 @@
     "prepublishOnly": "grunt"
   },
   "repository": "git://github.com/benchpressjs/benchpressjs",
-  "main": "build/lib/benchpress",
+  "main": "lib/benchpress",
   "browser": "build/benchpress",
   "keywords": [
     "templates",
