@@ -472,10 +472,15 @@ mod test {
         for n in 0..8 {
             let comment = format!("<!--{}⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️-->", " ".repeat(n));
             tokens(sp(&comment)).unwrap();
-            
+
             for sbraces in 1..=3 {
                 for ebraces in 1..=3 {
-                    let input = format!("{}{}⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️{}", "{".repeat(sbraces), " ".repeat(n), "}".repeat(ebraces));
+                    let input = format!(
+                        "{}{}⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️{}",
+                        "{".repeat(sbraces),
+                        " ".repeat(n),
+                        "}".repeat(ebraces)
+                    );
                     tokens(sp(&input)).unwrap();
                 }
             }
