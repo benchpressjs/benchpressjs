@@ -11,15 +11,15 @@ name = "bench"
 path = "bench.rs"
 
 [dependencies]
-aho-corasick = "0.7.15"
-console_error_panic_hook = "0.1.6"
-itertools = "0.10.0"
+aho-corasick = "0.7.20"
+console_error_panic_hook = "0.1.7"
+itertools = "0.10.5"
 json = "0.12.4"
-lazy_static = "1.4.0"
-nom = "6.1.2"
-nom_locate = "3.0.0"
-wasm-bindgen = "0.2.72"
-web-sys = { version = "0.3.49", features = ["console"] }
+nom = "7.1.3"
+nom_locate = "4.1.0"
+once_cell = { version = "1.17.0", default-features = false }
+wasm-bindgen = "0.2.84"
+web-sys = { version = "0.3.61", features = ["console"] }
 
 [dev-dependencies]
-pretty_assertions = "0.7.1"
+pretty_assertions = "1.3.0"

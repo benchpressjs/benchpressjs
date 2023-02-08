@@ -231,9 +231,14 @@ use aho_corasick::{
     AhoCorasickBuilder,
     MatchKind,
 };
-lazy_static::lazy_static! {
-    static ref TOKEN_START: AhoCorasick = AhoCorasickBuilder::new().auto_configure(PATTERNS).match_kind(MatchKind::LeftmostFirst).build(PATTERNS);
-}
+use once_cell::sync::Lazy;
+
+static TOKEN_START: Lazy<AhoCorasick> = Lazy::new(|| {
+    AhoCorasickBuilder::new()
+        .auto_configure(PATTERNS)
+        .match_kind(MatchKind::LeftmostFirst)
+        .build(PATTERNS)
+});
 
 #[rustfmt::skip::macros(warn)]
 pub fn tokens(mut input: Span) -> IResult<Span, Vec<Token<Span>>> {
