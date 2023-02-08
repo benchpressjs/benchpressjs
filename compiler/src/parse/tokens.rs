@@ -252,16 +252,16 @@ pub fn tokens(mut input: Span) -> IResult<Span, Vec<Token<Span>>> {
             if matches!(i.pattern(), 4..=7) {
                 index += i.start();
 
-                match token(input.slice(index..)) {
+                let slice = input.slice(index..);
+                match token(slice) {
                     // Not a match, step to the next character
-                    Err(nom::Err::Error(consumed)) => {
+                    Err(nom::Err::Error(_)) => {
                         let syntax_warning = |closer: &str| {
-                            let (line, column, padding) = consumed.input.get_line_column_padding();
+                            let (line, column, padding) = slice.get_line_column_padding();
 
                             // restrict search to end of line
-                            let consumed_line_end =
-                                line.len() - line.offset(consumed.input.fragment());
-                            let consumed_line = consumed.input.slice(..consumed_line_end);
+                            let consumed_line_end = line.len() - line.offset(slice.fragment());
+                            let consumed_line = slice.slice(..consumed_line_end);
 
                             let span = consumed_line.find(closer).map_or_else(
                                 || consumed_line,
@@ -279,17 +279,16 @@ pub fn tokens(mut input: Span) -> IResult<Span, Vec<Token<Span>>> {
                             warn!("      | note: This will become an error in the future.\n");
                         };
 
-                        // {{{ => }}}
-                        // {{ => }}
-                        // { => }
-                        // <!-- => -->
                         match i.pattern() {
+                            // {{{ => }}}
                             4 => syntax_warning("}}}"),
+                            // {{ => }}
                             5 => syntax_warning("}}"),
+                            // <!-- => -->
                             7 => {
                                 // try to make sure this looks like a template token
                                 // <!-- IF, <!-- ELSE, <!-- ENDIF, <!-- BEGIN, <!-- END
-                                let slice = consumed.input.slice(4..).trim_start();
+                                let slice = slice.slice(4..).trim_start();
                                 let alike = slice
                                     .strip_prefix("IF")
                                     .or_else(|| slice.strip_prefix("ELSE"))
@@ -458,6 +457,28 @@ mod test {
                     code,
                 }),
             ),
+        }
+    }
+
+    #[test]
+    fn test_comments() {
+        // actual offending code from issue63
+        tokens(sp(
+            "<!--<p>⚠️ Forum Maintenance: Feb 6th, 8am - 14pm (UTC+2)</p>-->",
+        ))
+        .unwrap();
+
+        // some fuzzing just to make sure
+        for n in 0..8 {
+            let comment = format!("<!--{}⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️-->", " ".repeat(n));
+            tokens(sp(&comment)).unwrap();
+            
+            for sbraces in 1..=3 {
+                for ebraces in 1..=3 {
+                    let input = format!("{}{}⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️{}", "{".repeat(sbraces), " ".repeat(n), "}".repeat(ebraces));
+                    tokens(sp(&input)).unwrap();
+                }
+            }
         }
     }
 
