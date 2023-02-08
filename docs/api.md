@@ -2,26 +2,26 @@
 
 ### Table of Contents
 
--   [Benchpress][1]
-    -   [registerHelper][2]
-        -   [Parameters][3]
-    -   [setGlobal][4]
-        -   [Parameters][5]
-    -   [flush][6]
-    -   [registerLoader][7]
-        -   [Parameters][8]
--   [precompile][9]
-    -   [Parameters][10]
--   [compileRender][11]
-    -   [Parameters][12]
--   [\_\_express][13]
-    -   [Parameters][14]
--   [compileParse][15]
-    -   [Parameters][16]
--   [render][17]
-    -   [Parameters][18]
--   [parse][19]
-    -   [Parameters][20]
+*   [Benchpress][1]
+    *   [registerHelper][2]
+        *   [Parameters][3]
+    *   [setGlobal][4]
+        *   [Parameters][5]
+    *   [flush][6]
+    *   [registerLoader][7]
+        *   [Parameters][8]
+*   [precompile][9]
+    *   [Parameters][10]
+*   [compileRender][11]
+    *   [Parameters][12]
+*   [\__express][13]
+    *   [Parameters][14]
+*   [compileParse][15]
+    *   [Parameters][16]
+*   [render][17]
+    *   [Parameters][18]
+*   [parse][19]
+    *   [Parameters][20]
 
 ## Benchpress
 
@@ -31,8 +31,8 @@ Register a helper function
 
 #### Parameters
 
--   `name` **[string][21]** Helper name
--   `fn` **[function][22]** Helper function
+*   `name` **[string][21]** Helper name
+*   `fn` **[function][22]** Helper function
 
 ### setGlobal
 
@@ -40,8 +40,8 @@ Set a global data value
 
 #### Parameters
 
--   `key` **[string][21]** Property key
--   `value` **[Object][23]** Property value
+*   `key` **[string][21]** Property key
+*   `value` **[Object][23]** Property value
 
 ### flush
 
@@ -51,28 +51,28 @@ Clear the template cache
 
 Register a loader function to fetch templates
 
--   `loader(name, callback) => callback(templateFunction)`
--   `loader(name) => Promise<templateFunction>`
+*   `loader(name, callback) => callback(templateFunction)`
+*   `loader(name) => Promise<templateFunction>`
 
 #### Parameters
 
--   `loader` **[function][22]** 
+*   `loader` **[function][22]** 
 
 ## precompile
 
 Precompile a benchpress template
 
--   `precompiled(source): Promise<string>`
--   `precompile(source, {}, callback) => callback(err, output)`
--   `precompile({ source }, callback) => callback(err, output)`
+*   `precompiled(source): Promise<string>`
+*   `precompile(source, {}, callback) => callback(err, output)`
+*   `precompile({ source }, callback) => callback(err, output)`
 
 ### Parameters
 
--   `source` **[string][21]** Template source
--   `options`  
--   `callback` **[function][22]?** (err, output)
+*   `source` **[string][21]** Template source
+*   `options`  
+*   `callback` **[function][22]?** (err, output)
 
-Returns **[Promise][24]&lt;[string][21]>** output code
+Returns **[Promise][24]<[string][21]>** output code
 
 ## compileRender
 
@@ -81,21 +81,21 @@ Automatically caches template function based on hash of input template
 
 ### Parameters
 
--   `templateSource` **[string][21]** 
--   `data` **any** 
--   `block` **[string][21]?** 
+*   `templateSource` **[string][21]** 
+*   `data` **any** 
+*   `block` **[string][21]?** 
 
-Returns **[Promise][24]&lt;[string][21]>** rendered output
+Returns **[Promise][24]<[string][21]>** rendered output
 
-## \_\_express
+## \__express
 
 Provide functionality to act as an express engine
 
 ### Parameters
 
--   `filepath` **[string][21]** Compiled template file path
--   `data` **[Object][23]** Data with which to parse the template
--   `next` **[function][22]** (err, output)
+*   `filepath` **[string][21]** Compiled template file path
+*   `data` **[Object][23]** Data with which to parse the template
+*   `next` **[function][22]** (err, output)
 
 ## compileParse
 
@@ -103,15 +103,14 @@ Alias for [compileRender][11], but uses a callback
 
 ### Parameters
 
--   `templateSource` **[string][21]** 
--   `block` **[string][21]?** 
--   `data` **any** 
--   `callback` **[function][22]** (err, output)
+*   `templateSource` **[string][21]** 
+*   `block` **[string][21]?** 
+*   `data` **any** 
+*   `callback` **[function][22]** (err, output)
 
 **Meta**
 
--   **deprecated**: Use [compileRender][11] instead
-
+*   **deprecated**: Use [compileRender][11] instead
 
 ## render
 
@@ -119,11 +118,11 @@ Fetch and run the given template
 
 ### Parameters
 
--   `template` **[string][21]** Name of template to fetch
--   `data` **[Object][23]** Data with which to run the template
--   `block` **[string][21]?** Parse only this block in the template
+*   `template` **[string][21]** Name of template to fetch
+*   `data` **[Object][23]** Data with which to run the template
+*   `block` **[string][21]?** Parse only this block in the template
 
-Returns **[Promise][24]&lt;[string][21]>** Rendered output
+Returns **[Promise][24]<[string][21]>** Rendered output
 
 ## parse
 
@@ -131,15 +130,14 @@ Alias for [render][17], but uses a callback
 
 ### Parameters
 
--   `template` **[string][21]** Name of template to fetch
--   `block` **[string][21]?** Render only this block in the template
--   `data` **[Object][23]** Data with which to run the template
--   `callback` **[function][22]** callback(output)
+*   `template` **[string][21]** Name of template to fetch
+*   `block` **[string][21]?** Render only this block in the template
+*   `data` **[Object][23]** Data with which to run the template
+*   `callback` **[function][22]** callback(output)
 
 **Meta**
 
--   **deprecated**: Use [render][17] instead
-
+*   **deprecated**: Use [render][17] instead
 
 [1]: #benchpress
 

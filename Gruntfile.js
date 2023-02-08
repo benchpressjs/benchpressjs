@@ -6,10 +6,8 @@
   global-require: off,
 */
 
-const fs = require('fs');
-const async = require('async');
+const fs = require('fs').promises;
 const mkdirp = require('mkdirp');
-const babel = require('@babel/core');
 
 const config = {
   uglify: {
@@ -40,24 +38,6 @@ const config = {
       src: ['tests/*.js'],
     },
   },
-  babel: {
-    options: {
-      sourceMap: true,
-      plugins: [
-        '@babel/plugin-proposal-class-properties',
-      ],
-    },
-    dist: {
-      files: [
-        {
-          expand: true,
-          cwd: 'lib',
-          src: ['**/*.js'],
-          dest: 'build/lib',
-        },
-      ],
-    },
-  },
   shell: {
     compiler: 'wasm-pack build --target nodejs --out-dir ../build/compiler compiler',
     docs: 'npm run docs',
@@ -79,17 +59,7 @@ function benchmark() {
   });
 }
 
-const babelConfig = {
-  plugins: [
-    '@babel/plugin-transform-arrow-functions',
-    '@babel/plugin-transform-block-scoped-functions',
-    '@babel/plugin-transform-block-scoping',
-    '@babel/plugin-transform-function-name',
-    '@babel/plugin-transform-shorthand-properties',
-  ],
-};
-
-function wrap([shimFile, runtimeFile], next) {
+function wrap([shimFile, runtimeFile]) {
   const cutout = /\/\* build:SERVER-ONLY:open \*\/[\s\S]*?\/\* build:SERVER-ONLY:close \*\//g;
   const shimSource = shimFile.toString().replace(cutout, '');
   const runtimeSource = runtimeFile.toString().replace(cutout, '');
@@ -110,26 +80,25 @@ function wrap([shimFile, runtimeFile], next) {
     return Benchpress;
   });`;
 
-  const transpiled = babel.transform(wrapped, babelConfig).code;
-
-  next(null, transpiled);
+  return wrapped;
 }
 
 function client() {
   const done = this.async();
 
-  async.waterfall([
-    next => async.parallel([
-      cb => fs.readFile('lib/benchpress.js', cb),
-      cb => fs.readFile('lib/runtime.js', cb),
-    ], next),
-    wrap,
-    async (file) => {
-      await mkdirp('build');
-      return file;
-    },
-    (file, next) => fs.writeFile('build/benchpress.js', file, next),
-  ], done);
+  (async () => {
+    const files = await Promise.all([
+      fs.readFile('lib/benchpress.js'),
+      fs.readFile('lib/runtime.js'),
+      mkdirp('build'),
+    ]);
+
+    const wrapped = wrap(files);
+    await fs.writeFile('build/benchpress.js', wrapped);
+  })().then(() => done(), (err) => {
+    console.error(err);
+    done(false);
+  });
 }
 
 module.exports = function Gruntfile(grunt) {
@@ -140,14 +109,13 @@ module.exports = function Gruntfile(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-mocha-test');
-  grunt.loadNpmTasks('grunt-babel');
   grunt.loadNpmTasks('grunt-shell');
 
   grunt.registerTask('benchmark', 'Run benchmarks', benchmark);
 
   grunt.registerTask('client', 'Stripping and wrapping shim', client);
 
-  grunt.registerTask('build', ['babel', 'client', 'uglify', 'shell:compiler', 'shell:docs']);
+  grunt.registerTask('build', ['client', 'uglify', 'shell:compiler', 'shell:docs']);
   grunt.registerTask('default', ['build', 'mochaTest']);
   grunt.registerTask('bench', ['default', 'benchmark']);
 };

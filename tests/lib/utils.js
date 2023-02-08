@@ -2,7 +2,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const async = require('async');
 const mkdirp = require('mkdirp');
 const assert = require('assert');
 
@@ -54,16 +53,11 @@ function collapseWhitespace(str) {
     .trim();
 }
 
-function compileTemplate(src, dest, callback) {
-  async.waterfall([
-    next => fs.readFile(src, 'utf8', next),
-    (source, next) => benchpress.precompile({ source }, next),
-    async (code) => {
-      await mkdirp(path.dirname(dest));
-      return code;
-    },
-    (code, next) => fs.writeFile(dest, code, next),
-  ], callback);
+async function compileTemplate(src, dest) {
+  const source = await fs.promises.readFile(src, 'utf8');
+  const code = await benchpress.precompile({ source });
+  await mkdirp(path.dirname(dest));
+  await fs.promises.writeFile(dest, code);
 }
 
 function equalsIgnoreWhitespace(actual, expected) {

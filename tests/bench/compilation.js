@@ -2,29 +2,22 @@
 
 const path = require('path');
 const fs = require('fs');
-const async = require('async');
 
 const benchpress = require('../../build/lib/benchpress');
 
-const templatePaths = ['categories.tpl', 'topic.tpl'].map(name => path.join(__dirname, name));
+async function prep() {
+  const [categories, topics] = Promise.all(
+    ['categories.tpl', 'topic.tpl']
+      .map(async name => fs.readFile(path.join(__dirname, name), 'utf8'))
+  );
 
-function prep(callback) {
-  async.waterfall([
-    next => async.map(
-      templatePaths,
-      (templatePath, cb) => fs.readFile(templatePath, 'utf8', cb),
-      next
-    ),
-    ([categories, topics], next) => {
-      function bench(deferred) {
-        return benchpress.precompile(categories, { filename: 'tests/bench/categories.tpl' })
-          .then(() => benchpress.precompile(topics, { filename: 'tests/bench/topic.tpl' }))
-          .then(() => deferred.resolve(), err => deferred.reject(err));
-      }
+  function bench(deferred) {
+    return benchpress.precompile(categories, { filename: 'tests/bench/categories.tpl' })
+      .then(() => benchpress.precompile(topics, { filename: 'tests/bench/topic.tpl' }))
+      .then(() => deferred.resolve(), err => deferred.reject(err));
+  }
 
-      next(null, { bench });
-    },
-  ], callback);
+  return { bench };
 }
 
 module.exports = prep;

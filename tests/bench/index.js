@@ -1,6 +1,5 @@
 'use strict';
 
-const async = require('async');
 const Benchmark = require('benchmark');
 
 const benchpress = require('../../build/lib/benchpress');
@@ -12,23 +11,23 @@ Benchmark.options.defer = true;
 Benchmark.options.minSamples = 100;
 const suite = new Benchmark.Suite();
 
-function benchmark(done) {
-  async.parallel([
-    categories,
-    topic,
-    compilation,
-  ], (err, [cats, top, comp]) => {
-    const cache = {
-      categories: cats.template,
-      topic: top.template,
-    };
+async function benchmark() {
+  const [cats, top, comp] = await Promise.all([
+    categories(),
+    topic(),
+    compilation(),
+  ]);
 
-    benchpress.registerLoader((name, callback) => {
-      callback(cache[name]);
-    });
+  const cache = {
+    categories: cats.template,
+    topic: top.template,
+  };
 
-    const output = [];
+  benchpress.registerLoader(async name => cache[name]);
 
+  const output = [];
+
+  return new Promise((resolve) => {
     suite
       .add('categories', cats.bench)
       .add('topic', top.bench)
@@ -37,7 +36,7 @@ function benchmark(done) {
         output.push(event.target.toString());
       })
       .on('complete', () => {
-        done(null, output);
+        resolve(output);
       })
       .run({
         async: true,

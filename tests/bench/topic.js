@@ -1,8 +1,7 @@
 'use strict';
 
 const path = require('path');
-const fs = require('fs');
-const async = require('async');
+const fs = require('fs').promises;
 
 const benchpress = require('../../build/lib/benchpress');
 const evaluate = require('../../build/lib/evaluate');
@@ -10,19 +9,14 @@ const data = require('./topic.json');
 
 const templatePath = path.join(__dirname, 'topic.tpl');
 
-function prep(callback) {
-  async.waterfall([
-    next => fs.readFile(templatePath, 'utf8', next),
-    (source, next) => benchpress.precompile({ source, filename: 'tests/bench/topic.tpl' }, next),
-    (code, next) => {
-      const template = evaluate(code);
-      function bench(deferred) {
-        benchpress.render('topic', data).then(() => deferred.resolve());
-      }
-
-      next(null, { bench, template });
-    },
-  ], callback);
+async function prep() {
+  const source = await fs.readFile(templatePath, 'utf8');
+  const code = await benchpress.precompile({ source, filename: 'tests/bench/topic.tpl' });
+  const template = evaluate(code);
+  function bench(deferred) {
+    benchpress.render('topic', data).then(() => deferred.resolve());
+  }
+  return { bench, template };
 }
 
 module.exports = prep;
