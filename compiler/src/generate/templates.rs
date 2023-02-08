@@ -21,7 +21,7 @@ pub const RUNTIME_PARAMS: &str = "helpers, context, guard, iter, helper";
 /// key with an indexed suffix
 /// for nested scoped
 pub fn key_i(i: u32) -> String {
-    format!("{}{}", KEY, i)
+    format!("{KEY}{i}")
 }
 
 /// indent each line (except the first) by a given number of spaces
@@ -57,7 +57,7 @@ pub fn block(name: &str, body: &str) -> String {
 ",
         escape_path(name),
         safe_name,
-        RUNTIME_PARAMS.to_string(),
+        RUNTIME_PARAMS,
         ESCAPE,
         HELPERS,
         ESCAPE,
@@ -71,12 +71,7 @@ pub fn block(name: &str, body: &str) -> String {
 
 /// block call template
 pub fn block_call(name: &str) -> String {
-    format!(
-        "{}['{}']({})",
-        BLOCKS,
-        escape_path(name),
-        RUNTIME_PARAMS.to_string()
-    )
+    format!("{}['{}']({})", BLOCKS, escape_path(name), RUNTIME_PARAMS)
 }
 
 /// module wrapper template
@@ -105,7 +100,7 @@ pub fn wrapper(body: &str, blocks: &[String]) -> String {
   return compiled;
 }})
 ",
-        RUNTIME_PARAMS.to_string(),
+        RUNTIME_PARAMS,
         ESCAPE,
         HELPERS,
         ESCAPE,
@@ -202,7 +197,7 @@ pub fn guard(input: Path<Span>) -> String {
 
         if let PathPart::PartDepth(_, n) = part {
             let prev = paths.last().unwrap();
-            let joined_path = format!("{}[key{}]", prev, n);
+            let joined_path = format!("{prev}[key{n}]");
             paths.push(joined_path);
         }
     }
@@ -210,11 +205,11 @@ pub fn guard(input: Path<Span>) -> String {
     let last = paths.len() - 1;
     let exp = paths[..last]
         .iter()
-        .map(|path| format!("{} != null", path))
+        .map(|path| format!("{path} != null"))
         .join(" && ");
     let whole_path = &paths[last];
 
-    format!("{}(({}) ? {} : null)", GUARD, exp, whole_path)
+    format!("{GUARD}(({exp}) ? {whole_path} : null)")
 }
 
 use std::borrow::Cow;
@@ -269,11 +264,7 @@ pub fn expression(input: Expression<Span>) -> Cow<str> {
                 .collect::<Vec<Cow<str>>>()
                 .join(", ");
 
-            format!(
-                "{}({}, {}, '{}', [{}])",
-                HELPER, CONTEXT, HELPERS, name, args_str
-            )
-            .into()
+            format!("{HELPER}({CONTEXT}, {HELPERS}, '{name}', [{args_str}])").into()
         }
         Expression::Negative { expr, .. } => format!("!{}", expression(*expr)).into(),
         Expression::Equ { lhs, rhs, .. } => {

@@ -59,17 +59,17 @@ pub fn compile(source: &str, filename: &str) -> String {
     console_error_panic_hook::set_once();
 
     let program = parse::Span::new_extra(
-        &source,
+        source,
         parse::FileInfo {
             filename,
-            full_source: &source,
+            full_source: source,
         },
     );
     let tokens = match nom::combinator::all_consuming(parse::tokens::tokens)(program) {
         Ok((_, tokens)) => tokens,
         Err(e) => {
-            console::error!("[benchpress] internal error: {:?}", e);
-            console::error!("     --> {}", filename);
+            console::error!("[benchpress] internal error: {e:?}");
+            console::error!("     --> {filename}");
             console::error!("      | note: This is not an issue with your template, please report this issue on the benchpress Github page.\n");
 
             return String::new();
@@ -81,13 +81,13 @@ pub fn compile(source: &str, filename: &str) -> String {
     match parse::tree::tree(0, &[], &mut iter, &mut tree) {
         Ok(None) => {}
         Ok(Some(rest)) => {
-            console::error!("[benchpress] internal error: LeftOver({:?})", rest);
-            console::error!("     --> {}", filename);
+            console::error!("[benchpress] internal error: LeftOver({rest:?})");
+            console::error!("     --> {filename}");
             console::error!("      | note: This is not an issue with your template, please report this issue on the benchpress Github page.\n");
         }
         Err(e) => {
-            console::error!("[benchpress] internal error: {:?}", e);
-            console::error!("     --> {}", filename);
+            console::error!("[benchpress] internal error: {e:?}");
+            console::error!("     --> {filename}");
             console::error!("      | note: This is not an issue with your template, please report this issue on the benchpress Github page.\n");
 
             return String::new();

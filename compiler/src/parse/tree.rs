@@ -142,8 +142,8 @@ pub fn fix_extra_tokens<'a>(input: Vec<Token<Span<'a>>>) -> Vec<Token<Span<'a>>>
     }
 }
 
-fn resolve_expression_paths<'a, 'b>(
-    base: Path<'b, Span<'a>>,
+fn resolve_expression_paths<'a>(
+    base: Path<'_, Span<'a>>,
     expr: Expression<Span<'a>>,
 ) -> Expression<Span<'a>> {
     match expr {
@@ -255,8 +255,7 @@ where
         warn!("{:>5} | {}", open_span.location_line(), open_line);
         warn!("      | {}{} block started here, but was not terminated before EOF",
             open_padding, "^".repeat(open_span.len()));
-        warn!("      | note: Add an `{}` to terminate the block. This will become an error in v3.0.0\n",
-            closer);
+        warn!("      | note: Add `{closer}` to terminate the block. This will become an error in v3.0.0\n");
     };
 
     while let Some(tok) = input.next() {

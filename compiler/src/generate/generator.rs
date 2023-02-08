@@ -11,10 +11,10 @@ use std::collections::HashSet;
 
 /// generate code for a body
 /// recursively applied to If and Iter children
-fn gen_body<'a, 'b>(
+fn gen_body<'a>(
     entry: Vec<Instruction<Span<'a>>>,
     top: bool,
-    mut block_names: &'b mut HashSet<&'a str>,
+    block_names: &mut HashSet<&'a str>,
 ) -> (String, Vec<String>) {
     if entry.is_empty() {
         return ("\"\"".to_string(), Vec::new());
@@ -29,8 +29,8 @@ fn gen_body<'a, 'b>(
             Instruction::Text(value) => json::stringify(json::from(*value.fragment())),
             // output a ternary in JS
             Instruction::If { subject, body, alt } => {
-                let (b, mut b_blocks) = gen_body(body, top, &mut block_names);
-                let (a, mut a_blocks) = gen_body(alt, top, &mut block_names);
+                let (b, mut b_blocks) = gen_body(body, top, block_names);
+                let (a, mut a_blocks) = gen_body(alt, top, block_names);
 
                 blocks.append(&mut b_blocks);
                 blocks.append(&mut a_blocks);

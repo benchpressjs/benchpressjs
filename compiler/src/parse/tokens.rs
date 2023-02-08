@@ -270,7 +270,7 @@ pub fn tokens(mut input: Span) -> IResult<Span, Vec<Token<Span>>> {
                             warn!("{:>5} | {}", span.location_line(), line);
                             warn!("      | {}{} this looks like a template token, but a parse error caused it to be passed through as text",
                                 padding, "^".repeat(span.len()));
-                            warn!("      | help: if this is supposed to be literal text, escape it like `\\{}`", span);
+                            warn!("      | help: if this is supposed to be literal text, escape it like `\\{span}`");
                             warn!("      | note: This will become an error in the future.\n");
                         };
 

@@ -14,7 +14,7 @@ impl<'a> PathPart<Span<'a>> {
     }
 
     pub fn inner(&self) -> &'a str {
-        *self.span().fragment()
+        self.span().fragment()
     }
 
     pub fn with_depth(&mut self, depth: u32) {
@@ -27,7 +27,7 @@ impl<'a> PathPart<Span<'a>> {
 pub type PathBuf<S> = Vec<PathPart<S>>;
 pub type Path<'b, S> = &'b [PathPart<S>];
 
-pub fn resolve<'a, 'b>(base: Path<'b, Span<'a>>, rel: PathBuf<Span<'a>>) -> PathBuf<Span<'a>> {
+pub fn resolve<'a>(base: Path<'_, Span<'a>>, rel: PathBuf<Span<'a>>) -> PathBuf<Span<'a>> {
     // ignore special paths
     if rel.len() == 1 && rel[0].inner().starts_with('@') {
         return rel.to_vec();
@@ -41,9 +41,7 @@ pub fn resolve<'a, 'b>(base: Path<'b, Span<'a>>, rel: PathBuf<Span<'a>>) -> Path
         loop {
             match rel.get(rel_start).map(|p| p.inner()) {
                 Some("../") => {
-                    if base_end > 0 {
-                        base_end -= 1;
-                    };
+                    base_end = base_end.saturating_sub(1);
                     rel_start += 1;
                 }
                 Some("./") => {
