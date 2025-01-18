@@ -22,7 +22,7 @@ trait SpanExt {
     fn get_line(&self) -> &str;
     fn get_line_column_padding(&self) -> (&str, usize, String);
 }
-impl<'a> SpanExt for Span<'a> {
+impl SpanExt for Span<'_> {
     fn get_line(&self) -> &str {
         let full_source = self.extra.full_source;
         let offset = self.location_offset();
@@ -57,7 +57,7 @@ impl<'a> SpanExt for Span<'a> {
 
 /// A combinator that takes a parser `inner` and produces a parser that also consumes both leading and
 /// trailing whitespace, returning the output of `inner`.
-pub fn ws<'a, F: 'a, O, E: ParseError<Span<'a>>>(
+pub fn ws<'a, F, O, E: ParseError<Span<'a>>>(
     inner: F,
 ) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, O, E>
 where

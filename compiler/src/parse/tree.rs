@@ -428,7 +428,7 @@ where
                 // Handle legacy `<!-- BEGIN stuff -->` working for top-level `stuff` and implicitly `./stuff`
                 match &subject {
                     Expression::Path { path, span }
-                        if depth > 0 && path.first().map_or(false, |s| {
+                        if depth > 0 && path.first().is_some_and(|s| {
                             // Not a relative path or keyword
                             !s.inner().starts_with(&['.', '@'] as &[char])
                         }) =>

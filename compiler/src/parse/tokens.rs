@@ -169,8 +169,7 @@ fn legacy_if(input: Span) -> IResult<Span, Token<Span>> {
                     args.insert(
                         0,
                         Expression::Keyword {
-                            span: args
-                                .get(0)
+                            span: args.first()
                                 .map_or_else(|| span.slice(span.len()..), |x| x.span().slice(..0)),
                             keyword: Keyword::Root,
                         },
@@ -294,7 +293,7 @@ pub fn tokens(mut input: Span) -> IResult<Span, Vec<Token<Span>>> {
                                     .or_else(|| slice.strip_prefix("ELSE"))
                                     .or_else(|| slice.strip_prefix("ENDIF"))
                                     .or_else(|| slice.strip_prefix("BEGIN"))
-                                    .map_or(false, |rest| {
+                                    .is_some_and(|rest| {
                                         rest.starts_with(|c: char| c.is_whitespace())
                                     });
                                 if alike {

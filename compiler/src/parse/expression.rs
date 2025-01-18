@@ -232,7 +232,7 @@ fn legacy_helper(input: Span) -> IResult<Span, Expression<Span>> {
     )(input)
 }
 
-fn binary<'a, F: 'a>(
+fn binary<'a, F>(
     op: &'static str,
     f: F,
 ) -> impl FnMut(Span<'a>) -> IResult<Span<'a>, Expression<Span<'a>>>

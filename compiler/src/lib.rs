@@ -50,7 +50,6 @@ mod console {
     pub use std::{
         eprintln as warn,
         eprintln as error,
-        println as info,
     };
 }
 
