@@ -225,18 +225,18 @@ static PATTERNS: &[&str] = &[
     "\\{{{", "\\{{", "\\{", "\\<!--", "{{{", "{{", "{", "<!--", "@key", "@value", "@index",
 ];
 
+use std::sync::LazyLock;
 use aho_corasick::{
     AhoCorasick,
     AhoCorasickBuilder,
     MatchKind,
 };
-use once_cell::sync::Lazy;
 
-static TOKEN_START: Lazy<AhoCorasick> = Lazy::new(|| {
+static TOKEN_START: LazyLock<AhoCorasick> = LazyLock::new(|| {
     AhoCorasickBuilder::new()
-        .auto_configure(PATTERNS)
         .match_kind(MatchKind::LeftmostFirst)
         .build(PATTERNS)
+        .unwrap()
 });
 
 #[rustfmt::skip::macros(warn)]
@@ -248,7 +248,7 @@ pub fn tokens(mut input: Span) -> IResult<Span, Vec<Token<Span>>> {
         // skip to the next `{` or `<!--`
         if let Some(i) = TOKEN_START.find(input.slice(index..).fragment()) {
             // If this is an opener, step to it
-            if matches!(i.pattern(), 4..=7) {
+            if matches!(i.pattern().as_u32(), 4..=7) {
                 index += i.start();
 
                 let slice = input.slice(index..);
@@ -278,7 +278,7 @@ pub fn tokens(mut input: Span) -> IResult<Span, Vec<Token<Span>>> {
                             warn!("      | note: This will become an error in the future.\n");
                         };
 
-                        match i.pattern() {
+                        match i.pattern().as_u32() {
                             // {{{ => }}}
                             4 => syntax_warning("}}}"),
                             // {{ => }}
@@ -333,7 +333,7 @@ pub fn tokens(mut input: Span) -> IResult<Span, Vec<Token<Span>>> {
                     Err(e) => return Err(e),
                 }
             // If this is an escaped opener, skip it
-            } else if matches!(i.pattern(), 0..=3) {
+            } else if matches!(i.pattern().as_u32(), 0..=3) {
                 let start = index + i.start();
                 let length = i.end() - i.start();
 

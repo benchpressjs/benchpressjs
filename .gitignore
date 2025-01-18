@@ -226,6 +226,5 @@ tmp/*
 .eslintcache
 yarn.lock
 target
-Cargo.lock
 flamegraph.svg
 perf.data*
