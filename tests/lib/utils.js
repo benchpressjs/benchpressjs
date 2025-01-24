@@ -2,7 +2,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const mkdirp = require('mkdirp');
 const assert = require('assert');
 
 const benchpress = require('../../lib/benchpress');
@@ -56,7 +55,7 @@ function collapseWhitespace(str) {
 async function compileTemplate(src, dest) {
   const source = await fs.promises.readFile(src, 'utf8');
   const code = await benchpress.precompile({ source });
-  await mkdirp(path.dirname(dest));
+  await fs.promises.mkdir(path.dirname(dest), { recursive: true });
   await fs.promises.writeFile(dest, code);
 }
 

@@ -7,7 +7,6 @@
 */
 
 const fs = require('fs').promises;
-const mkdirp = require('mkdirp');
 
 const config = {
   uglify: {
@@ -90,7 +89,7 @@ function client() {
     const files = await Promise.all([
       fs.readFile('lib/benchpress.js'),
       fs.readFile('lib/runtime.js'),
-      mkdirp('build'),
+      fs.mkdir('build', { recursive: true }),
     ]);
 
     const wrapped = wrap(files);
