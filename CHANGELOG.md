@@ -16,6 +16,22 @@ Format:
 - Small improvements
 -->
 
+## Version 2.5.2 (2024-01-25)
+
+### Fixes
+
+- Fix error parsing tokens that look like bare keywords (`@keyframe`) [#108](https://github.com/benchpressjs/benchpressjs/issues/108)
+- Bump dependencies
+
+## Version 2.5.1 (2023-02-07)
+
+Support only Node >= 14
+
+### Fixes
+
+- Fix utf8 panic in syntax warning code [nodebb-widget-essentials#63](https://github.com/NodeBB/nodebb-widget-essentials/issues/63)
+- Bump dependencies
+
 ## Version 2.4.1 (2021-02-13)
 
 ### Fixes
