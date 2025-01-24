@@ -3,6 +3,7 @@ use crate::{
     parse::{
         expression::{
             expression,
+            keyword,
             Expression,
             Keyword,
         },
@@ -169,7 +170,8 @@ fn legacy_if(input: Span) -> IResult<Span, Token<Span>> {
                     args.insert(
                         0,
                         Expression::Keyword {
-                            span: args.first()
+                            span: args
+                                .first()
                                 .map_or_else(|| span.slice(span.len()..), |x| x.span().slice(..0)),
                             keyword: Keyword::Root,
                         },
@@ -225,12 +227,12 @@ static PATTERNS: &[&str] = &[
     "\\{{{", "\\{{", "\\{", "\\<!--", "{{{", "{{", "{", "<!--", "@key", "@value", "@index",
 ];
 
-use std::sync::LazyLock;
 use aho_corasick::{
     AhoCorasick,
     AhoCorasickBuilder,
     MatchKind,
 };
+use std::sync::LazyLock;
 
 static TOKEN_START: LazyLock<AhoCorasick> = LazyLock::new(|| {
     AhoCorasickBuilder::new()
@@ -349,9 +351,12 @@ pub fn tokens(mut input: Span) -> IResult<Span, Vec<Token<Span>>> {
             } else {
                 // if matches!(i.pattern(), 8..=10)
                 let start = index + i.start();
-                let end = index + i.end();
-                let span = input.slice(start..end);
-                let (_, expr) = expression(span)?;
+                let Ok((_, expr)) = keyword(input.slice(start..)) else {
+                    // Invalid keyword, step to after it
+                    index += i.end();
+                    continue;
+                };
+                let span = expr.span();
 
                 let (line, column, padding) = span.get_line_column_padding();
                 warn!("[benchpress] warning: keyword outside an interpolation token is deprecated");
@@ -371,7 +376,7 @@ pub fn tokens(mut input: Span) -> IResult<Span, Vec<Token<Span>>> {
                 tokens.push(Token::InterpEscaped { span, expr });
 
                 // Advance to after the token
-                input = input.slice(end..);
+                input = input.slice((start + span.len())..);
                 index = 0;
             }
         } else {
@@ -826,6 +831,24 @@ mod test {
         }
 
         assert_eq_unspan!(
+            tokens(sp("before @value other stuff")),
+            Ok((
+                "",
+                vec![
+                    Token::Text("before "),
+                    Token::InterpEscaped {
+                        span: "@value",
+                        expr: Expression::Keyword {
+                            span: "@value",
+                            keyword: Keyword::Value
+                        }
+                    },
+                    Token::Text(" other stuff"),
+                ]
+            ))
+        );
+
+        assert_eq_unspan!(
             tokens(
                 sp("before {{{ if abc }}} we do one thing {{{ else }}} we do another {{{ end }}} other stuff")
             ),
@@ -935,9 +958,8 @@ mod test {
         );
 
         let program = "before \\{{{ each abc }}} for each thing \\{{{ end }}}";
-        let source = sp(program);
         assert_eq_unspan!(
-            tokens(source),
+            tokens(sp(program)),
             Ok((
                 "",
                 vec![

@@ -14,13 +14,16 @@ use nom::{
         tag,
         take,
     },
-    character::complete::alphanumeric1,
+    character::complete::{
+        alpha1,
+        alphanumeric1,
+    },
     combinator::{
         consumed,
         map,
+        map_res,
         opt,
         recognize,
-        value,
     },
     multi::{
         many0,
@@ -144,20 +147,26 @@ fn string_literal(input: Span) -> IResult<Span, Expression<Span>> {
     )(input)
 }
 
-fn keyword(input: Span) -> IResult<Span, Expression<Span>> {
-    map(
-        consumed(alt((
-            value(Keyword::Root, tag("@root")),
-            value(Keyword::Key, tag("@key")),
-            value(Keyword::Index, tag("@index")),
-            value(Keyword::Value, tag("@value")),
-            value(Keyword::First, tag("@first")),
-            value(Keyword::Last, tag("@last")),
-            value(Keyword::True, tag("@true")),
-            value(Keyword::False, tag("@false")),
-        ))),
-        |(span, keyword)| Expression::Keyword { span, keyword },
-    )(input)
+pub fn keyword(input: Span) -> IResult<Span, Expression<Span>> {
+    fn word(input: Span) -> IResult<Span, Span> {
+        alpha1(input)
+    }
+
+    map_res(consumed(preceded(tag("@"), word)), |(span, ident)| {
+        let keyword = match *ident.fragment() {
+            "root" => Keyword::Root,
+            "key" => Keyword::Key,
+            "index" => Keyword::Index,
+            "value" => Keyword::Value,
+            "first" => Keyword::First,
+            "last" => Keyword::Last,
+            "true" => Keyword::True,
+            "false" => Keyword::False,
+            _ => return Err("Invalid keyword"),
+        };
+
+        Ok(Expression::Keyword { span, keyword })
+    })(input)
 }
 
 fn identifier(input: Span) -> IResult<Span, Span> {
@@ -421,6 +430,7 @@ mod test {
                 }
             ))
         );
+        assert!(keyword(sp("@keyframes")).is_err());
     }
 
     #[test]
