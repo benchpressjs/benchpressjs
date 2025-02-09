@@ -14,6 +14,14 @@
   "repository": "git://github.com/benchpressjs/benchpressjs",
   "main": "lib/benchpress",
   "browser": "build/benchpress",
+  "files": [
+    "package.json",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "lib",
+    "build"
+  ],
   "keywords": [
     "templates",
     "templating",
@@ -35,7 +43,8 @@
     "grunt-shell": "^4.0.0",
     "mocha": "^11.1.0",
     "nyc": "^17.1.0",
-    "uglify-js": "^3.19.3"
+    "uglify-js": "^3.19.3",
+    "wasm-pack": "^0.13.1"
   },
   "license": "MIT",
   "engines": {

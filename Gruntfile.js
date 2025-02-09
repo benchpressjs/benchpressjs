@@ -100,6 +100,17 @@ function client() {
   });
 }
 
+// wasm-pack places `*` .gitignore, which would cause npm to not pack anything in `build/compiler`
+// https://github.com/rustwasm/wasm-pack/issues/728
+function removeCompilerGitignore() {
+  const done = this.async();
+
+  fs.unlink('build/compiler/.gitignore').then(() => done(), (err) => {
+    console.error(err);
+    done(false);
+  });
+}
+
 module.exports = function Gruntfile(grunt) {
   config.pkg = grunt.file.readJSON('package.json');
   grunt.initConfig(config);
@@ -114,7 +125,10 @@ module.exports = function Gruntfile(grunt) {
 
   grunt.registerTask('client', 'Stripping and wrapping shim', client);
 
-  grunt.registerTask('build', ['client', 'uglify', 'shell:compiler', 'shell:docs']);
+  grunt.registerTask('removeCompilerGitignore', 'Deleting build/compiler/.gitignore', removeCompilerGitignore);
+  grunt.registerTask('compiler', ['shell:compiler', 'removeCompilerGitignore']);
+
+  grunt.registerTask('build', ['client', 'uglify', 'compiler', 'shell:docs']);
   grunt.registerTask('default', ['build', 'mochaTest']);
   grunt.registerTask('bench', ['default', 'benchmark']);
 };
