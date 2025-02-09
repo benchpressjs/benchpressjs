@@ -16,7 +16,13 @@ Format:
 - Small improvements
 -->
 
-## Version 2.5.2 (2024-01-25)
+## Version 2.5.3 (2025-02-09)
+
+### Fixes
+
+- Fix `build/compiler` not included in npm package
+
+## Version 2.5.2 (2025-01-25) - BROKEN release
 
 ### Fixes
 
