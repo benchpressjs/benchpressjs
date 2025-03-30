@@ -69,7 +69,7 @@ function wrap([shimFile, runtimeFile]) {
     } else if (typeof module !== 'undefined' && module.exports) {
       module.exports = factory();
     } else {
-      this.benchpress = factory();
+      window.benchpress = factory();
     }
   })(function () {
     const runtime = (function () {
