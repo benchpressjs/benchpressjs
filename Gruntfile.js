@@ -66,6 +66,10 @@ function wrap([shimFile, runtimeFile]) {
   const wrapped = `(function (factory) {
     if (typeof define === 'function' && define.amd) {
       define('benchpress', factory);
+    } else if (typeof module !== 'undefined' && module.exports) {
+      module.exports = factory();
+    } else {
+      this.benchpress = factory();
     }
   })(function () {
     const runtime = (function () {
