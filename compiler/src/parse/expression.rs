@@ -117,6 +117,12 @@ pub enum Expression<S> {
         lhs: Box<Expression<S>>,
         rhs: Box<Expression<S>>,
     },
+    // "a" + "b"
+    Concat {
+        span: S,
+        lhs: Box<Expression<S>>,
+        rhs: Box<Expression<S>>,
+    },
 }
 
 impl<'a> Expression<Span<'a>> {
@@ -131,7 +137,8 @@ impl<'a> Expression<Span<'a>> {
             | Expression::Equ { span, .. }
             | Expression::Neq { span, .. }
             | Expression::And { span, .. }
-            | Expression::Or { span, .. } => *span,
+            | Expression::Or { span, .. }
+            | Expression::Concat { span, .. } => *span,
         }
     }
 }
@@ -289,6 +296,11 @@ pub fn expression(input: Span) -> IResult<Span, Expression<Span>> {
             lhs: Box::new(lhs),
             rhs: Box::new(rhs),
         }),
+        binary("+", |span, lhs, rhs| Expression::Concat {
+            span,
+            lhs: Box::new(lhs),
+            rhs: Box::new(rhs),
+        }),
     ))(input)
 }
 
@@ -362,6 +374,11 @@ mod test {
                     rhs: Box::new(rhs.span_to_str()),
                 },
                 Expression::Or { span, lhs, rhs } => Expression::Or {
+                    span: *span.fragment(),
+                    lhs: Box::new(lhs.span_to_str()),
+                    rhs: Box::new(rhs.span_to_str()),
+                },
+                Expression::Concat { span, lhs, rhs } => Expression::Concat {
                     span: *span.fragment(),
                     lhs: Box::new(lhs.span_to_str()),
                     rhs: Box::new(rhs.span_to_str()),
@@ -615,6 +632,36 @@ mod test {
                             },
                         ]
                     })
+                }
+            ))
+        );
+    }
+
+    #[test]
+    fn test_concat() {
+        assert_eq_unspan!(
+            expression(sp("(\"a\" + \"b\")")),
+            Ok((
+                "",
+                Expression::Concat {
+                    span: "(\"a\" + \"b\")",
+                    lhs: Box::new(Expression::StringLiteral("\"a\"")),
+                    rhs: Box::new(Expression::StringLiteral("\"b\"")),
+                }
+            ))
+        );
+
+        assert_eq_unspan!(
+            expression(sp("(a.b + \"test\")")),
+            Ok((
+                "",
+                Expression::Concat {
+                    span: "(a.b + \"test\")",
+                    lhs: Box::new(Expression::Path {
+                        span: "a.b",
+                        path: vec![PathPart::Part("a"), PathPart::Part("b")]
+                    }),
+                    rhs: Box::new(Expression::StringLiteral("\"test\"")),
                 }
             ))
         );

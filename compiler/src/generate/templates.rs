@@ -279,6 +279,9 @@ pub fn expression(input: Expression<Span>) -> Cow<str> {
         Expression::Or { lhs, rhs, .. } => {
             format!("({} || {})", expression(*lhs), expression(*rhs)).into()
         }
+        Expression::Concat { lhs, rhs, .. } => {
+            format!("({} + {})", expression(*lhs), expression(*rhs)).into()
+        }
     }
 }
 
@@ -339,7 +342,7 @@ mod tests {
   }
 
   compiled.blocks = {
-    
+
   };
 
   return compiled;
@@ -399,10 +402,10 @@ mod tests {
             iter(9, "stuff", "'for ' + \n'each one'", "'if ' + \n'none'"),
             "iter(stuff, function each(key9, index, length, value) {
   var key = key9;
-  return 'for ' + 
+  return 'for ' +
     'each one';
 }, function alt() {
-  return 'if ' + 
+  return 'if ' +
     'none';
 })"
         )
@@ -474,5 +477,29 @@ mod tests {
                 Expression::Path { span: sp("defaultLang"), path: vec![PathPart::Part(sp("defaultLang"))] },
             ]
         }), "helper(context, helpers, 'localeToHTML', [guard((context != null) ? context['userLang'] : null), guard((context != null) ? context['defaultLang'] : null)])");
+    }
+
+    #[test]
+    fn concat_expression_test() {
+        assert_eq!(
+            expression(Expression::Concat {
+                span: sp("(\"a\" + \"b\")"),
+                lhs: Box::new(Expression::StringLiteral(sp("\"a\""))),
+                rhs: Box::new(Expression::StringLiteral(sp("\"b\"")))
+            }),
+            "(\"a\" + \"b\")"
+        );
+
+        assert_eq!(
+            expression(Expression::Concat {
+                span: sp("(name + \" the Fantastic\")"),
+                lhs: Box::new(Expression::Path {
+                    span: sp("name"),
+                    path: vec![PathPart::Part(sp("name"))]
+                }),
+                rhs: Box::new(Expression::StringLiteral(sp("\" the Fantastic\"")))
+            }),
+            "(guard((context != null) ? context['name'] : null) + \" the Fantastic\")"
+        );
     }
 }

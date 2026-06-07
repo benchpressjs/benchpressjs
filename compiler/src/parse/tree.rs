@@ -193,6 +193,11 @@ fn resolve_expression_paths<'a>(
             lhs: Box::new(resolve_expression_paths(base, *lhs)),
             rhs: Box::new(resolve_expression_paths(base, *rhs)),
         },
+        Expression::Concat { span, lhs, rhs } => Expression::Concat {
+            span,
+            lhs: Box::new(resolve_expression_paths(base, *lhs)),
+            rhs: Box::new(resolve_expression_paths(base, *rhs)),
+        },
     }
 }
 
